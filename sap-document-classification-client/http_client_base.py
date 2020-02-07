@@ -1,9 +1,9 @@
 from base64 import b64encode
 import json
-from urllib.parse import urljoin
+import logging
 import requests
 import time
-import logging
+from urllib.parse import urljoin
 
 from .http_request_retry import retry_session
 

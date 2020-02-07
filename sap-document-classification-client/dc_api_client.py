@@ -1,17 +1,16 @@
-import time
-import os
-import re
-import fnmatch
-
 from concurrent.futures import ThreadPoolExecutor
+import fnmatch
 import json
 import logging
+import os
+import re
+import time
 
-from .constants import DATASETS_ENDPOINT, DATASET_ENDPOINT, DATASET_DOCUMENTS_ENDPOINT, \
-    DATASET_DOCUMENT_ENDPOINT, DOCUMENTS_ENDPOINT, DOCUMENT_RESULT_ENDPOINT, MODEL_TRAINING_JOBS_ENDPOINT, \
-    DEPLOYMENTS_ENDPOINT, TRAINED_MODEL_ENDPOINT, TRAINED_MODELS_ENDPOINT, MODEL_DEPLOYMENT_ENDPOINT, \
-    API_PAGINATION_TOP_PARAM, API_PAGINATION_SKIP_PARAM, API_PAGINATION_COUNT_PARAM, API_MIME_TYPE_FIELD, \
-    API_DOCUMENT_EXTRACTED_TEXT_FIELD, API_DOCUMENT_ID_FIELD, API_STATUS_FIELD, PDF_MIME_TYPE
+from .constants import API_DOCUMENT_EXTRACTED_TEXT_FIELD, API_DOCUMENT_ID_FIELD, API_MIME_TYPE_FIELD, \
+    API_PAGINATION_COUNT_PARAM, API_PAGINATION_SKIP_PARAM, API_PAGINATION_TOP_PARAM, API_STATUS_FIELD, \
+    DATASETS_ENDPOINT, DATASET_DOCUMENTS_ENDPOINT, DATASET_DOCUMENT_ENDPOINT, DATASET_ENDPOINT, DEPLOYMENTS_ENDPOINT, \
+    DOCUMENTS_ENDPOINT, DOCUMENT_RESULT_ENDPOINT, MODEL_DEPLOYMENT_ENDPOINT, MODEL_TRAINING_JOBS_ENDPOINT, \
+    PDF_MIME_TYPE, TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT
 from .http_client_base import CommonClient, STATUS_SUCCEEDED
 
 
@@ -20,6 +19,7 @@ class DCApiClient(CommonClient):
     This class provides an interface to access SAP Document Classification REST API from a Python application.
     Structure of values returned by all the methods is documented in Swagger.
     """
+
     def __init__(self,
                  base_url,
                  client_id,
@@ -81,8 +81,8 @@ class DCApiClient(CommonClient):
         self.logger.debug('Submitting document {} for classification'.format(document_path))
         response = self.session.post(url=self.path_to_url(
             DOCUMENTS_ENDPOINT(modelName=model_name, modelVersion=model_version)),
-                                     files={'document': open(document_path, 'rb')},
-                                     data=data)
+            files={'document': open(document_path, 'rb')},
+            data=data)
         self.logger.info(
             'Document {} submitted for classification successfully, waiting for result'.format(document_path))
         response.raise_for_status()
@@ -331,7 +331,7 @@ class DCApiClient(CommonClient):
         response_json = response.json()
         return self._poll_for_url(self.path_to_url(
             TRAINED_MODEL_ENDPOINT(model_name=response_json['modelName'], model_version=response_json['modelVersion'])),
-                                  sleep_interval=self.polling_long_sleep).json()
+            sleep_interval=self.polling_long_sleep).json()
 
     def delete_trained_model(self, model_name, model_version):
         """
@@ -399,7 +399,7 @@ class DCApiClient(CommonClient):
                          'the deployment completion'.format(model_name, model_version))
         return self._poll_for_url(self.path_to_url(
             MODEL_DEPLOYMENT_ENDPOINT(deployment_id=response.json()["deploymentId"])),
-                                  sleep_interval=self.polling_long_sleep).json()
+            sleep_interval=self.polling_long_sleep).json()
 
     def get_deployed_models_info(self):
         """
@@ -475,7 +475,8 @@ class DCApiClient(CommonClient):
             if result[API_STATUS_FIELD] != STATUS_SUCCEEDED:
                 if result.get(API_DOCUMENT_EXTRACTED_TEXT_FIELD):
                     result[API_DOCUMENT_EXTRACTED_TEXT_FIELD] = result[
-                        API_DOCUMENT_EXTRACTED_TEXT_FIELD][:50] + ' ... truncated'
+                                                                    API_DOCUMENT_EXTRACTED_TEXT_FIELD][
+                                                                :50] + ' ... truncated'
                 failed_results.append(result)
         if len(failed_results) > 0:
             raise Exception(error_message + ': ' + str(failed_results))
