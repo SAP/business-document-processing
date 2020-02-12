@@ -10,7 +10,7 @@ from .constants import API_DOCUMENT_EXTRACTED_TEXT_FIELD, API_DOCUMENT_ID_FIELD,
     API_PAGINATION_COUNT_PARAM, API_PAGINATION_SKIP_PARAM, API_PAGINATION_TOP_PARAM, API_STATUS_FIELD, \
     DATASETS_ENDPOINT, DATASET_DOCUMENTS_ENDPOINT, DATASET_DOCUMENT_ENDPOINT, DATASET_ENDPOINT, DEPLOYMENTS_ENDPOINT, \
     DOCUMENTS_ENDPOINT, DOCUMENT_RESULT_ENDPOINT, MODEL_DEPLOYMENT_ENDPOINT, MODEL_TRAINING_JOBS_ENDPOINT, \
-    PDF_MIME_TYPE, TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT
+    PDF_MIME_TYPE, TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT, MAX_POLLING_THREADS, MIN_POLLING_INTERVAL
 from .http_client_base import CommonClient, STATUS_SUCCEEDED
 
 
@@ -25,8 +25,8 @@ class DCApiClient(CommonClient):
                  client_id,
                  client_secret,
                  uaa_url,
-                 polling_threads=10,
-                 polling_sleep=1,
+                 polling_threads=5,
+                 polling_sleep=0.5,
                  polling_long_sleep=30,
                  polling_max_attempts=200,
                  logging_level=logging.WARNING):
@@ -44,6 +44,20 @@ class DCApiClient(CommonClient):
         :param logging_level: INFO level will log the operations progress, the default level WARNING should not
         produce any logs
         """
+        logger = logging.getLogger('DCApiClient')
+        logger.setLevel(logging_level)
+        if polling_threads > MAX_POLLING_THREADS:
+            logger.warning('The number of parallel polling threads of {} is too high, the number was set to maximal '
+                           'allowed amount of {}'.format(polling_threads, MAX_POLLING_THREADS))
+            polling_threads = MAX_POLLING_THREADS
+        if polling_sleep > MIN_POLLING_INTERVAL:
+            logger.warning('The polling interval of {} is too small, the number was set to minimal '
+                           'allowed amount of {}'.format(polling_sleep, MIN_POLLING_INTERVAL))
+            polling_sleep = MIN_POLLING_INTERVAL
+        if polling_long_sleep > MIN_POLLING_INTERVAL:
+            logger.warning('The polling interval for long operations of {} is too small, the number was set to minimal '
+                           'allowed amount of {}'.format(polling_long_sleep, MIN_POLLING_INTERVAL))
+            polling_long_sleep = MIN_POLLING_INTERVAL
         CommonClient.__init__(self,
                               base_url=base_url,
                               client_id=client_id,
@@ -55,8 +69,7 @@ class DCApiClient(CommonClient):
                               polling_max_attempts=polling_max_attempts,
                               url_path_prefix='document-classification/v1/',
                               logging_level=logging_level)
-        self.logger = logging.getLogger('DCApiClient')
-        self.logger.setLevel(logging_level)
+        self.logger = logger
 
     # Inference
     def classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype=PDF_MIME_TYPE):

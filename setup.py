@@ -1,10 +1,10 @@
 from distutils.core import setup
 setup(
   name='sap-document-classification-client',
-  packages=['sap-document-classification-client'],
-  version='0.1',
+  packages=['sap_document_classification_client'],
+  version='0.1.0',
   license='apache-2.0',
-  description = 'Python client library for convenient usage of SAP Document Classification service REST API',
+  description='Python client library for convenient usage of SAP Document Classification service REST API',
   author='Alexander Bolshakov',
   author_email='alexander.bolshakov@sap.com',
   url='https://github.com/sap/document-classification-client',
@@ -16,7 +16,7 @@ setup(
   classifiers=[
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
-    'License :: OSI Approved :: Apache License, v 2.0',
+    'License :: OSI Approved :: Apache Software License',
     'Programming Language :: Python :: 3'
   ],
 )

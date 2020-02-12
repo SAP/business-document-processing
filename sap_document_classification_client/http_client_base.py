@@ -99,7 +99,15 @@ class CommonClient:
         except PollingTimeoutException as e:
             return {'status': STATUS_FAILED, 'message': str(e)}
         except (requests.HTTPError, FailedCallException) as e:
-            return {'status': STATUS_FAILED, 'response': e.response}
+            try:
+                result = e.response.json()
+            except Exception:
+                result = {'response_text': e.response.text}
+            result['status'] = STATUS_FAILED
+            result['response_code'] = e.response.status_code
+            return result
+        except Exception as e:
+            return {'status': STATUS_FAILED, 'message': str(e)}
 
 
 class PollingTimeoutException(Exception):
