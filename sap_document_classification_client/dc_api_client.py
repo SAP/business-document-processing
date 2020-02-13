@@ -36,10 +36,11 @@ class DCApiClient(CommonClient):
         :param client_id: The client ID taken from the service key (key 'uaa.clientid' in service key JSON)
         :param client_secret: The client secret taken from the service key (key 'uaa.clientsecret' in service key JSON)
         :param uaa_url: The XSUAA URL taken from the service key (key 'uaa.url' in service key JSON)
-        :param polling_threads: Number of threads used to poll for asynchronous DC APIs
-        :param polling_sleep: Number of seconds to wait between the polling attempts for most of the APIs
+        :param polling_threads: Number of threads used to poll for asynchronous DC APIs, the maximal value is 15
+        :param polling_sleep: Number of seconds to wait between the polling attempts for most of the APIs,
+        the minimal value is 0.2
         :param polling_long_sleep: Number of seconds to wait between the polling attempts for model training and
-        deployment operations
+        deployment operations, the minimal value is 0.2
         :param polling_max_attempts: Maximum number of attempts used to poll for asynchronous DC APIs
         :param logging_level: INFO level will log the operations progress, the default level WARNING should not
         produce any logs
@@ -50,11 +51,11 @@ class DCApiClient(CommonClient):
             logger.warning('The number of parallel polling threads of {} is too high, the number was set to maximal '
                            'allowed amount of {}'.format(polling_threads, MAX_POLLING_THREADS))
             polling_threads = MAX_POLLING_THREADS
-        if polling_sleep > MIN_POLLING_INTERVAL:
+        if polling_sleep < MIN_POLLING_INTERVAL:
             logger.warning('The polling interval of {} is too small, the number was set to minimal '
                            'allowed amount of {}'.format(polling_sleep, MIN_POLLING_INTERVAL))
             polling_sleep = MIN_POLLING_INTERVAL
-        if polling_long_sleep > MIN_POLLING_INTERVAL:
+        if polling_long_sleep < MIN_POLLING_INTERVAL:
             logger.warning('The polling interval for long operations of {} is too small, the number was set to minimal '
                            'allowed amount of {}'.format(polling_long_sleep, MIN_POLLING_INTERVAL))
             polling_long_sleep = MIN_POLLING_INTERVAL
