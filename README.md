@@ -14,11 +14,11 @@ This python library should be consumed in the standard way by running `pip insta
 
 ## Known Issues
 
-No known issues so far.
+Please see the [issues section](https://github.com/SAP/document-classification-client/issues)
 
 ## How to obtain support
 
-In case you would like to contribute to this project, ask any questions or get support, please open an issue containing the description of your planned contribution in GitHub and we will get in touch.
+In case you would like to contribute to this project, ask any questions or get support, please open an issue containing the description of your question or planned contribution in GitHub and we will get in touch.
 
 ## License
 
