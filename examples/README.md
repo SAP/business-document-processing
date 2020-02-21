@@ -1,7 +1,7 @@
 In order to use the example `train_and_evaluate_custom_model.ipynb` example two prerequisites are:
 
 1. You have access to a service key for the SAP AI Busniess Services Document Classification service
-2. You need either a Jupyterhub instance (below are the instructions for setup either locally on your laptop in in SAP converged cloud instance)
+2. You need a Jupyterlab instance (below are the instructions for setup locally on your laptop)
 
 ### Service key
 
@@ -11,30 +11,5 @@ In order to get a service key please have a look at this [SAP Help Portal articl
 
 ### Example how to set up local Jupyterlab instance
 
-#### Install anaconda
-
-```
-wget https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh
-bash Anaconda3-2019.10-Linux-x86_64.sh
-rm Anaconda3-2019.10-Linux-x86_64.sh
-```
-
-Note: This guide was performed with default installation path querried after the `bash` command. Anaconda is used as the Python package manager as recommended by the Jupyterhub team. You will be asked whether `conda init` should be run. Answer with yes or run it afterwards yourself. Once you log off and back in again you should see `base` in front of your shell prompt indicating sucessfull installation.
-
-Check for updated version before download [here](https://www.anaconda.com/distribution/)
-
-#### Install jupyterlab via conda
-
-```
-conda update -n base -c defaults conda
-conda create --name jupyterlab
-conda activate jupyterlab
-conda install -c conda-forge jupyterlab
-```
-Then we can start jupyter lab
-
-```
-jupyter lab
-```
-
-Instructions should be displayed in the terminal on how to access the server.
+An example script on how to set up anaconda and start jupyterlab on your local machine is provided [here](./install_jupyterlab..sh).
+This might need modifications based on OS version (example used in Ubuntu 16.04).
