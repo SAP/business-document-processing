@@ -2,3 +2,4 @@
 dist/
 .idea/
 MANIFEST
+**/.ipynb_checkpoints/
