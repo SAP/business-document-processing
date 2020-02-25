@@ -1,4 +1,4 @@
-In order to use the example `train_and_evaluate_custom_model.ipynb` two prerequisites are required:
+In order to use the example [`train_and_evaluate_custom_model.ipynb`](train_and_evaluate_custom_model.ipynb) two prerequisites are required:
 
 1. You have access to a service key for the SAP AI Busniess Services Document Classification service
 2. You need a Jupyterlab instance (below are the instructions for setup locally on your laptop)
