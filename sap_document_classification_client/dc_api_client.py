@@ -18,6 +18,19 @@ class DCApiClient(CommonClient):
     """
     This class provides an interface to access SAP Document Classification REST API from a Python application.
     Structure of values returned by all the methods is documented in Swagger.
+
+    :param base_url: The service URL taken from the service key (key 'url' in service key JSON)
+    :param client_id: The client ID taken from the service key (key 'uaa.clientid' in service key JSON)
+    :param client_secret: The client secret taken from the service key (key 'uaa.clientsecret' in service key JSON)
+    :param uaa_url: The XSUAA URL taken from the service key (key 'uaa.url' in service key JSON)
+    :param polling_threads: Number of threads used to poll for asynchronous DC APIs, the maximal value is 15
+    :param polling_sleep: Number of seconds to wait between the polling attempts for most of the APIs,
+    the minimal value is 0.2
+    :param polling_long_sleep: Number of seconds to wait between the polling attempts for model training and
+    deployment operations, the minimal value is 0.2
+    :param polling_max_attempts: Maximum number of attempts used to poll for asynchronous DC APIs
+    :param logging_level: INFO level will log the operations progress, the default level WARNING should not
+    produce any logs
     """
 
     def __init__(self,
@@ -32,18 +45,6 @@ class DCApiClient(CommonClient):
                  logging_level=logging.WARNING):
         """
         Creates a new instance of a client object to access the SAP Document Classification service
-        :param base_url: The service URL taken from the service key (key 'url' in service key JSON)
-        :param client_id: The client ID taken from the service key (key 'uaa.clientid' in service key JSON)
-        :param client_secret: The client secret taken from the service key (key 'uaa.clientsecret' in service key JSON)
-        :param uaa_url: The XSUAA URL taken from the service key (key 'uaa.url' in service key JSON)
-        :param polling_threads: Number of threads used to poll for asynchronous DC APIs, the maximal value is 15
-        :param polling_sleep: Number of seconds to wait between the polling attempts for most of the APIs,
-        the minimal value is 0.2
-        :param polling_long_sleep: Number of seconds to wait between the polling attempts for model training and
-        deployment operations, the minimal value is 0.2
-        :param polling_max_attempts: Maximum number of attempts used to poll for asynchronous DC APIs
-        :param logging_level: INFO level will log the operations progress, the default level WARNING should not
-        produce any logs
         """
         logger = logging.getLogger('DCApiClient')
         logger.setLevel(logging_level)
