@@ -1,6 +1,6 @@
-# Python client library for SAP Document Classification REST API
+# Python client library for SAP AI Business Service Document Classification REST API
 
-This repository contains the [source code](sap_document_classification_client) of Python client library for convenient usage of [SAP Document Classification service](https://help.sap.com/viewer/product/DOCUMENT_CLASSIFICATION/SHIP/en-US) and the [examples of its usage](./examples). The client library provides convenience methods to access the service that issue calls to the [SAP Document Classification  REST API](https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html). In order to be able to use the library you need to [have access to SAP Cloud Platform](https://www.sap.com/products/cloud-platform/get-started.html).
+This repository contains the [source code](sap_document_classification_client) of Python client library for convenient usage of [SAP AI Business Service Document Classification](https://help.sap.com/viewer/product/DOCUMENT_CLASSIFICATION/SHIP/en-US) and the [examples of its usage](./examples). The client library provides convenience methods to access the service that issue calls to the [SAP AI Business Service Document Classification REST API](https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html). In order to be able to use the library you need to [have access to SAP Cloud Platform](https://www.sap.com/products/cloud-platform/get-started.html).
 
 Please have a look at [API documentation](./API.md) in order to use the library.
 
