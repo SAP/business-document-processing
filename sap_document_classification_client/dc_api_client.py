@@ -73,7 +73,8 @@ class DCApiClient(CommonClient):
         self.logger = logger
 
     # Inference
-    def classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype=PDF_MIME_TYPE):
+    def classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype=PDF_MIME_TYPE,
+                          lang_hint='en'):
         """
         Submits request for document classification, checks the response and returns the reference ID for the
         uploaded document
@@ -84,13 +85,15 @@ class DCApiClient(CommonClient):
         :param reference_id: In case the document reference ID has to be managed by the user, it can be specified.
         In this case the user is responsible for providing unique reference IDs for different documents
         :param mimetype: The file type of the document uploaded
+        :param lang_hint: The language hint provided for text extraction
         :return: Object containing the reference ID of the classified document and the classification results
         """
 
         options = {}
         if reference_id is not None:
             options[API_DOCUMENT_ID_FIELD] = reference_id
-            options[API_MIME_TYPE_FIELD] = mimetype
+        options[API_MIME_TYPE_FIELD] = mimetype
+        options['lang'] = lang_hint
         data = {'parameters': json.dumps(options)}
         self.logger.debug('Submitting document {} for classification'.format(document_path))
         response = self.session.post(url=self.path_to_url(
@@ -244,7 +247,8 @@ class DCApiClient(CommonClient):
                           'the model {} with version {}'.format(model_name, model_version))
         return response.json()
 
-    def upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type='pdf'):
+    def upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type='pdf',
+                                   lang_hint='en'):
         """
         Uploads a single document and its ground truth to a specific dataset
         :param dataset_id: The ID of the dataset
@@ -252,6 +256,7 @@ class DCApiClient(CommonClient):
         :param ground_truth: Path to the ground truth JSON file or an object representing the ground truth
         :param document_id: The reference ID of the document
         :param mime_type: The file type of the document
+        :param lang_hint : The language hint provided for text extraction
         :return: Object containing information about the uploaded document
         """
         if type(ground_truth) is str:
@@ -261,7 +266,7 @@ class DCApiClient(CommonClient):
         else:
             raise Exception('Wrong argument type string (path to ground truth file) or a dictionary (ground truth is '
                             'JSON format) are expected for ground_truth argument')
-        data = {'groundTruth': ground_truth_json, 'mimeType': mime_type}
+        data = {'groundTruth': ground_truth_json, 'lang': lang_hint,'mimeType': mime_type}
         if document_id:
             data['documentId'] = document_id
         self.logger.debug('Uploading the document {} with ground truth {} to the dataset {}'.format(
