@@ -1,6 +1,6 @@
-# Python client library for SAP AI Business Service Document Classification REST API
+# Python client library for SAP AI Business Services - Document Classification REST API
 
-This repository contains the [source code](sap_document_classification_client) of Python client library for convenient usage of [SAP AI Business Service Document Classification](https://help.sap.com/viewer/product/DOCUMENT_CLASSIFICATION/SHIP/en-US) and the [examples of its usage](./examples). The client library provides convenience methods to access the service that issue calls to the [SAP AI Business Service Document Classification REST API](https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html). In order to be able to use the library you need to [have access to SAP Cloud Platform](https://www.sap.com/products/cloud-platform/get-started.html).
+This repository contains the [source code](sap_document_classification_client) of a Python client library to facilitate the use of [SAP AI Business Services - Document Classification](https://help.sap.com/dc) and [usage examples](./examples). The client library provides convenient methods to access the service that issue calls to the [SAP AI Business Services - Document Classification REST API](https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html). In order to be able to use the library you need to [have access to SAP Cloud Platform](https://www.sap.com/products/cloud-platform/get-started.html).
 
 Please have a look at [API documentation](./API.md) in order to use the library.
 
@@ -10,11 +10,11 @@ This library requires properly setup [Python 3](https://www.python.org/downloads
 
 ## Download and Installation
 
-This python library should be consumed in the standard way by running `pip install sap-document-classification-client` or adding the library as a dependency of your code in `requirements.txt` file.
+This Python library should be consumed in the standard way by running `pip install sap-document-classification-client` or adding the library as a dependency of your code in `requirements.txt` file.
 
 ## Known Issues
 
-Please see the [issues section](https://github.com/SAP/document-classification-client/issues)
+Please see the [issues section](https://github.com/SAP/document-classification-client/issues).
 
 ## How to obtain support
 
