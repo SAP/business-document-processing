@@ -7,8 +7,8 @@
 DCApiClient(self, base_url, client_id, client_secret, uaa_url, polling_threads=5, polling_sleep=0.5, polling_long_sleep=30, polling_max_attempts=400, logging_level=30)
 ```
 
-This class provides an interface to access SAP Document Classification REST API from a Python application.
-Structure of values returned by all the methods is documented in Swagger.
+This class provides an interface to access SAP AI Business Services - Document Classification REST API from a Python application.
+Structure of values returned by all the methods is documented in Swagger. See Swagger UI by adding: /document-classification/v1 to your Document Classification service key URL value (from outside the uaa section).
 
 - Argument base_url: The service URL taken from the service key (key 'url' in service key JSON)
 - Argument client_id: The client ID taken from the service key (key 'uaa.clientid' in service key JSON)
@@ -261,4 +261,3 @@ version has to be provided as well
 - Argument model_version: The version of the deployed model
 
 **Returns**: An empty object
-
