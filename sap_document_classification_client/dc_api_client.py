@@ -93,8 +93,9 @@ class DCApiClient(CommonClient):
         options = {}
         if reference_id is not None:
             options[API_DOCUMENT_ID_FIELD] = reference_id
-        options[API_MIME_TYPE_FIELD] = mimetype
-        options['lang'] = lang_hint
+            options[API_MIME_TYPE_FIELD] = mimetype
+        if lang_hint is not None:
+            options['lang'] = lang_hint
         data = {'parameters': json.dumps(options)}
         self.logger.debug('Submitting document {} for classification'.format(document_path))
         response = self.session.post(url=self.path_to_url(
