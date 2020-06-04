@@ -29,6 +29,7 @@ class CommonClient:
         single_line_stream = logging.StreamHandler()
         single_line_stream.terminator = ''
         self.same_line_logger.addHandler(single_line_stream)
+        self.same_line_logger.setLevel(logging_level)
         headers = {'Authorization': 'Bearer {}'.format(self.get_access_token(client_id, client_secret, uaa_url))}
         if base_url[-1] != '/':
             base_url += '/'
