@@ -17,7 +17,8 @@ from .http_client_base import CommonClient, STATUS_SUCCEEDED
 class DCApiClient(CommonClient):
     """
     This class provides an interface to access SAP Document Classification REST API from a Python application.
-    Structure of values returned by all the methods is documented in Swagger.
+    Structure of values returned by all the methods is documented in Swagger. See Swagger UI by adding:
+    /document-classification/v1 to your Document Classification service key URL value (from outside the uaa section).
 
     :param base_url: The service URL taken from the service key (key 'url' in service key JSON)
     :param client_id: The client ID taken from the service key (key 'uaa.clientid' in service key JSON)
@@ -75,7 +76,7 @@ class DCApiClient(CommonClient):
 
     # Inference
     def classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype=PDF_MIME_TYPE,
-                          lang_hint='en'):
+                          lang_hint=None):
         """
         Submits request for document classification, checks the response and returns the reference ID for the
         uploaded document
@@ -118,8 +119,10 @@ class DCApiClient(CommonClient):
                                        model_version,
                                        reference_id=None,
                                        mimetype=PDF_MIME_TYPE):
-        return self._function_wrap_errors(self.classify_document, document_path, model_name, model_version,
-                                          reference_id, mimetype)
+        result = self._function_wrap_errors(self.classify_document, document_path, model_name, model_version,
+                                            reference_id, mimetype)
+        result['document_path'] = document_path
+        return result
 
     def classify_documents(self, documents_paths, model_name, model_version, silent=False):
         """
@@ -268,7 +271,7 @@ class DCApiClient(CommonClient):
         else:
             raise Exception('Wrong argument type string (path to ground truth file) or a dictionary (ground truth is '
                             'JSON format) are expected for ground_truth argument')
-        data = {'groundTruth': ground_truth_json, 'lang': lang_hint,'mimeType': mime_type}
+        data = {'groundTruth': ground_truth_json, 'lang': lang_hint, 'mimeType': mime_type}
         if document_id:
             data['documentId'] = document_id
         self.logger.debug('Uploading the document {} with ground truth {} to the dataset {}'.format(
@@ -284,8 +287,10 @@ class DCApiClient(CommonClient):
                                                        document_id=response.json()["documentId"]))).json()
 
     def _upload_document_to_dataset_wrap_errors(self, dataset_id, document_path, ground_truth, document_id=None):
-        return self._function_wrap_errors(self.upload_document_to_dataset, dataset_id, document_path, ground_truth,
-                                          document_id)
+        result = self._function_wrap_errors(self.upload_document_to_dataset, dataset_id, document_path, ground_truth,
+                                            document_id)
+        result['document_path'] = document_path
+        return result
 
     def upload_documents_directory_to_dataset(self, dataset_id, path, silent=False):
         """
@@ -506,4 +511,4 @@ class DCApiClient(CommonClient):
     def _find_files(directory, pattern):
         rule = re.compile(fnmatch.translate(pattern), re.IGNORECASE)
         return [os.path.join(directory, name) for name in os.listdir(directory) if rule.match(name)]
-    
+
