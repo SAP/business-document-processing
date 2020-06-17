@@ -17,7 +17,8 @@ from .http_client_base import CommonClient, STATUS_SUCCEEDED
 class DCApiClient(CommonClient):
     """
     This class provides an interface to access SAP Document Classification REST API from a Python application.
-    Structure of values returned by all the methods is documented in Swagger.
+    Structure of values returned by all the methods is documented in Swagger. See Swagger UI by adding:
+    /document-classification/v1 to your Document Classification service key URL value (from outside the uaa section).
 
     :param base_url: The service URL taken from the service key (key 'url' in service key JSON)
     :param client_id: The client ID taken from the service key (key 'uaa.clientid' in service key JSON)

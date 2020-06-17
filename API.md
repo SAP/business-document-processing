@@ -7,8 +7,9 @@
 DCApiClient(self, base_url, client_id, client_secret, uaa_url, polling_threads=5, polling_sleep=0.5, polling_long_sleep=30, polling_max_attempts=400, logging_level=30)
 ```
 
-This class provides an interface to access SAP AI Business Services - Document Classification REST API from a Python application.
-Structure of values returned by all the methods is documented in Swagger. See Swagger UI by adding: /document-classification/v1 to your Document Classification service key URL value (from outside the uaa section).
+This class provides an interface to access SAP Document Classification REST API from a Python application.
+Structure of values returned by all the methods is documented in Swagger. See Swagger UI by adding:
+/document-classification/v1 to your Document Classification service key URL value (from outside the uaa section).
 
 - Argument base_url: The service URL taken from the service key (key 'url' in service key JSON)
 - Argument client_id: The client ID taken from the service key (key 'uaa.clientid' in service key JSON)
@@ -25,7 +26,7 @@ produce any logs
 
 ### classify_document
 ```python
-DCApiClient.classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype='pdf')
+DCApiClient.classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype='pdf', lang_hint=None)
 ```
 
 Submits request for document classification, checks the response and returns the reference ID for the
@@ -37,6 +38,7 @@ uploaded document
 - Argument reference_id: In case the document reference ID has to be managed by the user, it can be specified.
 In this case the user is responsible for providing unique reference IDs for different documents
 - Argument mimetype: The file type of the document uploaded
+- Argument lang_hint: The language hint provided for text extraction
 
 **Returns**: Object containing the reference ID of the classified document and the classification results
 
@@ -132,7 +134,7 @@ and the classification status
 
 ### upload_document_to_dataset
 ```python
-DCApiClient.upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type='pdf')
+DCApiClient.upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type='pdf', lang_hint='en')
 ```
 
 Uploads a single document and its ground truth to a specific dataset
@@ -141,6 +143,7 @@ Uploads a single document and its ground truth to a specific dataset
 - Argument ground_truth: Path to the ground truth JSON file or an object representing the ground truth
 - Argument document_id: The reference ID of the document
 - Argument mime_type: The file type of the document
+- Argument lang_hint : The language hint provided for text extraction
 
 **Returns**: Object containing information about the uploaded document
 
@@ -261,3 +264,4 @@ version has to be provided as well
 - Argument model_version: The version of the deployed model
 
 **Returns**: An empty object
+
