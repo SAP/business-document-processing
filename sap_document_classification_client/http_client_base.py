@@ -71,7 +71,7 @@ class CommonClient:
         for _ in range(0, self.polling_max_attempts):
             response = self.session.get(url, json=payload)
             if response.status_code == wait_status:
-                self.same_line_logger.info('.')
+                self.same_line_logger.debug('.')
                 time.sleep(sleep_interval)
             elif response.status_code == success_status:
                 if check_json_status:
@@ -81,7 +81,7 @@ class CommonClient:
                     elif response_json['status'] == STATUS_FAILED:
                         raise FailedCallException(response)
                     else:
-                        self.same_line_logger.info('.')
+                        self.same_line_logger.debug('.')
                         time.sleep(sleep_interval)
                 else:
                     return response
