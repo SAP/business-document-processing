@@ -4,7 +4,7 @@
 
 ## DCApiClient
 ```python
-DCApiClient(self, base_url, client_id, client_secret, uaa_url, polling_threads=5, polling_sleep=0.5, polling_long_sleep=30, polling_max_attempts=400, logging_level=30)
+DCApiClient(self, base_url, client_id, client_secret, uaa_url, polling_threads=5, polling_sleep=0.5, polling_long_sleep=30, polling_max_attempts=1200, logging_level=30)
 ```
 
 This class provides an interface to access SAP Document Classification REST API from a Python application.
