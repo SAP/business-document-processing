@@ -42,7 +42,7 @@ class DCApiClient(CommonClient):
                  polling_threads=5,
                  polling_sleep=0.5,
                  polling_long_sleep=30,
-                 polling_max_attempts=400,
+                 polling_max_attempts=1200,
                  logging_level=logging.WARNING):
         """
         Creates a new instance of a client object to access the SAP Document Classification service
