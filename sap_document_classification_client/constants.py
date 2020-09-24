@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from functools import partial
 
 DATASETS_ENDPOINT = 'datasets'
