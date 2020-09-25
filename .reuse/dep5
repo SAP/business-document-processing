@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: document-classification-client
+Upstream-Contact: Alexander Bolshakov <alexander.bolshakov@sap.com>
+Source: https://github.com/SAP/document-classification-client
+
+Files: *
+Copyright: 2019-2020 SAP SE
+License: Apache-2.0
+SPDX-FileCopyrightText: 2019-2020 SAP SE

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
+#
+# SPDX-License-Identifier: Apache-2.0
+
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 In order to use the example [`train_and_evaluate_custom_model.ipynb`](train_and_evaluate_custom_model.ipynb) two prerequisites are required:
 
 1. You have access to a service key for the SAP AI Business Services - Document Classification service
