@@ -26,7 +26,7 @@ class CommonAuth:
         self.get_access_token()
 
     def get_access_token(self):
-        if datetime.datetime.now() + datetime.timedelta(seconds=600) > self.expires_in:
+        if datetime.datetime.now() + datetime.timedelta(seconds=5) > self.expires_in:
             uaa_get_token_url = urljoin(self.url, 'oauth/token')
             token_auth_header = 'Basic {}'.format(
                 b64encode('{}:{}'.format(self.tenant, self.secret).encode('utf-8')).decode())
