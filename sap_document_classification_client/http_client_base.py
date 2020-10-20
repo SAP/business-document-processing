@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from base64 import b64encode
+import datetime
 import json
 import logging
 import requests
@@ -13,6 +14,38 @@ from .http_request_retry import retry_session
 
 STATUS_SUCCEEDED = 'SUCCEEDED'
 STATUS_FAILED = 'FAILED'
+
+
+# See: https://requests.readthedocs.io/en/master/user/advanced/#custom-authentication
+class CommonAuth:
+    def __init__(self, url, tenant, secret):
+        self.url = url
+        self.tenant = tenant
+        self.secret = secret
+        self.expires_in = datetime.datetime.now()
+        self.get_access_token()
+
+    def get_access_token(self):
+        if datetime.datetime.now() + datetime.timedelta(seconds=5) > self.expires_in:
+            uaa_get_token_url = urljoin(self.url, 'oauth/token')
+            token_auth_header = 'Basic {}'.format(
+                b64encode('{}:{}'.format(self.tenant, self.secret).encode('utf-8')).decode())
+            payload = 'grant_type=client_credentials'
+            headers = {
+                'authorization': token_auth_header,
+                'cache-control': "no-cache",
+                'content-type': "application/x-www-form-urlencoded"
+            }
+            response = requests.post(uaa_get_token_url, data=payload, headers=headers)
+            response.raise_for_status()
+            response_json = response.json()
+            self.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=response_json.get('expires_in'))
+            self.access_token = response_json.get('access_token')
+
+    def __call__(self, r):
+        self.get_access_token()
+        r.headers['Authorization'] = 'Bearer {}'.format(self.access_token)
+        return r
 
 
 class CommonClient:
@@ -34,34 +67,19 @@ class CommonClient:
         single_line_stream.terminator = ''
         self.same_line_logger.addHandler(single_line_stream)
         self.same_line_logger.setLevel(logging_level)
-        headers = {'Authorization': 'Bearer {}'.format(self.get_access_token(client_id, client_secret, uaa_url))}
         if base_url[-1] != '/':
             base_url += '/'
         base_url += url_path_prefix
         self.base_url = base_url
-        self.session = retry_session(pool_maxsize=polling_threads)
-        self.session.headers = headers
         self.polling_max_attempts = polling_max_attempts
         self.polling_sleep = polling_sleep
         self.polling_long_sleep = polling_long_sleep
         self.polling_threads = polling_threads
-
-    # Authentication
-    def get_access_token(self, client_id, client_secret, uaa_url):
-        self.logger.debug('Getting an access token from URL {}'.format(uaa_url))
-        uaa_get_token_url = urljoin(uaa_url, 'oauth/token')
-        token_auth_header = 'Basic {}'.format(
-            b64encode('{}:{}'.format(client_id, client_secret).encode('utf-8')).decode())
-        payload = 'grant_type=client_credentials'
-        headers = {
-            'authorization': token_auth_header,
-            'cache-control': "no-cache",
-            'content-type': "application/x-www-form-urlencoded"
-        }
-        response = requests.post(uaa_get_token_url, data=payload, headers=headers)
-        response.raise_for_status()
-        self.logger.info('Authentication finished successfully')
-        return response.json().get('access_token')
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.uaa_url = uaa_url
+        self.session = retry_session(pool_maxsize=polling_threads)
+        self.session.auth = CommonAuth(uaa_url, client_id, client_secret)
 
     def _poll_for_url(self,
                       url,
