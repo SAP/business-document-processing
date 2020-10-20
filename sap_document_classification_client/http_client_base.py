@@ -41,6 +41,7 @@ class CommonAuth:
             self.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=response_json.get('expires_in'))
             self.access_token = response_json.get('access_token')
         r.headers['Authorization'] = 'Bearer {}'.format(self.access_token)
+        return r
 
 
 class CommonClient:
