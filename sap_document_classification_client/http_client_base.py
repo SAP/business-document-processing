@@ -72,7 +72,7 @@ class CommonClient:
         self.polling_threads = polling_threads
         self.client_id = client_id
         self.client_secret = client_secret
-        self.uaa_url = self.uaa_url
+        self.uaa_url = uaa_url
         self.session = retry_session(pool_maxsize=polling_threads)
         self.session.auth = CommonAuth(uaa_url, client_id, client_secret)
 
