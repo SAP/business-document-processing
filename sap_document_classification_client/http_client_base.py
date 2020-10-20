@@ -16,6 +16,33 @@ STATUS_SUCCEEDED = 'SUCCEEDED'
 STATUS_FAILED = 'FAILED'
 
 
+# See: https://requests.readthedocs.io/en/master/user/advanced/#custom-authentication
+class CommonAuth:
+    def __init(self, url, tenant, secret):
+        self.url = url
+        self.tenant = tenant
+        self.secret = secret
+        self.expires_in = datetime.datetime.now()
+
+    def __call(self, r):
+        if datetime.datetime.now() + datetime.timedelta(seconds=600) > self.expires_in:
+            uaa_get_token_url = urljoin(self.url, 'oauth/token')
+            token_auth_header = 'Basic {}'.format(
+                b64encode('{}:{}'.format(self.tenant, self.secret).encode('utf-8')).decode())
+            payload = 'grant_type=client_credentials'
+            headers = {
+                'authorization': token_auth_header,
+                'cache-control': "no-cache",
+                'content-type': "application/x-www-form-urlencoded"
+            }
+            response = requests.post(uaa_get_token_url, data=payload, headers=headers)
+            response.raise_for_status()
+            response_json = response.json()
+            self.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=response_json.get('expires_in'))
+            self.access_token = response_json.get('access_token')
+        r['Authorization'] = 'Bearer {}'.format(self.access_token)
+
+
 class CommonClient:
     def __init__(self,
                  base_url,
@@ -47,29 +74,7 @@ class CommonClient:
         self.client_secret = client_secret
         self.uaa_url = self.uaa_url
         self.session = retry_session(pool_maxsize=polling_threads)
-        # See: https://requests.readthedocs.io/en/master/user/advanced/#custom-authentication
-        self.session.auth = self.set_default_headers_with_token
-
-    # Authentication
-    def set_default_headers_with_token(self):
-        if not hasattr(self, 'expires_in') or datetime.datetime.now() + datetime.timedelta(seconds=600) > self.expires_in:
-            self.logger.debug('Getting an access token from URL {}'.format(self.uaa_url))
-            uaa_get_token_url = urljoin(self.uaa_url, 'oauth/token')
-            token_auth_header = 'Basic {}'.format(
-                b64encode('{}:{}'.format(self.client_id, self.client_secret).encode('utf-8')).decode())
-            payload = 'grant_type=client_credentials'
-            headers = {
-                'authorization': token_auth_header,
-                'cache-control': "no-cache",
-                'content-type': "application/x-www-form-urlencoded"
-            }
-            response = requests.post(uaa_get_token_url, data=payload, headers=headers)
-            response.raise_for_status()
-            self.logger.info('Authentication finished successfully')
-            response_json = response.json()
-            self.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=response_json.get('expires_in'))
-            auth_header = {'Authorization': 'Bearer {}'.format(response_json.get('access_token'))}
-            self.session.headers = auth_header
+        self.session.auth = CommonAuth(uaa_url, client_id, client_secret)
 
     def _poll_for_url(self,
                       url,
