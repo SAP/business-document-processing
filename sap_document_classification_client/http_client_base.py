@@ -18,13 +18,13 @@ STATUS_FAILED = 'FAILED'
 
 # See: https://requests.readthedocs.io/en/master/user/advanced/#custom-authentication
 class CommonAuth:
-    def __init(self, url, tenant, secret):
+    def __init__(self, url, tenant, secret):
         self.url = url
         self.tenant = tenant
         self.secret = secret
         self.expires_in = datetime.datetime.now()
 
-    def __call(self, r):
+    def __call__(self, r):
         if datetime.datetime.now() + datetime.timedelta(seconds=600) > self.expires_in:
             uaa_get_token_url = urljoin(self.url, 'oauth/token')
             token_auth_header = 'Basic {}'.format(
