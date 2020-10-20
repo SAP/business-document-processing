@@ -23,8 +23,9 @@ class CommonAuth:
         self.tenant = tenant
         self.secret = secret
         self.expires_in = datetime.datetime.now()
+        self.get_access_token()
 
-    def __call__(self, r):
+    def get_access_token(self):
         if datetime.datetime.now() + datetime.timedelta(seconds=600) > self.expires_in:
             uaa_get_token_url = urljoin(self.url, 'oauth/token')
             token_auth_header = 'Basic {}'.format(
@@ -40,6 +41,9 @@ class CommonAuth:
             response_json = response.json()
             self.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=response_json.get('expires_in'))
             self.access_token = response_json.get('access_token')
+
+    def __call__(self, r):
+        self.get_access_token()
         r.headers['Authorization'] = 'Bearer {}'.format(self.access_token)
         return r
 
