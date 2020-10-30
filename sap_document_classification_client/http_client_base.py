@@ -23,7 +23,6 @@ class CommonAuth:
         self.tenant = tenant
         self.secret = secret
         self.expires_in = datetime.datetime.now()
-        self.get_access_token()
 
     def get_access_token(self):
         if datetime.datetime.now() + datetime.timedelta(seconds=5) > self.expires_in:
