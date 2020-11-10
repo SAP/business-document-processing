@@ -18,15 +18,15 @@ STATUS_FAILED = 'FAILED'
 
 # See: https://requests.readthedocs.io/en/master/user/advanced/#custom-authentication
 class CommonAuth:
-    def __init__(self, url, tenant, secret):
+    def __init__(self, url, tenant, secret, token_renewal_buffer):
         self.url = url
         self.tenant = tenant
         self.secret = secret
         self.expires_in = datetime.datetime.now()
-        self.get_access_token()
+        self.token_renewal_buffer = token_renewal_buffer
 
     def get_access_token(self):
-        if datetime.datetime.now() + datetime.timedelta(seconds=5) > self.expires_in:
+        if datetime.datetime.now() + datetime.timedelta(seconds=self.token_renewal_buffer) > self.expires_in:
             uaa_get_token_url = urljoin(self.url, 'oauth/token')
             token_auth_header = 'Basic {}'.format(
                 b64encode('{}:{}'.format(self.tenant, self.secret).encode('utf-8')).decode())
@@ -58,6 +58,7 @@ class CommonClient:
                  polling_sleep=1,
                  polling_long_sleep=30,
                  polling_max_attempts=200,
+                 token_renewal_buffer=300,
                  url_path_prefix='',
                  logging_level=logging.WARNING):
         self.logger = logging.getLogger('CommonClient')
@@ -79,7 +80,7 @@ class CommonClient:
         self.client_secret = client_secret
         self.uaa_url = uaa_url
         self.session = retry_session(pool_maxsize=polling_threads)
-        self.session.auth = CommonAuth(uaa_url, client_id, client_secret)
+        self.session.auth = CommonAuth(uaa_url, client_id, client_secret, token_renewal_buffer)
 
     def _poll_for_url(self,
                       url,
