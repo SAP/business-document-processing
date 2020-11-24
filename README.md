@@ -26,6 +26,11 @@ This Python library should be consumed in the standard way by running
 
 or adding the library as a dependency of your code in `requirements.txt` file.
 
+## Demo usage
+To try out the Document classification service using the document classification client
+library you can also run the two demo links below:
+* Try out DC classification using default model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/master?filepath=examples%2Fclassification_default_model.ipynb)
+* Try out DC training and classification using custom model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/master?filepath=examples%2Ftrain_and_evaluate_custom_model.ipynb)
 ## Known Issues
 
 Please see the [issues section](https://github.com/SAP/document-classification-client/issues).
