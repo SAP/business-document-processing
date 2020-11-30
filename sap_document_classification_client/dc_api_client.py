@@ -14,7 +14,8 @@ from .constants import API_DOCUMENT_EXTRACTED_TEXT_FIELD, API_DOCUMENT_ID_FIELD,
     API_PAGINATION_COUNT_PARAM, API_PAGINATION_SKIP_PARAM, API_PAGINATION_TOP_PARAM, API_STATUS_FIELD, \
     DATASETS_ENDPOINT, DATASET_DOCUMENTS_ENDPOINT, DATASET_DOCUMENT_ENDPOINT, DATASET_ENDPOINT, DEPLOYMENTS_ENDPOINT, \
     DOCUMENTS_ENDPOINT, DOCUMENT_RESULT_ENDPOINT, MODEL_DEPLOYMENT_ENDPOINT, MODEL_TRAINING_JOBS_ENDPOINT, \
-    TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT, MAX_POLLING_THREADS, MIN_POLLING_INTERVAL
+    TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT, MAX_POLLING_THREADS, MIN_POLLING_INTERVAL, \
+    FILE_EXTENSIONS_FOR_FOLDER_UPLOAD
 from .http_client_base import CommonClient, STATUS_SUCCEEDED
 
 
@@ -508,8 +509,7 @@ class DCApiClient(CommonClient):
 
     @staticmethod
     def _find_files(directory):
-        return [os.path.join(directory, name) for name in os.listdir(directory) if name.lower().endswith(".pdf",
-                                                                                                         ".jpeg",
-                                                                                                         ".jpg",
-                                                                                                         ".png")]
+        return [os.path.join(directory, name) for name in os.listdir(directory)
+                if name.lower().endswith(FILE_EXTENSIONS_FOR_FOLDER_UPLOAD)]
+
 
