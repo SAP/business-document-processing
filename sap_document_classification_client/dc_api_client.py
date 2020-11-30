@@ -14,7 +14,7 @@ from .constants import API_DOCUMENT_EXTRACTED_TEXT_FIELD, API_DOCUMENT_ID_FIELD,
     API_PAGINATION_COUNT_PARAM, API_PAGINATION_SKIP_PARAM, API_PAGINATION_TOP_PARAM, API_STATUS_FIELD, \
     DATASETS_ENDPOINT, DATASET_DOCUMENTS_ENDPOINT, DATASET_DOCUMENT_ENDPOINT, DATASET_ENDPOINT, DEPLOYMENTS_ENDPOINT, \
     DOCUMENTS_ENDPOINT, DOCUMENT_RESULT_ENDPOINT, MODEL_DEPLOYMENT_ENDPOINT, MODEL_TRAINING_JOBS_ENDPOINT, \
-    PDF_MIME_TYPE, TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT, MAX_POLLING_THREADS, MIN_POLLING_INTERVAL
+    TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT, MAX_POLLING_THREADS, MIN_POLLING_INTERVAL
 from .http_client_base import CommonClient, STATUS_SUCCEEDED
 
 
@@ -79,8 +79,7 @@ class DCApiClient(CommonClient):
         self.logger = logger
 
     # Inference
-    def classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype=PDF_MIME_TYPE,
-                          lang_hint=None):
+    def classify_document(self, document_path, model_name, model_version, reference_id=None, mimetype=None):
         """
         Submits request for document classification, checks the response and returns the reference ID for the
         uploaded document
@@ -91,16 +90,14 @@ class DCApiClient(CommonClient):
         :param reference_id: In case the document reference ID has to be managed by the user, it can be specified.
         In this case the user is responsible for providing unique reference IDs for different documents
         :param mimetype: The file type of the document uploaded
-        :param lang_hint: The language hint provided for text extraction
         :return: Object containing the reference ID of the classified document and the classification results
         """
 
         options = {}
         if reference_id is not None:
             options[API_DOCUMENT_ID_FIELD] = reference_id
+        if mimetype is not None
             options[API_MIME_TYPE_FIELD] = mimetype
-        if lang_hint is not None:
-            options['lang'] = lang_hint
         data = {'parameters': json.dumps(options)}
         self.logger.debug('Submitting document {} for classification'.format(document_path))
         response = self.session.post(url=self.path_to_url(
@@ -122,7 +119,7 @@ class DCApiClient(CommonClient):
                                        model_name,
                                        model_version,
                                        reference_id=None,
-                                       mimetype=PDF_MIME_TYPE):
+                                       mimetype=None):
         result = self._function_wrap_errors(self.classify_document, document_path, model_name, model_version,
                                             reference_id, mimetype)
         result['document_path'] = document_path
@@ -256,8 +253,7 @@ class DCApiClient(CommonClient):
                           'the model {} with version {}'.format(model_name, model_version))
         return response.json()
 
-    def upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type='pdf',
-                                   lang_hint='en'):
+    def upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type=None):
         """
         Uploads a single document and its ground truth to a specific dataset
         :param dataset_id: The ID of the dataset
@@ -265,7 +261,6 @@ class DCApiClient(CommonClient):
         :param ground_truth: Path to the ground truth JSON file or an object representing the ground truth
         :param document_id: The reference ID of the document
         :param mime_type: The file type of the document
-        :param lang_hint : The language hint provided for text extraction
         :return: Object containing information about the uploaded document
         """
         if type(ground_truth) is str:
@@ -275,7 +270,7 @@ class DCApiClient(CommonClient):
         else:
             raise Exception('Wrong argument type string (path to ground truth file) or a dictionary (ground truth is '
                             'JSON format) are expected for ground_truth argument')
-        data = {'groundTruth': ground_truth_json, 'lang': lang_hint, 'mimeType': mime_type}
+        data = {'groundTruth': ground_truth_json, 'mimeType': mime_type}
         if document_id:
             data['documentId'] = document_id
         self.logger.debug('Uploading the document {} with ground truth {} to the dataset {}'.format(
@@ -299,19 +294,19 @@ class DCApiClient(CommonClient):
     def upload_documents_directory_to_dataset(self, dataset_id, path, silent=False):
         """
         :param dataset_id: The dataset_id of dataset to upload the documents to
-        :param path: The path has to contain PDF and JSON files with corresponding names
+        :param path: The path has to contain document data files and JSON file with GT with corresponding names
         :param silent: If set to True will not throw exception when upload of one of the documents fails,
         in this case the upload statuses in the results array have to be validated manually
         :return: Array with the upload results
         """
-        pdf_files = self._find_files(path, '*.pdf')
-        pdf_files_id = [os.path.splitext(os.path.basename(f))[0] for f in pdf_files]
-        assert len(pdf_files_id) > 0, 'No training data found'
-        ground_truth_files = [os.path.join(path, f + '.json') for f in pdf_files_id]
-        assert len(pdf_files_id) == len(ground_truth_files), 'The folder has a different number of documents and ' \
+        files = self._find_files(path)
+        files_id = [os.path.splitext(os.path.basename(f))[0] for f in files]
+        assert len(files_id) > 0, 'No training data found'
+        ground_truth_files = [os.path.join(path, f + '.json') for f in files_id]
+        assert len(files_id) == len(ground_truth_files), 'The folder has a different number of documents and ' \
                                                              'ground truths'
         return self.upload_documents_to_dataset(dataset_id=dataset_id,
-                                                documents_paths=pdf_files,
+                                                documents_paths=files,
                                                 ground_truths_paths=ground_truth_files,
                                                 silent=silent)
 
@@ -512,7 +507,9 @@ class DCApiClient(CommonClient):
             raise Exception(error_message + ': ' + str(failed_results))
 
     @staticmethod
-    def _find_files(directory, pattern):
-        rule = re.compile(fnmatch.translate(pattern), re.IGNORECASE)
-        return [os.path.join(directory, name) for name in os.listdir(directory) if rule.match(name)]
+    def _find_files(directory):
+        return [os.path.join(directory, name) for name in os.listdir(directory) if name.lower().endswith(".pdf",
+                                                                                                         ".jpeg",
+                                                                                                         ".jpg",
+                                                                                                         ".png")]
 
