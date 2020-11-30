@@ -97,7 +97,7 @@ class DCApiClient(CommonClient):
         options = {}
         if reference_id is not None:
             options[API_DOCUMENT_ID_FIELD] = reference_id
-        if mimetype is not None
+        if mimetype is not None:
             options[API_MIME_TYPE_FIELD] = mimetype
         data = {'parameters': json.dumps(options)}
         self.logger.debug('Submitting document {} for classification'.format(document_path))
