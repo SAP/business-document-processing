@@ -139,6 +139,8 @@ def raise_for_status_with_logging(response):
     except requests.HTTPError as e:
         logging.getLogger('CommonClient').warning(f'Got an HTTPError from a {response.request.method} request '
                                                   f'to the URL {response.url} with the message "{response.text}"')
+        print(f'Got an HTTPError from a {response.request.method} request '
+                                                  f'to the URL {response.url} with the message "{response.text}"')
         raise e
 
 
