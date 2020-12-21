@@ -133,7 +133,7 @@ class CommonClient:
             return {'status': STATUS_FAILED, 'message': str(e)}
 
 
-def log_text_and_raise_for_status(self, response):
+def log_text_and_raise_for_status(response):
     logging.getLogger('CommonClient').warning(response.text)
     response.raise_for_status()
 
