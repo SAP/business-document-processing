@@ -9,6 +9,7 @@ import logging
 import requests
 import time
 from urllib.parse import urljoin
+from urllib.error import HTTPError
 
 from .http_request_retry import retry_session
 
@@ -134,8 +135,12 @@ class CommonClient:
 
 
 def log_text_and_raise_for_status(response):
-    logging.getLogger('CommonClient').warning(response.text)
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except HTTPError as e:
+        logging.getLogger('CommonClient').warning(f'Got an HTTPError from a {response.request.method} request '
+                                                  f'to the URL {response.url} with the message "{response.text}"')
+        raise e
 
 
 class PollingTimeoutException(Exception):
