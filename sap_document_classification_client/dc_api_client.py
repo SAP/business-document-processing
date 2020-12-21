@@ -16,7 +16,7 @@ from .constants import API_DOCUMENT_EXTRACTED_TEXT_FIELD, API_DOCUMENT_ID_FIELD,
     DOCUMENTS_ENDPOINT, DOCUMENT_RESULT_ENDPOINT, MODEL_DEPLOYMENT_ENDPOINT, MODEL_TRAINING_JOBS_ENDPOINT, \
     TRAINED_MODELS_ENDPOINT, TRAINED_MODEL_ENDPOINT, MAX_POLLING_THREADS, MIN_POLLING_INTERVAL, \
     FILE_EXTENSIONS_FOR_FOLDER_UPLOAD
-from .http_client_base import CommonClient, STATUS_SUCCEEDED, log_text_and_raise_for_status
+from .http_client_base import CommonClient, STATUS_SUCCEEDED, raise_for_status_with_logging
 
 
 class DCApiClient(CommonClient):
@@ -107,7 +107,7 @@ class DCApiClient(CommonClient):
             data=data)
         self.logger.info(
             'Document {} submitted for classification successfully, waiting for result'.format(document_path))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         classification_job = response.json()
         return self._poll_for_url(
             self.path_to_url(
@@ -161,7 +161,7 @@ class DCApiClient(CommonClient):
         """
         self.logger.debug('Creating a new dataset')
         response = self.session.post(self.path_to_url(DATASETS_ENDPOINT))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully created a new dataset')
         return response.json()
 
@@ -173,7 +173,7 @@ class DCApiClient(CommonClient):
         """
         self.logger.debug('Deleting the dataset {}'.format(dataset_id))
         response = self.session.delete(self.path_to_url(DATASET_ENDPOINT(dataset_id=dataset_id)))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully deleted the dataset {}'.format(dataset_id))
         return response.json()
 
@@ -187,7 +187,7 @@ class DCApiClient(CommonClient):
         self.logger.debug('Deleting the document {} from the dataset {}'.format(document_id, dataset_id))
         response = self.session.delete(
             self.path_to_url(DATASET_DOCUMENT_ENDPOINT(dataset_id=dataset_id, document_id=document_id)))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully deleted the document {} from the dataset {}'.format(document_id, dataset_id))
         return response.json()
 
@@ -200,7 +200,7 @@ class DCApiClient(CommonClient):
         """
         self.logger.debug('Getting information about the dataset {}'.format(dataset_id))
         response = self.session.get(self.path_to_url(DATASET_ENDPOINT(dataset_id=dataset_id)))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully got the information about the dataset {}'.format(dataset_id))
         return response.json()
 
@@ -211,7 +211,7 @@ class DCApiClient(CommonClient):
         """
         self.logger.debug('Getting information about datasets')
         response = self.session.get(self.path_to_url(DATASETS_ENDPOINT))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully got the information about the datasets')
         return response.json()
 
@@ -233,7 +233,7 @@ class DCApiClient(CommonClient):
             params[API_PAGINATION_COUNT_PARAM] = count
         self.logger.debug('Getting information about the documents in the dataset {}'.format(dataset_id))
         response = self.session.get(self.path_to_url(DATASET_DOCUMENTS_ENDPOINT(dataset_id=dataset_id)), params=params)
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully got the information about the documents in the dataset {}'.format(dataset_id))
         return response.json()
 
@@ -249,7 +249,7 @@ class DCApiClient(CommonClient):
                           'with version {}'.format(model_name, model_version))
         response = self.session.get(
             self.path_to_url(DOCUMENTS_ENDPOINT(modelName=model_name, modelVersion=model_version)))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.debug('Successfully got the information about the documents that were recently classified against '
                           'the model {} with version {}'.format(model_name, model_version))
         return response.json()
@@ -279,7 +279,7 @@ class DCApiClient(CommonClient):
         response = self.session.post(self.path_to_url(DATASET_DOCUMENTS_ENDPOINT(dataset_id=dataset_id)),
                                      files={'document': open(document_path, 'rb')},
                                      data={'parameters': json.dumps(data)})
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.debug('Successfully uploaded the document {} with ground truth {} to the dataset {}, waiting for '
                           'the document processing'.format(document_path, str(ground_truth_json), dataset_id))
         return self._poll_for_url(
@@ -351,7 +351,7 @@ class DCApiClient(CommonClient):
         if response.status_code == 409:
             time.sleep(self.polling_long_sleep)
             return self.train_model(model_name, dataset_id)
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Triggered training of the model {} from the dataset {}, waiting for the training to '
                          'complete'.format(model_name, dataset_id))
         response_json = response.json()
@@ -369,7 +369,7 @@ class DCApiClient(CommonClient):
         self.logger.debug('Triggering deletion of the model {} with version {}'.format(model_name, model_version))
         response = self.session.delete(
             self.path_to_url(TRAINED_MODEL_ENDPOINT(model_name=model_name, model_version=model_version)))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully deleted the model {} with version {}'.format(model_name, model_version))
         return response.json()
 
@@ -381,7 +381,7 @@ class DCApiClient(CommonClient):
         """
         self.logger.debug('Getting information about all trained models')
         response = self.session.get(self.path_to_url(TRAINED_MODELS_ENDPOINT))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully got information about all trained models')
         return response.json()
 
@@ -395,7 +395,7 @@ class DCApiClient(CommonClient):
         self.logger.debug('Getting information about the model {} with version {}'.format(model_name, model_version))
         response = self.session.get(
             self.path_to_url(TRAINED_MODEL_ENDPOINT(model_name=model_name, model_version=model_version)))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully got the information about the model {} with version {}'.format(
             model_name, model_version))
         return response.json()
@@ -417,10 +417,10 @@ class DCApiClient(CommonClient):
         if response.status_code == 409:
             # TODO: Change the API to differ between the 409 codes, see: DIGITALCONTENTPROCESSING-709
             if 'model is already deployed' in response.text:
-                log_text_and_raise_for_status(response)
+                raise_for_status_with_logging(response)
             time.sleep(self.polling_long_sleep)
             return self.deploy_model(model_name, model_version)
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully triggered the deployment of the model {} with version {}, waiting for '
                          'the deployment completion'.format(model_name, model_version))
         return self._poll_for_url(self.path_to_url(
@@ -434,7 +434,7 @@ class DCApiClient(CommonClient):
         """
         self.logger.debug('Getting information about all deployed models')
         response = self.session.get(self.path_to_url(DEPLOYMENTS_ENDPOINT))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully got information about all deployed models')
         return response.json()
 
@@ -466,7 +466,7 @@ class DCApiClient(CommonClient):
             self.logger.debug('Getting the deployment of the model with ID {}'.format(model_name_or_deployment_id))
             response = self.session.get(
                 self.path_to_url(MODEL_DEPLOYMENT_ENDPOINT(deployment_id=model_name_or_deployment_id)))
-            log_text_and_raise_for_status(response)
+            raise_for_status_with_logging(response)
             self.logger.info('Successfully got information about the deployment of the model with ID {}'.format(
                 model_name_or_deployment_id))
             return response.json()
@@ -487,7 +487,7 @@ class DCApiClient(CommonClient):
             'Triggering the removal of the model deployment with ID {}'.format(model_name_or_deployment_id))
         response = self.session.delete(
             self.path_to_url(MODEL_DEPLOYMENT_ENDPOINT(deployment_id=model_name_or_deployment_id)))
-        log_text_and_raise_for_status(response)
+        raise_for_status_with_logging(response)
         self.logger.info('Successfully triggered the removal of the model deployment with ID {}, waiting for '
                          'the deployment completion'.format(model_name_or_deployment_id))
         return self._poll_for_url(

@@ -9,7 +9,6 @@ import logging
 import requests
 import time
 from urllib.parse import urljoin
-from urllib.error import HTTPError
 
 from .http_request_retry import retry_session
 
@@ -38,7 +37,7 @@ class CommonAuth:
                 'content-type': "application/x-www-form-urlencoded"
             }
             response = requests.post(uaa_get_token_url, data=payload, headers=headers)
-            log_text_and_raise_for_status(response)
+            raise_for_status_with_logging(response)
             response_json = response.json()
             self.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=response_json.get('expires_in'))
             self.access_token = response_json.get('access_token')
@@ -109,7 +108,7 @@ class CommonClient:
                 else:
                     return response
             else:
-                log_text_and_raise_for_status(response)
+                raise_for_status_with_logging(response)
         raise PollingTimeoutException("Polling for URL {} timed out after {} seconds".format(
             url, sleep_interval * self.polling_max_attempts))
 
@@ -134,10 +133,10 @@ class CommonClient:
             return {'status': STATUS_FAILED, 'message': str(e)}
 
 
-def log_text_and_raise_for_status(response):
+def raise_for_status_with_logging(response):
     try:
         response.raise_for_status()
-    except HTTPError as e:
+    except requests.HTTPError as e:
         logging.getLogger('CommonClient').warning(f'Got an HTTPError from a {response.request.method} request '
                                                   f'to the URL {response.url} with the message "{response.text}"')
         raise e
