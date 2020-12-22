@@ -137,8 +137,8 @@ def raise_for_status_with_logging(response):
     try:
         response.raise_for_status()
     except requests.HTTPError as e:
-        logging.getLogger('CommonClient').warning(f'{response.request.method} request to the URL {response.url} failed '
-                                                  f'with the body: {response.text}')
+        logging.getLogger('CommonClient').warning(f'{response.request.method} request to URL {response.url} failed '
+                                                  f'with body: {response.text}')
         raise e
 
 
