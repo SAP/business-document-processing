@@ -37,7 +37,7 @@ class CommonAuth:
                 'content-type': "application/x-www-form-urlencoded"
             }
             response = requests.post(uaa_get_token_url, data=payload, headers=headers)
-            response.raise_for_status()
+            raise_for_status_with_logging(response)
             response_json = response.json()
             self.expires_in = datetime.datetime.now() + datetime.timedelta(seconds=response_json.get('expires_in'))
             self.access_token = response_json.get('access_token')
@@ -61,8 +61,7 @@ class CommonClient:
                  token_renewal_buffer=300,
                  url_path_prefix='',
                  logging_level=logging.WARNING):
-        self.logger = logging.getLogger('CommonClient')
-        self.logger.setLevel(logging_level)
+        logging.getLogger('CommonClient').setLevel(logging_level)
         self.same_line_logger = logging.getLogger('CommonClientSameLine')
         single_line_stream = logging.StreamHandler()
         single_line_stream.terminator = ''
@@ -109,7 +108,7 @@ class CommonClient:
                 else:
                     return response
             else:
-                response.raise_for_status()
+                raise_for_status_with_logging(response)
         raise PollingTimeoutException("Polling for URL {} timed out after {} seconds".format(
             url, sleep_interval * self.polling_max_attempts))
 
@@ -132,6 +131,15 @@ class CommonClient:
             return result
         except Exception as e:
             return {'status': STATUS_FAILED, 'message': str(e)}
+
+
+def raise_for_status_with_logging(response):
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as e:
+        logging.getLogger('CommonClient').warning(f'{response.request.method} request to URL {response.url} failed '
+                                                  f'with body: {response.text}')
+        raise e
 
 
 class PollingTimeoutException(Exception):
