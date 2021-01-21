@@ -55,7 +55,7 @@ class CommonClient:
                  client_secret,
                  uaa_url,
                  polling_threads=20,
-                 polling_sleep=1,
+                 polling_sleep=5,
                  polling_long_sleep=30,
                  polling_max_attempts=200,
                  token_renewal_buffer=300,

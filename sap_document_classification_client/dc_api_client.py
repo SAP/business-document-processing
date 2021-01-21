@@ -45,7 +45,7 @@ class DCApiClient(CommonClient):
                  client_secret,
                  uaa_url,
                  polling_threads=5,
-                 polling_sleep=0.5,
+                 polling_sleep=5,
                  polling_long_sleep=30,
                  polling_max_attempts=1200,
                  logging_level=logging.WARNING):
