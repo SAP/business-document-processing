@@ -15,7 +15,7 @@ DCApiClient(self,
             polling_threads=5,
             polling_sleep=5,
             polling_long_sleep=30,
-            polling_max_attempts=1200,
+            polling_max_attempts=120,
             logging_level=30)
 ```
 

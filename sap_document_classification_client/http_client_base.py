@@ -57,7 +57,7 @@ class CommonClient:
                  polling_threads=20,
                  polling_sleep=5,
                  polling_long_sleep=30,
-                 polling_max_attempts=200,
+                 polling_max_attempts=120,
                  token_renewal_buffer=300,
                  url_path_prefix='',
                  logging_level=logging.WARNING):
