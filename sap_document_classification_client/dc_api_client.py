@@ -254,7 +254,8 @@ class DCApiClient(CommonClient):
                           'the model {} with version {}'.format(model_name, model_version))
         return response.json()
 
-    def upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type=None):
+    def upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type=None,
+                                   stratification_set=None):
         """
         Uploads a single document and its ground truth to a specific dataset
         :param dataset_id: The ID of the dataset
@@ -262,6 +263,7 @@ class DCApiClient(CommonClient):
         :param ground_truth: Path to the ground truth JSON file or an object representing the ground truth
         :param document_id: The reference ID of the document
         :param mime_type: The file type of the document
+        :param stratification_set: Defines a custom stratification set (training/validation/test)
         :return: Object containing information about the uploaded document
         """
         if type(ground_truth) is str:
@@ -271,9 +273,13 @@ class DCApiClient(CommonClient):
         else:
             raise Exception('Wrong argument type string (path to ground truth file) or a dictionary (ground truth is '
                             'JSON format) are expected for ground_truth argument')
-        data = {'groundTruth': ground_truth_json, 'mimeType': mime_type}
-        if document_id:
+        data = {'groundTruth': ground_truth_json}
+        if document_id is not None:
             data['documentId'] = document_id
+        if mime_type is not None:
+            data['mimeType'] = mime_type
+        if stratification_set is not None:
+            data['stratificationSet'] = stratification_set
         self.logger.debug('Uploading the document {} with ground truth {} to the dataset {}'.format(
             document_path, str(ground_truth_json), dataset_id))
         response = self.session.post(self.path_to_url(DATASET_DOCUMENTS_ENDPOINT(dataset_id=dataset_id)),
