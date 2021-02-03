@@ -169,7 +169,8 @@ DCApiClient.upload_document_to_dataset(dataset_id,
                                        document_path,
                                        ground_truth,
                                        document_id=None,
-                                       mime_type=None)
+                                       mime_type=None,
+                                       stratification_set=None)
 ```
 
 Uploads a single document and its ground truth to a specific dataset
@@ -178,6 +179,7 @@ Uploads a single document and its ground truth to a specific dataset
 - Argument ground_truth: Path to the ground truth JSON file or an object representing the ground truth
 - Argument document_id: The reference ID of the document
 - Argument mime_type: The file type of the document
+- Argument stratification_set: Defines a custom stratification set (training/validation/test)
 
 **Returns**: Object containing information about the uploaded document
 
