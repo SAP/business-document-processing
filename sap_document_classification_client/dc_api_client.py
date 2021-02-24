@@ -292,18 +292,19 @@ class DCApiClient(CommonClient):
             self.path_to_url(DATASET_DOCUMENT_ENDPOINT(dataset_id=dataset_id,
                                                        document_id=response.json()["documentId"]))).json()
 
-    def _upload_document_to_dataset_wrap_errors(self, dataset_id, document_path, ground_truth, document_id=None):
+    def _upload_document_to_dataset_wrap_errors(self, dataset_id, document_path, ground_truth, **kwargs):
         result = self._function_wrap_errors(self.upload_document_to_dataset, dataset_id, document_path, ground_truth,
-                                            document_id)
+                                            **kwargs)
         result['document_path'] = document_path
         return result
 
-    def upload_documents_directory_to_dataset(self, dataset_id, path, silent=False):
+    def upload_documents_directory_to_dataset(self, dataset_id, path, **kwargs):
         """
         :param dataset_id: The dataset_id of dataset to upload the documents to
         :param path: The path has to contain document data files and JSON file with GT with corresponding names
         :param silent: If set to True will not throw exception when upload of one of the documents fails,
         in this case the upload statuses in the results array have to be validated manually
+        :param stratification_set: Defines a custom stratification set (training/validation/test)
         :return: Array with the upload results
         """
         files = self._find_files(path)
@@ -315,9 +316,9 @@ class DCApiClient(CommonClient):
         return self.upload_documents_to_dataset(dataset_id=dataset_id,
                                                 documents_paths=files,
                                                 ground_truths_paths=ground_truth_files,
-                                                silent=silent)
+                                                **kwargs)
 
-    def upload_documents_to_dataset(self, dataset_id, documents_paths, ground_truths_paths, silent=False):
+    def upload_documents_to_dataset(self, dataset_id, documents_paths, ground_truths_paths, **kwargs):
         """
 
         :param dataset_id: The dataset_id of dataset to upload the documents to
@@ -325,6 +326,7 @@ class DCApiClient(CommonClient):
         :param ground_truths_paths: The paths of the JSON files contining the ground truths
         :param silent: If set to True will not throw exception when upload of one of the documents fails,
         in this case the upload statuses in the results array have to be validated manually
+        :param stratification_set: Defines a custom stratification set (training/validation/test)
         :return: Array with the upload results
         """
         number_of_documents = len(documents_paths)
@@ -333,10 +335,10 @@ class DCApiClient(CommonClient):
             number_of_documents, dataset_id, self.polling_threads))
         pool = ThreadPoolExecutor(min(self.polling_threads, len(documents_paths)))
         results = pool.map(self._upload_document_to_dataset_wrap_errors, [dataset_id] * number_of_documents,
-                           documents_paths, ground_truths_paths)
+                           documents_paths, ground_truths_paths, **kwargs)
         pool.shutdown()
         self.logger.info('Finished uploading of {} documents to the dataset {}'.format(number_of_documents, dataset_id))
-        if not silent:
+        if not kwargs.get('silent', False):
             self._validate_results(results, 'Some documents could not be successfully uploaded to the dataset')
         return results
 

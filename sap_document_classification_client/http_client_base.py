@@ -116,9 +116,9 @@ class CommonClient:
         return self.base_url + path
 
     @staticmethod
-    def _function_wrap_errors(function, *args):
+    def _function_wrap_errors(function, *args, **kwargs):
         try:
-            return function(*args)
+            return function(*args, **kwargs)
         except PollingTimeoutException as e:
             return {'status': STATUS_FAILED, 'message': str(e)}
         except (requests.HTTPError, FailedCallException) as e:
