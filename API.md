@@ -187,23 +187,22 @@ Uploads a single document and its ground truth to a specific dataset
 ### upload_documents_directory_to_dataset
 ```python
 DCApiClient.upload_documents_directory_to_dataset(
-  dataset_id, path, silent=False)
+  dataset_id, path, **kwargs)
 ```
 
 - Argument dataset_id: The dataset_id of dataset to upload the documents to
 - Argument path: The path has to contain document data files and JSON file with GT with corresponding names
 - Argument silent: If set to True will not throw exception when upload of one of the documents fails,
 in this case the upload statuses in the results array have to be validated manually
+- Argument stratification_set: Defines a custom stratification set (training/validation/test)
 
 **Returns**: Array with the upload results
 
 
 ### upload_documents_to_dataset
 ```python
-DCApiClient.upload_documents_to_dataset(dataset_id,
-                                        documents_paths,
-                                        ground_truths_paths,
-                                        silent=False)
+DCApiClient.upload_documents_to_dataset(dataset_id, documents_paths,
+                                        ground_truths_paths, **kwargs)
 ```
 
 
@@ -212,6 +211,7 @@ DCApiClient.upload_documents_to_dataset(dataset_id,
 - Argument ground_truths_paths: The paths of the JSON files contining the ground truths
 - Argument silent: If set to True will not throw exception when upload of one of the documents fails,
 in this case the upload statuses in the results array have to be validated manually
+- Argument stratification_set: Defines a custom stratification set (training/validation/test)
 
 **Returns**: Array with the upload results
 
