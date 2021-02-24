@@ -4,6 +4,7 @@
 
 from concurrent.futures import ThreadPoolExecutor
 import fnmatch
+from functools import partial
 import json
 import logging
 import os
@@ -334,8 +335,8 @@ class DCApiClient(CommonClient):
         self.logger.debug('Started uploading of {} documents to the dataset {} in parallel using {} threads'.format(
             number_of_documents, dataset_id, self.polling_threads))
         pool = ThreadPoolExecutor(min(self.polling_threads, len(documents_paths)))
-        results = pool.map(self._upload_document_to_dataset_wrap_errors, [dataset_id] * number_of_documents,
-                           documents_paths, ground_truths_paths, **kwargs)
+        results = pool.map(partial(self._upload_document_to_dataset_wrap_errors, **kwargs), [dataset_id] * number_of_documents,
+                           documents_paths, ground_truths_paths)
         pool.shutdown()
         self.logger.info('Finished uploading of {} documents to the dataset {}'.format(number_of_documents, dataset_id))
         if not kwargs.get('silent', False):
