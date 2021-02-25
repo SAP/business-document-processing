@@ -330,6 +330,7 @@ class DCApiClient(CommonClient):
         :param stratification_set: Defines a custom stratification set (training/validation/test)
         :return: Array with the upload results
         """
+        silent = kwargs.pop('silent', False)
         number_of_documents = len(documents_paths)
         assert number_of_documents > 0, 'Please supply at least one document'
         self.logger.debug('Started uploading of {} documents to the dataset {} in parallel using {} threads'.format(
@@ -339,7 +340,7 @@ class DCApiClient(CommonClient):
                            documents_paths, ground_truths_paths)
         pool.shutdown()
         self.logger.info('Finished uploading of {} documents to the dataset {}'.format(number_of_documents, dataset_id))
-        if not kwargs.get('silent', False):
+        if not silent:
             self._validate_results(results, 'Some documents could not be successfully uploaded to the dataset')
         return results
 
