@@ -1,17 +1,18 @@
 from distutils.core import setup
 setup(
-  name='sap-document-classification-client',
-  packages=['sap_document_classification_client'],
-    version='0.1.22',
+  name='sap-business-document-processing',
+  packages=['sap_business_document_processing'],
+    version='0.1.0',
   license='apache-2.0',
-  description='Python client library for convenient usage of SAP Document Classification service REST API',
+  description='Python client library for convenient usage of SAP Business Document Processing services',
   author='Alexander Bolshakov',
   author_email='alexander.bolshakov@sap.com',
-  url='https://github.com/sap/document-classification-client',
-  download_url='https://github.com/sap/document-classification-client/archive/v_01.tar.gz',
-  keywords=['business', 'document', 'classification', 'machine learning', 'SAP'],
+  url='https://github.com/sap/business_document_processing',
+  download_url='https://pypi.org/project/sap-business-document-processing',
+  keywords=['SAP', 'business', 'document', 'processing', 'classification', 'information', 'extraction', 'machine learning'],
   install_requires=[
-          'requests==2.23.0'
+          'requests==2.23.0',
+          'requests_oauthlib'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',
