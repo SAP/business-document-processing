@@ -568,7 +568,7 @@ class DoxApiClient(CommonClient):
         """
         response = self.get(DOCUMENT_PAGES_DIMENSIONS_ENDPOINT.format(document_id=document_id),
                             log_msg_before=f'Getting dimensions for all pages of document with ID {document_id}',
-                            log_msg_after=f'Successfully got dimensions for all pages od document with ID {document_id}')
+                            log_msg_after=f'Successfully got dimensions for all pages of document with ID {document_id}')
         return response.json()[API_FIELD_RESULTS]
 
     def post_ground_truth_for_document(self, document_id, ground_truth):
