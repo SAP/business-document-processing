@@ -429,7 +429,6 @@ class DCApiClient(CommonClient):
         :return: Object containing the information about the deployed model serving
         """
         if model_version:
-            self.logger.debug(f'Getting the deployment of the model {model_name_or_deployment_id} with version {model_version}')
             deployed_models = self.get_deployed_models_info()
             models = [
                 model for model in deployed_models
