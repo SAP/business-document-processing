@@ -213,7 +213,7 @@ class DoxApiClient(CommonClient):
         the processed results given the iterator.
         """
         if not isinstance(document_paths, list) or len(document_paths) == 0:
-            raise ValueError(f'Argument \'document_paths\' must be a list of paths to documents to be uploaded, '
+            raise ValueError(f'Expected argument \'document_paths\' to be a non-empty list of paths to documents to be uploaded, '
                              f'but got {document_paths}')
         number_of_documents = len(document_paths)
 
