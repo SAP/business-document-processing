@@ -505,7 +505,7 @@ class DoxApiClient(CommonClient):
         Gets the image of a document page for the given document ID and page number
         :param document_id: The ID of the document
         :param page_no: The page number for which to get the image
-        :return: The image of the document page as bytearray
+        :return: The image of the document page in the PNG format as bytearray
         """
         headers = {API_HEADER_ACCEPT: CONTENT_TYPE_PNG}
         response = self.get(DOCUMENT_PAGE_ENDPOINT.format(document_id=document_id, page_number=page_no),
