@@ -12,7 +12,7 @@ setup(
   keywords=['SAP', 'business', 'document', 'processing', 'classification', 'information', 'extraction', 'machine learning'],
   install_requires=[
           'requests==2.23.0',
-          'requests_oauthlib'
+          'requests_oauthlib==1.3.0'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',
