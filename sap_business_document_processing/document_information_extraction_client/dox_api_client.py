@@ -288,7 +288,7 @@ class DoxApiClient(CommonClient):
     def delete_documents(self, document_ids: list = None):
         """
         Deletes a list of documents or all documents
-        :param document_ids: (optional) A list of document IDs that shall be deleted. If none is given, all documents
+        :param document_ids: (optional) A list of document IDs that shall be deleted. If this argument is not provided, all documents
         are deleted.
         :return: The API endpoint response as dictionary
         """
