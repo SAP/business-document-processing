@@ -30,11 +30,6 @@ class CommonClient:
                  logging_level=logging.WARNING):
         self.common_logger = logging.getLogger('CommonClient')
         self.common_logger.setLevel(logging_level)
-        self.same_line_logger = logging.getLogger('CommonClientSameLine')
-        single_line_stream = logging.StreamHandler()
-        single_line_stream.terminator = ''
-        self.same_line_logger.addHandler(single_line_stream)
-        self.same_line_logger.setLevel(logging_level)
         self.logger = logging.getLogger(logger_name)
         self.logger.setLevel(logging_level)
         if polling_threads > MAX_POLLING_THREADS:
@@ -101,7 +96,6 @@ class CommonClient:
         for _ in range(self.polling_max_attempts):
             response = self.get(path, validate=False, **kwargs)
             if (wait_status is not None) and response.status_code == wait_status:
-                self.same_line_logger.debug('.')
                 time.sleep(sleep_interval)
             elif response.status_code == success_status:
                 if check_json_status:
@@ -114,7 +108,6 @@ class CommonClient:
                         raise BDPFailedAsynchronousOperationException("Asynchronous job with URL '{}' failed".format(
                             self.path_to_url(path)), response=response)
                     else:
-                        self.same_line_logger.debug('.')
                         time.sleep(sleep_interval)
                 else:
                     if log_msg_after is not None:
