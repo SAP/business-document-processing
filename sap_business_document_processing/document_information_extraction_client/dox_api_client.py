@@ -526,7 +526,7 @@ class DoxApiClient(CommonClient):
                             log_msg_before=f'Getting text for all pages of document with ID {document_id}',
                             log_msg_after=f'Successfully got text fot all pages of document with ID {document_id}')
         return response.json()[API_FIELD_RESULTS]
-
+    def get_document_text(self, document_id):
     def get_request_for_document(self, document_id):
         """
         Gets the request of a processed document
