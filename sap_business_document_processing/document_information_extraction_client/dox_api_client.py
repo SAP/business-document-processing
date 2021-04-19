@@ -490,16 +490,6 @@ class DoxApiClient(CommonClient):
                                       log_msg_after='Successfully activated enrichment data records')
         return response.json()
 
-    def get_enrichment_data_activation_job(self, data_activation_job_id):
-        """
-        Gets an enrichment data activation job with the given ID
-        :return: The API endpoint response as dictionary
-        """
-        response = self.get(DATA_ACTIVATION_ID_ENDPOINT.format(id=data_activation_job_id),
-                            log_msg_before=f'Getting enrichment data activation job {data_activation_job_id}',
-                            log_msg_after=f'Successfully got enrichment data activation job {data_activation_job_id}')
-        return response.json()[API_FIELD_VALUE]
-
     def get_image_for_document(self, document_id, page_no: int):
         """
         Gets the image of a document page for the given document ID and page number
