@@ -213,7 +213,7 @@ class DoxApiClient(CommonClient):
         the processed results given the iterator.
         """
         if not isinstance(document_paths, list) or len(document_paths) == 0:
-            raise ValueError(f'Argument \'document_paths\' must be a list of paths to documents to be uploaded, '
+            raise ValueError(f'Expected argument \'document_paths\' to be a non-empty list of paths to documents to be uploaded, '
                              f'but got {document_paths}')
         number_of_documents = len(document_paths)
 
@@ -288,7 +288,7 @@ class DoxApiClient(CommonClient):
     def delete_documents(self, document_ids: list = None):
         """
         Deletes a list of documents or all documents
-        :param document_ids: (optional) A list of document IDs that shall be deleted. If none is given, all documents
+        :param document_ids: (optional) A list of document IDs that shall be deleted. If this argument is not provided, all documents
         are deleted.
         :return: The API endpoint response as dictionary
         """
@@ -495,7 +495,7 @@ class DoxApiClient(CommonClient):
         Gets the image of a document page for the given document ID and page number
         :param document_id: The ID of the document
         :param page_no: The page number for which to get the image
-        :return: The image of the document page as bytearray
+        :return: The image of the document page in the PNG format as bytearray
         """
         headers = {API_HEADER_ACCEPT: CONTENT_TYPE_PNG}
         response = self.get(DOCUMENT_PAGE_ENDPOINT.format(document_id=document_id, page_number=page_no),
@@ -558,7 +558,7 @@ class DoxApiClient(CommonClient):
         """
         response = self.get(DOCUMENT_PAGES_DIMENSIONS_ENDPOINT.format(document_id=document_id),
                             log_msg_before=f'Getting dimensions for all pages of document with ID {document_id}',
-                            log_msg_after=f'Successfully got dimensions for all pages od document with ID {document_id}')
+                            log_msg_after=f'Successfully got dimensions for all pages of document with ID {document_id}')
         return response.json()[API_FIELD_RESULTS]
 
     def post_ground_truth_for_document(self, document_id, ground_truth):
