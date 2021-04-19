@@ -504,7 +504,7 @@ class DoxApiClient(CommonClient):
                             log_msg_after=f'Successfully got image for page {page_no} of document with ID {document_id}')
         return response.content
 
-    def get_text_for_document(self, document_id, page_no: int):
+    def get_document_page_text(self, document_id, page_no: int):
         """
         Gets the text for a document page for the given document ID and page number
         :param document_id: The ID of the document
@@ -514,9 +514,9 @@ class DoxApiClient(CommonClient):
         response = self.get(DOCUMENT_PAGE_TEXT_ENDPOINT.format(document_id=document_id, page_number=page_no),
                             log_msg_before=f'Getting text for page {page_no} of document with ID {document_id}',
                             log_msg_after=f'Successfully got text for page {page_no} of document with ID {document_id}')
-    def get_document_page_text(self, document_id, page_no: int):
+        return response.json()[API_FIELD_VALUE]
 
-    def get_all_texts_for_document(self, document_id):
+    def get_document_text(self, document_id):
         """
         Gets the text for all pages of a document
         :param document_id: The ID of the document
@@ -526,7 +526,7 @@ class DoxApiClient(CommonClient):
                             log_msg_before=f'Getting text for all pages of document with ID {document_id}',
                             log_msg_after=f'Successfully got text fot all pages of document with ID {document_id}')
         return response.json()[API_FIELD_RESULTS]
-    def get_document_text(self, document_id):
+
     def get_request_for_document(self, document_id):
         """
         Gets the request of a processed document
