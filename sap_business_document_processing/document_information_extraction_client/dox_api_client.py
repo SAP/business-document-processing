@@ -514,7 +514,7 @@ class DoxApiClient(CommonClient):
         response = self.get(DOCUMENT_PAGE_TEXT_ENDPOINT.format(document_id=document_id, page_number=page_no),
                             log_msg_before=f'Getting text for page {page_no} of document with ID {document_id}',
                             log_msg_after=f'Successfully got text for page {page_no} of document with ID {document_id}')
-        return response.json()[API_FIELD_VALUE]
+    def get_document_page_text(self, document_id, page_no: int):
 
     def get_all_texts_for_document(self, document_id):
         """
