@@ -28,7 +28,7 @@ API_DOCUMENT_ID_FIELD = 'documentId'
 API_STATUS_FIELD = 'status'
 
 # NOTE: Equivalent uppercase/mixed case will be picked up as well
-FILE_EXTENSIONS_FOR_FOLDER_UPLOAD = ('.pdf', '.png', '.jpeg', '.jpg')
+FILE_EXTENSIONS_FOR_FOLDER_UPLOAD = ('.pdf', '.png', '.jpeg', '.jpg', '.tif', '.tiff')
 
 MAX_POLLING_THREADS = 100
 MIN_POLLING_INTERVAL = 0.2
