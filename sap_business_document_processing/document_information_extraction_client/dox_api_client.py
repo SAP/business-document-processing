@@ -9,13 +9,12 @@ from typing import List
 
 from sap_business_document_processing.common.http_client_base import CommonClient
 from sap_business_document_processing.common.helpers import function_wrap_errors
-from .capabilities import DoxDataType, DoxDataSubType
 from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CLIENT_NAME, API_FIELD_ID, \
     API_FIELD_EXTRACTED_VALUES, API_FIELD_RESULTS, API_FIELD_RETURN_NULL, API_FIELD_STATUS, API_FIELD_VALUE, \
     API_FIELD_DATA_FOR_RETRAINING, API_HEADER_ACCEPT, API_REQUEST_FIELD_CLIENT_START_WITH, API_REQUEST_FIELD_FILE, \
     API_REQUEST_FIELD_LIMIT, API_REQUEST_FIELD_OFFSET, API_REQUEST_FIELD_OPTIONS, API_REQUEST_FIELD_PAYLOAD, \
     API_REQUEST_FIELD_ENRICHMENT_COMPANYCODE, API_REQUEST_FIELD_ENRICHMENT_ID, API_REQUEST_FIELD_ENRICHMENT_SUBTYPE, \
-    API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PNG
+    API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PNG, DATA_TYPE_BUSINESS_ENTITY
 from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
     DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
     DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
@@ -367,7 +366,7 @@ class DoxApiClient(CommonClient):
             API_FIELD_CLIENT_ID: client_id,
             API_REQUEST_FIELD_ENRICHMENT_TYPE: str(data_type)
         }
-        if data_type == DoxDataType.BUSINESS_ENTITY and subtype is not None:
+        if data_type == DATA_TYPE_BUSINESS_ENTITY and subtype is not None:
             params[API_REQUEST_FIELD_ENRICHMENT_SUBTYPE] = str(subtype)
         if not isinstance(data, list):
             data = [data]
@@ -379,38 +378,6 @@ class DoxApiClient(CommonClient):
                                       get_status=lambda r: r[API_FIELD_VALUE][API_FIELD_STATUS],
                                       log_msg_after=f'Successfully uploaded {len(data)} enrichment data records for client {client_id}')
         return response.json()
-
-    def upload_enrichment_data_employee(self, client_id, data):
-        """
-        Creates one or more 'employee' enrichment data records
-        :param client_id: The client ID for which the data records shall be created
-        :param data: The data records to be uploaded. A record should have the following format: {"id":"E0001",
-        "email":"", "firstName":"", "middleName": "", "lastName":""}
-        :return: The API endpoint response as dictionary
-        """
-        return self.upload_enrichment_data(client_id, DoxDataType.EMPLOYEE, data)
-
-    def upload_enrichment_data_supplier(self, client_id, data):
-        """
-        Creates one or more 'supplier' enrichment data records
-        :param client_id: The client ID for which the data records shall be created
-        :param data: The data records to be uploaded. A record should have the following format: {"id":"BE0001",
-        "name":"", "accountNumber":"", "address1":"", "address2": "", "city":"", "countryCode":"", "postalCode":"",
-        "state":"", "email":"", "phone":"", "bankAccount":"", "taxId":""}
-        :return: The API endpoint response as dictionary
-        """
-        return self.upload_enrichment_data(client_id, DoxDataType.BUSINESS_ENTITY, data, DoxDataSubType.SUPPLIER)
-
-    def upload_enrichment_data_customer(self, client_id, data):
-        """
-        Creates one or more 'customer' enrichment data records
-        :param client_id: The client ID for which the data records shall be created
-        :param data: The data records to be uploaded. A record should have he following format: {"id":"BE0001",
-        "name":"", "accountNumber":"", "address1":"", "address2": "", "city":"", "countryCode":"", "postalCode":"",
-        "state":"", "email":"", "phone":"", "bankAccount":"", "taxId":""}
-        :return: The API endpoint response as dictionary
-        """
-        return self.upload_enrichment_data(client_id, DoxDataType.BUSINESS_ENTITY, data, DoxDataSubType.CUSTOMER)
 
     def get_enrichment_data(self, client_id, data_type, data_id=None, offset=None, limit=None, subtype=None,
                             system=None, company_code=None):
