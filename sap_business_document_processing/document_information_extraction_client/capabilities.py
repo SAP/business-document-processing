@@ -5,8 +5,6 @@
 from enum import Enum
 
 
-DOCUMENT_TYPE_ADVICE = "paymentAdvice"
-DOCUMENT_TYPE_INVOICE = "invoice"
 DATA_TYPE_BUSINESS_ENTITY = "businessEntity"
 DATA_TYPE_EMPLOYEE = "employee"
 DATA_SUBTYPE_COMPANYCODE = "companyCode"
@@ -37,15 +35,3 @@ class DoxDataSubType(Enum):
     def __str__(self):
         return self.value
 
-
-HEADER_FIELD_NAMES_FOR_DOCUMENT_TYPES = {
-    DOCUMENT_TYPE_INVOICE: ["documentNumber", "taxId", "taxName", "purchaseOrderNumber", "shippingAmount", "netAmount",
-                            "grossAmount", "currencyCode", "receiverContact", "documentDate", "taxAmount", "taxRate",
-                            "receiverName", "receiverAddress", "deliveryDate", "paymentTerms", "deliveryNoteNumber",
-                            "senderBankAccount", "barcode", "senderAddress", "senderName"],
-    DOCUMENT_TYPE_ADVICE: ["documentNumber", "grossAmount", "currencyCode", "documentDate", "senderName"]
-}
-LINE_ITEM_FIELDS_NAMES_FOR_DOCUMENT_TYPES = {
-    DOCUMENT_TYPE_INVOICE: ["description", "netAmount", "quantity", "unitPrice", "materialNumber"],
-    DOCUMENT_TYPE_ADVICE: ["netAmount", "documentNumber", "documentDate", "discountAmount", "deductionAmount"],
-}

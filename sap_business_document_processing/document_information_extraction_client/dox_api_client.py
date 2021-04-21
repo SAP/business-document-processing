@@ -21,7 +21,7 @@ from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_EN
     DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
     DOCUMENT_PAGE_DIMENSIONS_ENDPOINT, DOCUMENT_PAGES_DIMENSIONS_ENDPOINT, DOCUMENT_PAGE_TEXT_ENDPOINT, \
     DOCUMENT_PAGES_TEXT_ENDPOINT
-from .helpers import merge_document_options
+from .helpers import create_document_options
 
 
 class DoxApiClient(CommonClient):
@@ -151,110 +151,106 @@ class DoxApiClient(CommonClient):
                              log_msg_after=f'Successfully created custom capability mapping for client {client_id}')
         return response.json()
 
-    def upload_document(self, document_path: str, client_id=None, document_type: str = None, options: dict = None,
-                        header_fields=None, line_item_fields=None, template_id=None, received_date=None,
-                        enrichment=None, return_null_values=False):
+    def extract_information_from_document(self, document_path: str, client_id, document_type: str, header_fields=None,
+                                          line_item_fields=None, template_id=None, received_date=None,
+                                          enrichment=None, return_null_values=False):
         """
-        Uploads one document for processing. The function will run until a processing result can be returned or a
-        timeout is reached
-        :param document_path: The path to the document to be uploaded
-        :param client_id: The client ID for which the document should be uploaded. Can be omitted, if an ID is given in
-        the 'options' parameter
-        :param document_type: The type of the document being uploaded. Options are 'invoice' or 'paymentAdvice'. Can be
-        omitted, if the type is specified in the options parameter
-        :param options: (optional) The options for processing the document as dictionary. If no client ID or document
-        type are given as parameters, they have to be given in this dictionary. If other parameters are given, they
-        overwrite the respective values in this dictionary
-        :param header_fields: (optional) A list of header fields to be extracted. Can be given as list of strings or as
-        comma separated string. If none are given, all available header fields are used
-        :param line_item_fields: (optional) A list of line item fields to be extracted. Can be given as list of string
-        or as comma separated string. If none are given, all available line item fields are used
+        Extracts the information from a document. The function will run until a processing result can be returned or
+        a timeout is reached
+        :param document_path: The path to the document
+        :param client_id: The client ID for which the document should be uploaded
+        :param document_type: The type of the document being uploaded. For available document types see documentation
+        :param header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
+        separated string. If none are given, no header fields will be extracted
+        :param line_item_fields: A list of line item fields to be extracted. Can be given as list of strings or as comma
+        separated string. If none are given, no line item fields will be extracted
         :param template_id: (optional) The ID of the template to be used for this document
         :param received_date: (optional) The date the document was received
         :param enrichment: (optional) A dictionary of entities that should be used for entity matching
         :param return_null_values: Flag if fields with null as value should be included in the response or not.
         Default is False
-        :return: The result of the processed document as dictionary
+        :return: The extracted information of the document as dictionary
         """
-        return next(self.upload_documents([document_path], client_id, document_type, options=options,
-                                          header_fields=header_fields, line_item_fields=line_item_fields,
-                                          template_id=template_id, received_date=received_date, enrichment=enrichment,
-                                          return_null_values=return_null_values, silent=True))
+        return next(self.extract_information_from_documents([document_path], client_id, document_type,
+                                                            header_fields=header_fields,
+                                                            line_item_fields=line_item_fields, template_id=template_id,
+                                                            received_date=received_date, enrichment=enrichment,
+                                                            return_null_values=return_null_values, silent=True))
 
-    def upload_documents(self, document_paths: List[str], client_id=None, document_type=None, options=None,
-                         header_fields=None, line_item_fields=None, template_id=None, received_date=None,
-                         enrichment=None, return_null_values=False, wait_for_results=True, silent=False):
+    def extract_information_from_document_with_options(self, document_path: str, options: dict,
+                                                       return_null_values=False):
         """
-        Uploads multiple documents for processing. If wait_for_results is True, the function will run until all
-        documents have been processed or a timeout is reached. The given parameters will be applied to all documents.
-        :param document_paths: A list of paths to the documents to be uploaded
-        :param client_id: The client ID for which the document should be uploaded. Can be omitted, if an ID is given in
-        the 'options' parameter
-        :param document_type: The type of the document being uploaded. Options are 'invoice' or 'paymentAdvice'
-        :param options: (optional) The options for processing the document as dictionary. If no client ID or document
-        type are given as parameters, they have to be given in this dictionary. If other parameters are given, they
-        overwrite the respective values in this dictionary
-        :param header_fields: (optional) A list of header fields to be extracted. Can be passed as list of strings or as
-        comma separated string. If none are given, all available header fields are used
-        :param line_item_fields: (optional) A list of line item fields to be extracted. Can be passed as list of string
-        or as comma separated string. If none are given, all available line item are used
-        :param template_id: (optional) The ID of the template to be used for this document
-        :param received_date: (optional) The date the document was received
-        :param enrichment: (optional) A dictionary of entities that should be used for entity matching
+        Extracts the information from a document. The function will run until a processing result can be returned or
+        a timeout is reached.
+        :param document_path: The path to the document
+        :param options: The options for processing the document as dictionary. It has to include at least a valid client
+        ID and document type
         :param return_null_values: Flag if fields with null as value should be included in the response or not.
         Default is False
-        :param wait_for_results: Flag if the method will wait for the processed results. Default is True.
+        :return: The extracted information of the document as dictionary
+        """
+        return next(self.extract_information_from_documents_with_options([document_path], options, return_null_values,
+                                                                         silent=True))
+
+    def extract_information_from_documents(self, document_paths: List[str], client_id, document_type,
+                                           header_fields=None, line_item_fields=None, template_id=None,
+                                           received_date=None, enrichment=None, return_null_values=False, silent=False):
+        """
+        Extracts the information from multiple documents. The function will run until all documents have been processed
+        or a timeout is reached. The given parameters will be used for all documents
+        :param document_paths: A list of paths to the documents
+        :param client_id: The client ID for which the documents should be uploaded
+        :param document_type: The type of the document being uploaded. For available document types see documentation
+        :param header_fields: A list of header fields to be extracted. Can be passed as list of strings or as comma
+        separated string. If none are given, no header fields will be extracted
+        :param line_item_fields: A list of line item fields to be extracted. Can be passed as list of strings
+        or as comma separated string. If none are given, no line items fields are extracted
+        :param template_id: (optional) The ID of the template to be used for the documents
+        :param received_date: (optional) The date the documents were received
+        :param enrichment: (optional) A dictionary of entities that should be used for entity matching
+        :param return_null_values: Flag if fields with null as value should be included in the responses or not.
+        Default is False
         :param silent: If True, the functions returns even if some documents failed uploading or processing. If False,
         will raise an exception if at least one document failed. Default is False
-        :return: An iterator with results for successful documents and exceptions for failed documents. Use
-        next(iterator) within a try-catch block to filter the failed documents. If input argument `wait_for_results` is
-        true, the iterator will contain processed document results. If false, the iterator will contain information
-        about the uploaded document including its ID; the user can use `get_document_results` method to further fetch
-        the processed results given the iterator.
+        :return: An iterator with extracted information for successful documents and exceptions for failed documents.
+        Use next(iterator) within a try-catch block to filter the failed documents.
+        """
+        options = create_document_options(client_id, document_type, header_fields, line_item_fields, template_id,
+                                          received_date, enrichment)
+        return self.extract_information_from_documents_with_options(document_paths, options, return_null_values, silent)
+
+    def extract_information_from_documents_with_options(self, document_paths: List[str], options: dict,
+                                                        return_null_values=False, silent=False):
+        """
+        Extracts the information from multiple documents. The function will run until all documents have been processed
+        or a timeout is reached. The given options will be used for all documents
+        :param document_paths: A list of paths to the documents
+        :param options: The options for processing the documents as dictionary. It has to include at least a valid
+        client ID and document type
+        :param return_null_values: Flag if fields with null as value should be included in the responses or not.
+        Default is False
+        :param silent: If True, the functions returns even if some documents failed uploading or processing. If False,
+        will raise an exception if at least one document failed. Default is False
+        :return:
         """
         if not isinstance(document_paths, list) or len(document_paths) == 0:
-            raise ValueError(f'Expected argument \'document_paths\' to be a non-empty list of paths to documents to be uploaded, '
-                             f'but got {document_paths}')
+            raise ValueError(f'Expected argument \'document_paths\' to be a non-empty list of paths to documents to be '
+                             f'uploaded, but got {document_paths}')
+        client_id = options.get(API_FIELD_CLIENT_ID)
         number_of_documents = len(document_paths)
 
-        options = merge_document_options(options, client_id, document_type, header_fields, line_item_fields,
-                                         template_id, received_date, enrichment)
-
-        self.logger.debug(f'Starting upload of {number_of_documents} documents for client {client_id} in parallel using '
-                          f'{self.polling_threads} threads')
+        self.logger.debug(
+            f'Starting upload of {number_of_documents} documents for client {client_id} in parallel using '
+            f'{self.polling_threads} threads')
         with ThreadPoolExecutor(min(self.polling_threads, number_of_documents)) as pool:
             upload_results = pool.map(self._single_upload_wrap_errors, document_paths, [options] * number_of_documents)
         if not silent:
             upload_results = self._validate_results(upload_results, 'Some documents could not be uploaded successfully')
-
         self.logger.info(f'Finished uploading {number_of_documents} documents for client {client_id}')
-        if not wait_for_results:
-            return self._create_result_iterator(upload_results)
 
-        return self.get_documents_results(upload_results, return_null_values, silent)
-
-    def get_documents_results(self, upload_results, return_null_values=False, silent=False):
-        """
-        Get results of multiple documents, given their upload results.
-        :param upload_results: A list of uploaded documents. This input parameter typically can be the output of method
-        upload_documents(..., wait_for_results=False).
-        :param return_null_values: Flag if fields with null as value should be included in the response or not.
-        Default is False
-        :param silent: If True, the functions returns even if some documents failed uploading or processing. If False,
-        will raise an exception if at least one document failed. Default is False
-        :return: An iterator with processed document results for successful documents and exceptions for failed
-        documents. Use next(iterator) within a try-catch block to filter the failed documents.
-        """
-        if not isinstance(upload_results, list):
-            upload_results = list(upload_results)
-        self.logger.debug(f'Waiting for {len(upload_results)} documents to be processed')
-        with ThreadPoolExecutor(min(self.polling_threads, len(upload_results))) as pool:
-            results = pool.map(self._get_document_wrap_errors, upload_results,
-                               [return_null_values] * len(upload_results))
-        if not silent:
-            results = self._validate_results(results, 'Some documents could not be processed successfully')
-        self.logger.info(f'{len(upload_results)} documents have been processed')
-        return self._create_result_iterator(results)
+        upload_ids = [result if isinstance(result, Exception) else result[API_FIELD_ID] for result in upload_results]
+        return self.get_extraction_for_documents(upload_ids, extracted_values=True,
+                                                 return_null_values=return_null_values)
 
     def _single_upload(self, document_path: str, options):
         with open(document_path, 'rb') as file:
@@ -266,14 +262,67 @@ class DoxApiClient(CommonClient):
     def _single_upload_wrap_errors(self, document_path, options):
         return function_wrap_errors(self._single_upload, document_path, options)
 
-    def _get_document_wrap_errors(self, upload_result, *args):
-        if isinstance(upload_result, Exception):
-            return upload_result
-        return function_wrap_errors(self.get_document_result, upload_result[API_FIELD_ID], True, *args)
+    def _get_extraction_for_document_wrap_errors(self, document_id, *args):
+        if isinstance(document_id, Exception):
+            return document_id
+        return function_wrap_errors(self.get_extraction_for_document, document_id, *args)
 
-    def get_documents(self, client_id: str = None):
+    def get_extraction_for_document(self, document_id, extracted_values: bool = None, return_null_values: bool = False):
         """
-        Gets all document jobs filtered by the client ID
+        Gets the extracted information of an uploaded document by document ID. Raises an exception, when the document
+        failed or didn't finish processing after the maximum number of requests
+        :param document_id: The ID of the document
+        :param extracted_values: (optional) Flag if the extracted values or the ground truth should be returned. If set
+        to `True` the extracted values are returned. If set to `False` the ground truth is returned. If no ground truth
+        is available, the extracted values will be returned either way. If `None` is given, the ground truth is returned
+        if available
+        :param return_null_values: Flag if fields with null as value should be included in the response or not.
+        Default is False
+        :return: The extracted information processed document or the ground truth as dictionary
+        """
+        params = {
+            API_FIELD_RETURN_NULL: return_null_values
+        }
+        if extracted_values is not None:
+            params[API_FIELD_EXTRACTED_VALUES] = extracted_values
+
+        response = self._poll_for_url(DOCUMENT_ID_ENDPOINT.format(document_id=document_id), params=params,
+                                      log_msg_before=f'Getting extraction for document with ID {document_id}',
+                                      log_msg_after=f'Successfully got extraction for document with ID {document_id}')
+        return response.json()
+
+    def get_extraction_for_documents(self, document_ids: list, extracted_values: bool = None,
+                                     return_null_values: bool = False, silent=False):
+        """
+        Gets the extracted information for multiple documents given their document IDs
+        :param document_ids: A list of IDs of documents
+        :param extracted_values: (optional) Flag if the extracted values or the ground truth should be returned. If set
+        to `True` the extracted values are returned. If set to `False` the ground truth is returned. If no ground truth
+        is available, the extracted values will be returned either way. If `None` is given, the ground truth is returned
+        if available
+        :param return_null_values: Flag if fields with null as value should be included in the response or not.
+        Default is False
+        :param silent: If True, the functions returns even if some documents failed. If False, will raise an exception
+        if at least one document failed. Default is False
+        :return: An iterator with extracted information or ground truths for successful documents and exceptions
+        for failed documents. Use next(iterator) within a try-catch block to filter the failed documents.
+        """
+        if not isinstance(document_ids, list) or len(document_ids) == 0:
+            raise ValueError(f'Expected argument \'document_ids\' to be a non-empty list, but got {document_ids}')
+
+        self.logger.debug(f'Start getting extracted information for {len(document_ids)} documents')
+        with ThreadPoolExecutor(min(self.polling_threads, len(document_ids))) as pool:
+            results = pool.map(self._get_extraction_for_document_wrap_errors, document_ids,
+                               [extracted_values] * len(document_ids), [return_null_values] * len(document_ids))
+        if not silent:
+            results = self._validate_results(results, 'Information extraction failed for some documents')
+        self.logger.info(f'Successfully got extracted information for {len(document_ids)} documents')
+
+        return self._create_result_iterator(results)
+
+    def get_document_list(self, client_id: str = None):
+        """
+        Gets a list of  document jobs filtered by the client ID
         :param client_id: (optional) The client ID for which the document jobs should be get. Gets all document jobs if
         no client ID is given
         :return: A list of document jobs as dictionaries
@@ -297,30 +346,6 @@ class DoxApiClient(CommonClient):
         response = self.delete(DOCUMENT_ENDPOINT, json=payload,
                                log_msg_before=f"Deleting {len(document_ids if payload else 'all')} documents",
                                log_msg_after='Successfully deleted documents')
-        return response.json()
-
-    def get_document_result(self, document_id, extracted_values: bool = None, return_null_values: bool = False):
-        """
-        Gets the processing result of an uploaded document by document ID. Raises en exception, when the documents
-        failed or didn't finish processing after the maximum number of requests
-        :param document_id: The ID of the document uploaded for processing
-        :param extracted_values: (optional) Flag if the extracted values or the ground truth should be returned. If set
-        to `True` the extracted values are returned. If set to `False` the ground truth is returned. If no ground truth
-        is available, the extracted values will be returned either way. If `None` is given, the ground truth is returned
-        if available
-        :param return_null_values: Flag if fields with null as value should be included in the response or not.
-        Default is False
-        :return: The result of the processed document or the ground truth as dictionary
-        """
-        params = {
-            API_FIELD_RETURN_NULL: return_null_values
-        }
-        if extracted_values is not None:
-            params[API_FIELD_EXTRACTED_VALUES] = extracted_values
-
-        response = self._poll_for_url(DOCUMENT_ID_ENDPOINT.format(document_id=document_id), params=params,
-                                      log_msg_before=f'Getting document result with ID {document_id}',
-                                      log_msg_after=f'Successfully got document result with ID {document_id}')
         return response.json()
 
     def upload_enrichment_data(self, client_id, data, data_type, subtype=None):
