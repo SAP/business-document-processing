@@ -9,7 +9,7 @@ import os
 import time
 
 from sap_business_document_processing.common.http_client_base import CommonClient
-from sap_business_document_processing.common.helpers import function_wrap_errors
+from sap_business_document_processing.common.helpers import get_ground_truth_json, function_wrap_errors
 from .constants import API_DATASET_ID_FIELD, API_DATASETS_FIELD, API_DEPLOYMENT_ID_FIELD, API_DEPLOYMENTS_FIELD, \
     API_DOCUMENT_FIELD, API_DOCUMENT_ID_FIELD, API_GROUND_TRUTH_FIELD, API_MIME_TYPE_FIELD, API_MODELS_FIELD, \
     API_MODEL_NAME_FIELD, API_MODEL_VERSION_FIELD, API_PAGINATION_COUNT_PARAM, API_PAGINATION_SKIP_PARAM, \
@@ -244,14 +244,8 @@ class DCApiClient(CommonClient):
         :param stratification_set: Defines a custom stratification set (training/validation/test)
         :return: Object containing information about the uploaded document
         """
-        if type(ground_truth) is str:
-            with open(ground_truth, 'r') as file:
-                ground_truth_json = json.load(file)
-        elif type(ground_truth) is dict:
-            ground_truth_json = ground_truth
-        else:
-            raise ValueError('Wrong argument type, string (path to ground truth file) or a dictionary (ground truth as '
-                             'JSON format) are expected for ground_truth argument')
+        ground_truth_json = get_ground_truth_json(ground_truth)
+
         data = {API_GROUND_TRUTH_FIELD: ground_truth_json}
         if document_id is not None:
             data[API_DOCUMENT_ID_FIELD] = document_id

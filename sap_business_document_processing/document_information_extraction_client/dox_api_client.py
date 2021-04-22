@@ -8,7 +8,7 @@ import logging
 from typing import List
 
 from sap_business_document_processing.common.http_client_base import CommonClient
-from sap_business_document_processing.common.helpers import function_wrap_errors
+from sap_business_document_processing.common.helpers import get_ground_truth_json, function_wrap_errors
 from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CLIENT_NAME, API_FIELD_ID, \
     API_FIELD_EXTRACTED_VALUES, API_FIELD_RESULTS, API_FIELD_RETURN_NULL, API_FIELD_STATUS, API_FIELD_VALUE, \
     API_FIELD_DATA_FOR_RETRAINING, API_HEADER_ACCEPT, API_REQUEST_FIELD_CLIENT_START_WITH, API_REQUEST_FIELD_FILE, \
@@ -570,14 +570,7 @@ class DoxApiClient(CommonClient):
         :param ground_truth: Path to the ground truth JSON file or an object representing the ground truth
         :return: The API endpoint response as dictionary
         """
-        if isinstance(ground_truth, str):
-            with open(ground_truth, 'r') as file:
-                ground_truth_json = json.load(file)
-        elif isinstance(ground_truth, dict):
-            ground_truth_json = ground_truth
-        else:
-            raise ValueError('Wrong argument type, string (path to ground truth file) or a dictionary (ground truth as '
-                             'JSON format) are expected for ground_truth argument')
+        ground_truth_json = get_ground_truth_json(ground_truth)
 
         response = self.post(DOCUMENT_ID_ENDPOINT.format(document_id=document_id), json=ground_truth_json,
                              log_msg_before=f'Uploading ground truth for document with ID {document_id}',

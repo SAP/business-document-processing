@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
 #
 # SPDX-License-Identifier: Apache-2.0
-
+import json
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -28,6 +28,17 @@ def function_wrap_errors(function, *args):
         return function(*args)
     except Exception as e:
         return e
+
+
+def get_ground_truth_json(ground_truth):
+    if isinstance(ground_truth, str):
+        with open(ground_truth, 'r') as file:
+            return json.load(file)
+    elif isinstance(ground_truth, dict):
+        return ground_truth
+    else:
+        raise ValueError('Wrong argument type, string (path to ground truth file) or a dictionary (ground truth as '
+                         'JSON format) are expected for \'ground_truth\'')
 
 
 def add_retry_to_session(session: requests.Session, pool_maxsize=None, retries=3, backoff_factor=1,
