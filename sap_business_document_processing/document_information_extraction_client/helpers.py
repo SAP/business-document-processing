@@ -4,7 +4,7 @@
 
 from .constants import API_FIELD_CLIENT_ID, API_FIELD_DOCUMENT_TYPE, API_FIELD_ENRICHMENT, API_FIELD_TEMPLATE_ID, \
     API_FIELD_EXTRACTED_HEADER_FIELDS, API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, API_REQUEST_FIELD_EXTRACTED_FIELDS, \
-    API_REQUEST_FIELD_RECEIVED_DATE
+    API_FIELD_FILE_TYPE, API_REQUEST_FIELD_RECEIVED_DATE
 
 
 def create_document_options(client_id, document_type, header_fields=None, line_item_fields=None, template_id=None,
@@ -39,5 +39,26 @@ def create_document_options(client_id, document_type, header_fields=None, line_i
 
     if enrichment is not None:
         options[API_FIELD_ENRICHMENT] = enrichment
+
+    return options
+
+
+def create_capability_mapping_options(document_type, file_type, header_fields=None, line_item_fields=None):
+    options = {
+        API_FIELD_DOCUMENT_TYPE: document_type,
+        API_FIELD_FILE_TYPE: file_type
+    }
+
+    if header_fields is None:
+        header_fields = []
+    elif not isinstance(header_fields, list):
+        raise TypeError(f'Input variable \'header_fields\' has wrong datatype: {type(header_fields)}')
+    options[API_FIELD_EXTRACTED_HEADER_FIELDS] = header_fields
+
+    if line_item_fields is None:
+        line_item_fields = []
+    elif not isinstance(line_item_fields, list):
+        raise TypeError(f'Input variable \'line_item_fields\' has wrong datatype: {type(line_item_fields)}')
+    options[API_FIELD_EXTRACTED_LINE_ITEM_FIELDS] = line_item_fields
 
     return options

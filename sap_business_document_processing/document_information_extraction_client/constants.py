@@ -10,6 +10,7 @@ API_FIELD_ENRICHMENT = 'enrichment'
 API_FIELD_EXTRACTED_HEADER_FIELDS = 'headerFields'
 API_FIELD_EXTRACTED_LINE_ITEM_FIELDS = 'lineItemFields'
 API_FIELD_EXTRACTED_VALUES = 'extractedValues'
+API_FIELD_FILE_TYPE = 'fileType'
 API_FIELD_ID = 'id'
 API_FIELD_RESULTS = 'results'
 API_FIELD_RETURN_NULL = 'returnNullValues'
@@ -37,3 +38,5 @@ API_HEADER_ACCEPT = 'accept'
 
 CONTENT_TYPE_PNG = 'image/png'
 DATA_TYPE_BUSINESS_ENTITY = "businessEntity"
+DOCUMENT_TYPE_ADVICE = 'paymentAdvice'
+FILE_TYPE_EXCEL = 'Excel'

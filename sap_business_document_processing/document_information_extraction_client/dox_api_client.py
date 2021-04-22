@@ -14,13 +14,14 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     API_FIELD_DATA_FOR_RETRAINING, API_HEADER_ACCEPT, API_REQUEST_FIELD_CLIENT_START_WITH, API_REQUEST_FIELD_FILE, \
     API_REQUEST_FIELD_LIMIT, API_REQUEST_FIELD_OFFSET, API_REQUEST_FIELD_OPTIONS, API_REQUEST_FIELD_PAYLOAD, \
     API_REQUEST_FIELD_ENRICHMENT_COMPANYCODE, API_REQUEST_FIELD_ENRICHMENT_ID, API_REQUEST_FIELD_ENRICHMENT_SUBTYPE, \
-    API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PNG, DATA_TYPE_BUSINESS_ENTITY
+    API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PNG, \
+    DATA_TYPE_BUSINESS_ENTITY, DOCUMENT_TYPE_ADVICE, FILE_TYPE_EXCEL
 from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
     DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
     DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
     DOCUMENT_PAGE_DIMENSIONS_ENDPOINT, DOCUMENT_PAGES_DIMENSIONS_ENDPOINT, DOCUMENT_PAGE_TEXT_ENDPOINT, \
     DOCUMENT_PAGES_TEXT_ENDPOINT
-from .helpers import create_document_options
+from .helpers import create_document_options, create_capability_mapping_options
 
 
 class DoxApiClient(CommonClient):
@@ -87,7 +88,7 @@ class DoxApiClient(CommonClient):
     def create_clients(self, clients: list):
         """
         Creates one or more clients for whom documents can be uploaded
-        :param clients: A list of clients to be created. List items can be dictionaries or :class:`DoxClient`.
+        :param clients: A list of clients to be created. For the format of a client see documentation
         :return: The API endpoint response as dictionary
         """
         response = self.post(CLIENT_ENDPOINT, json={API_FIELD_VALUE: clients},
@@ -126,7 +127,7 @@ class DoxApiClient(CommonClient):
     def delete_clients(self, client_ids: list = None):
         """
         Deletes multiple clients with the given client IDs
-        :param client_ids: (optional) List of IDs of clients to be deleted. If no IDs ar provided, all clients will be
+        :param client_ids: (optional) List of IDs of clients to be deleted. If no IDs are provided, all clients will be
         deleted
         :return: The API endpoint response as dictionary
         """
@@ -137,11 +138,25 @@ class DoxApiClient(CommonClient):
                                log_msg_after='Successfully deleted clients')
         return response.json()
 
-    def post_client_capability_mapping(self, client_id, options):
+    def post_client_capability_mapping(self, client_id, document_type=DOCUMENT_TYPE_ADVICE, file_type=FILE_TYPE_EXCEL,
+                                       header_fields=None, line_item_fields=None):
         """
         Post the client capability mapping for the Identifier API provided by the customer to the entity client DB
         :param client_id: The ID of the client for which to upload the capability mapping
-        :param options: The mapping that should be uploaded
+        :param document_type: The document type of for which the mapping applies. Default is 'paymentAdvice'
+        :param file_type: The file type for which the mapping applies. Default is 'Excel'
+        :param header_fields: A list of mappings for the header fields. For the format see documentation
+        :param line_item_fields: A list of mappings for the line item fields. For the format see documentation
+        :return: The API endpoint response as dictionary
+        """
+        options = create_capability_mapping_options(document_type, file_type, header_fields, line_item_fields)
+        return self.post_client_capability_mapping_with_options(client_id, options)
+
+    def post_client_capability_mapping_with_options(self, client_id, options):
+        """
+        Post the client capability mapping for the Identifier API provided by the customer to the entity client DB
+        :param client_id: The ID of the client for which to upload the capability mapping
+        :param options: The mapping that should be uploaded.  For the format see documentation
         :return: The API endpoint response as dictionary
         """
         response = self.post(CLIENT_MAPPING_ENDPOINT, params={API_FIELD_CLIENT_ID: client_id},
@@ -352,14 +367,9 @@ class DoxApiClient(CommonClient):
         Creates one or more enrichment data records. The function returns after all data was created successfully or
         raises an exception if something went wrong.
         :param client_id: The client ID for which the data records shall be created.
-        :param data: A list of data to be uploaded. A 'businessEntity' record has the following format:
-        {"id":"BE0001", "name":"","accountNumber":"", "address1":"", "address2": "", "city":"", "countryCode":"",
-        "postalCode":"","state":"", "email":"", "phone":"", "bankAccount":"", "taxId":""}. An 'employee' record has the
-        following format: {"id":"E0001", "email":"", "firstName":"", "middleName": "", "lastName":""}
-        :param data_type: The type of data which is uploaded. Can be given as instance of the enum :enum:`DoxDataType`
-        or as string. Options are 'businessEntity' and 'employee'
-        :param subtype: (optional) Only used for type 'businessEntity'. Can be given as instance of the enum
-        :enum:`DoxDataSubType` or as string. Options are 'supplier', 'customer' or 'companyCode'
+        :param data: A list of data to be uploaded. For the format of the data see documentation
+        :param data_type: The type of data which is uploaded. For the available data types see documentation
+        :param subtype: (optional) Only used for type 'businessEntity'. For the available subtypes see documentation
         :return: The API endpoint response as dictionary
         """
         params = {
@@ -379,18 +389,17 @@ class DoxApiClient(CommonClient):
                                       log_msg_after=f'Successfully uploaded {len(data)} enrichment data records for client {client_id}')
         return response.json()
 
-    def get_enrichment_data(self, client_id, data_type, data_id=None, offset=None, limit=None, subtype=None,
+    def get_enrichment_data(self, client_id, data_type: str, data_id=None, offset=None, limit=None, subtype=None,
                             system=None, company_code=None):
         """
         Gets the enrichment data records filtered by the provided parameters
         :param client_id: The ID of the client for which the enrichment data was created
-        :param data_type: The type of the data records. Can be given as an instance of :enum:`DoxDataType` or string.
-        Options are 'businessEntity' or 'employee'
+        :param data_type: The type of the data records. For the available data types see documentation
         :param data_id: (optional) The ID of a single data record. Only one will be returned
         :param offset: (optional) The index of the first record to be returned
         :param limit: (optional) The maximum number records to be returned
-        :param subtype: (optional) The subtype of the records. Only used for type 'businessEntity'. Can be given as
-        instance of :enum:`DoxDataSubType` or as string. Options are 'supplier', 'customer' or 'companyCode'
+        :param subtype: (optional) The subtype of the records. Only used for type 'businessEntity'. For the available
+        subtypes see documentation
         :param system: (optional) The system of a single record
         :param company_code: (optional) The company code of a single record
         :return: A list of enrichment data records. Returns a list with one item when data_id is given
@@ -420,8 +429,8 @@ class DoxApiClient(CommonClient):
     def delete_all_enrichment_data(self, data_type=None):
         """
         This endpoint is deleting all master data records for the account
-        :param data_type: (Optional) The type of enrichment data that should be deleted. Can be given as
-        :enum:`DoxDataType` or string. Options are 'businessEntity' or 'employee'
+        :param data_type: (Optional) The type of enrichment data that should be deleted. For the available data types
+        see documentation
         :return: The API endpoint response as dictionary
         """
         delete_url = DATA_ASYNC_ENDPOINT
@@ -440,12 +449,11 @@ class DoxApiClient(CommonClient):
         """
         Deletes the enrichment data records with the given IDs in the payload
         :param client_id: The client ID for which the enrichment data was created
-        :param data_type: The type of enrichment data that should be deleted. Can be given as :enum:`DoxDataType` or
-        string. Options are 'businessEntity' or 'employee'
+        :param data_type: The type of enrichment data that should be deleted. For the available document data types see
+        documentation
         :param payload: A list of dictionaries with the form: ``{'id':'', 'system':'', 'companyCode':''}``
         :param subtype: (optional) The subtype of the records that should be deleted. Only used for type
-        'businessEntity'. Can be given as instance of :enum:`DoxDataSubType` or as string. Options are 'supplier',
-        'customer' or 'companyCode'
+        'businessEntity'. For the available subtypes see documentation
         :param delete_async: Set to ``True`` to delete data records asynchronously. Asynchronous deletion should be
         used when deleting large amounts of data to improve performance. Default is ``False``
         :return: The API endpoint response as dictionary
