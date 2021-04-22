@@ -96,23 +96,23 @@ class DoxApiClient(CommonClient):
                              log_msg_after=f'Successfully created {len(clients)} clients')
         return response.json()
 
-    def get_clients(self, limit=100, client_id_starts_with=None, offset=None):
+    def get_clients(self, top: int = 100, offset: int = None, client_id_starts_with: str = None):
         """
         Gets all existing clients filtered by the parameters
-        :param limit: The maximum number of clients to get. Default is 100
-        :param client_id_starts_with: (optional) Filters the clients by the characters the ID starts with
+        :param top: The maximum number of clients to get. Default is 100
         :param offset: (optional) Index of the first client to get
+        :param client_id_starts_with: (optional) Filters the clients by the characters the ID starts with
         :return: List of existing clients as dictionaries
         """
-        params = {API_FIELD_CLIENT_LIMIT: limit}
+        params = {API_FIELD_CLIENT_LIMIT: top}
         if client_id_starts_with is not None:
-            params[API_REQUEST_FIELD_CLIENT_START_WITH] = str(client_id_starts_with)
+            params[API_REQUEST_FIELD_CLIENT_START_WITH] = client_id_starts_with
         if offset is not None:
             params[API_REQUEST_FIELD_OFFSET] = int(offset)
 
         response = self.get(CLIENT_ENDPOINT, params=params,
                             log_msg_before='Getting up to {} clients{}'.format(
-                                limit, f' that start with \'{client_id_starts_with}\'' if client_id_starts_with else ''))
+                                top, f' that start with \'{client_id_starts_with}\'' if client_id_starts_with else ''))
         self.logger.info(f'Successfully got {len(response.json()[API_REQUEST_FIELD_PAYLOAD])} clients')
         return response.json()[API_REQUEST_FIELD_PAYLOAD]
 
@@ -206,7 +206,7 @@ class DoxApiClient(CommonClient):
         return next(self.extract_information_from_documents_with_options([document_path], options, return_null_values,
                                                                          silent=True))
 
-    def extract_information_from_documents(self, document_paths: List[str], client_id, document_type,
+    def extract_information_from_documents(self, document_paths: List[str], client_id, document_type: str,
                                            header_fields=None, line_item_fields=None, template_id=None,
                                            received_date=None, enrichment=None, return_null_values=False, silent=False):
         """
@@ -221,7 +221,8 @@ class DoxApiClient(CommonClient):
         or as comma separated string. If none are given, no line items fields are extracted
         :param template_id: (optional) The ID of the template to be used for the documents
         :param received_date: (optional) The date the documents were received
-        :param enrichment: (optional) A dictionary of entities that should be used for entity matching
+        :param enrichment: (optional) A dictionary of entities that should be used for entity matching. For the format
+        see documentation
         :param return_null_values: Flag if fields with null as value should be included in the responses or not.
         Default is False
         :param silent: If True, the functions returns even if some documents failed uploading or processing. If False,
@@ -362,7 +363,7 @@ class DoxApiClient(CommonClient):
                                log_msg_after='Successfully deleted documents')
         return response.json()
 
-    def upload_enrichment_data(self, client_id, data, data_type, subtype=None):
+    def upload_enrichment_data(self, client_id, data, data_type: str, subtype: str = None):
         """
         Creates one or more enrichment data records. The function returns after all data was created successfully or
         raises an exception if something went wrong.
@@ -374,10 +375,10 @@ class DoxApiClient(CommonClient):
         """
         params = {
             API_FIELD_CLIENT_ID: client_id,
-            API_REQUEST_FIELD_ENRICHMENT_TYPE: str(data_type)
+            API_REQUEST_FIELD_ENRICHMENT_TYPE: data_type
         }
         if data_type == DATA_TYPE_BUSINESS_ENTITY and subtype is not None:
-            params[API_REQUEST_FIELD_ENRICHMENT_SUBTYPE] = str(subtype)
+            params[API_REQUEST_FIELD_ENRICHMENT_SUBTYPE] = subtype
         if not isinstance(data, list):
             data = [data]
         resp = self.post(DATA_ASYNC_ENDPOINT, json={API_FIELD_VALUE: data}, params=params,
@@ -389,33 +390,33 @@ class DoxApiClient(CommonClient):
                                       log_msg_after=f'Successfully uploaded {len(data)} enrichment data records for client {client_id}')
         return response.json()
 
-    def get_enrichment_data(self, client_id, data_type: str, data_id=None, offset=None, limit=None, subtype=None,
-                            system=None, company_code=None):
+    def get_enrichment_data(self, client_id, data_type: str, subtype: str = None, top: int = None, skip: int = None,
+                            data_id=None, system=None, company_code=None):
         """
         Gets the enrichment data records filtered by the provided parameters
         :param client_id: The ID of the client for which the enrichment data was created
         :param data_type: The type of the data records. For the available data types see documentation
-        :param data_id: (optional) The ID of a single data record. Only one will be returned
-        :param offset: (optional) The index of the first record to be returned
-        :param limit: (optional) The maximum number records to be returned
         :param subtype: (optional) The subtype of the records. Only used for type 'businessEntity'. For the available
         subtypes see documentation
+        :param top: (optional) The maximum number records to be returned
+        :param skip: (optional) The index of the first record to be returned
+        :param data_id: (optional) The ID of a single data record. Only one will be returned
         :param system: (optional) The system of a single record
         :param company_code: (optional) The company code of a single record
         :return: A list of enrichment data records. Returns a list with one item when data_id is given
         """
         params = {
             API_FIELD_CLIENT_ID: client_id,
-            API_REQUEST_FIELD_ENRICHMENT_TYPE: str(data_type)
+            API_REQUEST_FIELD_ENRICHMENT_TYPE: data_type
         }
         if data_id is not None:
             params[API_REQUEST_FIELD_ENRICHMENT_ID] = data_id
-        if offset is not None:
-            params[API_REQUEST_FIELD_OFFSET] = offset
-        if limit is not None:
-            params[API_REQUEST_FIELD_LIMIT] = limit
+        if top is not None:
+            params[API_REQUEST_FIELD_LIMIT] = top
+        if skip is not None:
+            params[API_REQUEST_FIELD_OFFSET] = skip
         if subtype is not None:
-            params[API_REQUEST_FIELD_ENRICHMENT_SUBTYPE] = str(subtype)
+            params[API_REQUEST_FIELD_ENRICHMENT_SUBTYPE] = subtype
         if system is not None:
             params[API_REQUEST_FIELD_ENRICHMENT_SYSTEM] = system
         if company_code is not None:
@@ -426,7 +427,7 @@ class DoxApiClient(CommonClient):
         self.logger.info(f'Successfully got {len(response.json()[API_FIELD_VALUE])} enrichment data records')
         return response.json()[API_FIELD_VALUE]
 
-    def delete_all_enrichment_data(self, data_type=None):
+    def delete_all_enrichment_data(self, data_type: str = None):
         """
         This endpoint is deleting all master data records for the account
         :param data_type: (Optional) The type of enrichment data that should be deleted. For the available data types
@@ -435,7 +436,7 @@ class DoxApiClient(CommonClient):
         """
         delete_url = DATA_ASYNC_ENDPOINT
 
-        params = {API_REQUEST_FIELD_ENRICHMENT_TYPE: str(data_type)} if data_type else None
+        params = {API_REQUEST_FIELD_ENRICHMENT_TYPE: data_type} if data_type else None
         response = self.delete(delete_url, json={API_FIELD_VALUE: []}, params=params,
                                log_msg_before=f"Start deleting all{f' {data_type}' if data_type else ''} enrichment data records")
 
@@ -445,13 +446,14 @@ class DoxApiClient(CommonClient):
                                       log_msg_after=f"Successfully deleted all{f' {data_type}' if data_type else ''} enrichment data records")
         return response.json()
 
-    def delete_enrichment_data(self, client_id, data_type, payload: list, subtype=None, delete_async=False):
+    def delete_enrichment_data(self, client_id, enrichment_records: list, data_type: str, subtype: str = None,
+                               delete_async: bool = False):
         """
         Deletes the enrichment data records with the given IDs in the payload
         :param client_id: The client ID for which the enrichment data was created
+        :param enrichment_records: A list of dictionaries with the form: ``{'id':'', 'system':'', 'companyCode':''}``
         :param data_type: The type of enrichment data that should be deleted. For the available document data types see
         documentation
-        :param payload: A list of dictionaries with the form: ``{'id':'', 'system':'', 'companyCode':''}``
         :param subtype: (optional) The subtype of the records that should be deleted. Only used for type
         'businessEntity'. For the available subtypes see documentation
         :param delete_async: Set to ``True`` to delete data records asynchronously. Asynchronous deletion should be
@@ -460,20 +462,20 @@ class DoxApiClient(CommonClient):
         """
         params = {
             API_FIELD_CLIENT_ID: client_id,
-            API_REQUEST_FIELD_ENRICHMENT_TYPE: str(data_type)
+            API_REQUEST_FIELD_ENRICHMENT_TYPE: data_type
         }
         if subtype is not None:
-            params[API_REQUEST_FIELD_ENRICHMENT_SUBTYPE] = str(subtype)
+            params[API_REQUEST_FIELD_ENRICHMENT_SUBTYPE] = subtype
         delete_url = DATA_ASYNC_ENDPOINT if delete_async else DATA_ENDPOINT
-        response = self.delete(delete_url, json={API_FIELD_VALUE: payload}, params=params,
-                               log_msg_before=f"Start deleting {len(payload) if len(payload) > 0 else 'all'} "
+        response = self.delete(delete_url, json={API_FIELD_VALUE: enrichment_records}, params=params,
+                               log_msg_before=f"Start deleting {len(enrichment_records) if len(enrichment_records) > 0 else 'all'} "
                                f"enrichment data records for client {client_id}")
 
         if delete_async:
             job_id = response.json()[API_FIELD_ID]
             response = self._poll_for_url(DATA_ID_ENDPOINT.format(id=job_id),
                                           get_status=lambda r: r[API_FIELD_VALUE][API_FIELD_STATUS],
-                                          log_msg_after=f"Successfully deleted {len(payload) if len(payload) > 0 else 'all'} "
+                                          log_msg_after=f"Successfully deleted {len(enrichment_records) if len(enrichment_records) > 0 else 'all'} "
                                           f"enrichment data records for client {client_id}")
         return response.json()
 
