@@ -20,7 +20,8 @@ def create_document_options(client_id, document_type, header_fields=None, line_i
     elif isinstance(header_fields, str):
         header_fields = [s.strip() for s in header_fields.split(',')]
     elif not isinstance(header_fields, list):
-        raise TypeError(f'Input variable \'header_fields\' has wrong datatype: {type(header_fields)}')
+        raise TypeError(f'Input variable \'header_fields\' has wrong type: {type(header_fields)}. Should be a string '
+                        f'of comma separated values or a list of strings')
     options[API_REQUEST_FIELD_EXTRACTED_FIELDS][API_FIELD_EXTRACTED_HEADER_FIELDS] = header_fields
 
     if line_item_fields is None:
@@ -28,7 +29,8 @@ def create_document_options(client_id, document_type, header_fields=None, line_i
     elif isinstance(line_item_fields, str):
         line_item_fields = [s.strip() for s in line_item_fields.split(',')]
     elif not isinstance(line_item_fields, list):
-        raise TypeError(f'Input variable \'line_item_fields\' has wrong datatype: {type(line_item_fields)}')
+        raise TypeError(f'Input variable \'line_item_fields\' has wrong type: {type(line_item_fields)}. Should be a '
+                        f'string of comma separated values or a list of strings')
     options[API_REQUEST_FIELD_EXTRACTED_FIELDS][API_FIELD_EXTRACTED_LINE_ITEM_FIELDS] = line_item_fields
 
     if template_id is not None:
@@ -52,13 +54,15 @@ def create_capability_mapping_options(document_type, file_type, header_fields=No
     if header_fields is None:
         header_fields = []
     elif not isinstance(header_fields, list):
-        raise TypeError(f'Input variable \'header_fields\' has wrong datatype: {type(header_fields)}')
+        raise TypeError(f'Input variable \'header_fields\' has wrong type: {type(header_fields)}. Should be a string '
+                        f'of comma separated values or a list of strings')
     options[API_FIELD_EXTRACTED_HEADER_FIELDS] = header_fields
 
     if line_item_fields is None:
         line_item_fields = []
     elif not isinstance(line_item_fields, list):
-        raise TypeError(f'Input variable \'line_item_fields\' has wrong datatype: {type(line_item_fields)}')
+        raise TypeError(f'Input variable \'line_item_fields\' has wrong type: {type(line_item_fields)}. Should be a '
+                        f'string of comma separated values or a list of strings')
     options[API_FIELD_EXTRACTED_LINE_ITEM_FIELDS] = line_item_fields
 
     return options
