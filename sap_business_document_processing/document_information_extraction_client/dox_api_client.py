@@ -5,7 +5,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
-from typing import List
+from typing import Iterator, List, Union
 
 from sap_business_document_processing.common.http_client_base import CommonClient
 from sap_business_document_processing.common.helpers import get_ground_truth_json, function_wrap_errors
@@ -63,7 +63,7 @@ class DoxApiClient(CommonClient):
                                            logger_name='DoxApiClient',
                                            logging_level=logging_level)
 
-    def get_capabilities(self):
+    def get_capabilities(self) -> dict:
         """
         Gets the capabilities available for the service instance.
         :return: Dictionary with available extraction fields, enrichment and document types.
@@ -73,7 +73,7 @@ class DoxApiClient(CommonClient):
                             log_msg_after='Successfully got all available capabilities')
         return response.json()
 
-    def create_client(self, client_id, client_name):
+    def create_client(self, client_id, client_name) -> dict:
         """
         Creates a new client for whom a document can be uploaded
         :param client_id: The ID of the new client
@@ -85,7 +85,7 @@ class DoxApiClient(CommonClient):
             API_FIELD_CLIENT_NAME: client_name
         }])
 
-    def create_clients(self, clients: list):
+    def create_clients(self, clients: list) -> dict:
         """
         Creates one or more clients for whom documents can be uploaded
         :param clients: A list of clients to be created. For the format of a client see documentation
@@ -96,7 +96,7 @@ class DoxApiClient(CommonClient):
                              log_msg_after=f'Successfully created {len(clients)} clients')
         return response.json()
 
-    def get_clients(self, top: int = 100, offset: int = None, client_id_starts_with: str = None):
+    def get_clients(self, top: int = 100, offset: int = None, client_id_starts_with: str = None) -> List[dict]:
         """
         Gets all existing clients filtered by the parameters
         :param top: The maximum number of clients to get. Default is 100
@@ -116,7 +116,7 @@ class DoxApiClient(CommonClient):
         self.logger.info(f'Successfully got {len(response.json()[API_REQUEST_FIELD_PAYLOAD])} clients')
         return response.json()[API_REQUEST_FIELD_PAYLOAD]
 
-    def delete_client(self, client_id):
+    def delete_client(self, client_id) -> dict:
         """
         Deletes a client with the given client ID
         :param client_id: The ID of the client to be deleted
@@ -124,7 +124,7 @@ class DoxApiClient(CommonClient):
         """
         return self.delete_clients([client_id])
 
-    def delete_clients(self, client_ids: list = None):
+    def delete_clients(self, client_ids: list = None) -> dict:
         """
         Deletes multiple clients with the given client IDs
         :param client_ids: (optional) List of IDs of clients to be deleted. If no IDs are provided, all clients will be
@@ -138,8 +138,9 @@ class DoxApiClient(CommonClient):
                                log_msg_after='Successfully deleted clients')
         return response.json()
 
-    def post_client_capability_mapping(self, client_id, document_type=DOCUMENT_TYPE_ADVICE, file_type=FILE_TYPE_EXCEL,
-                                       header_fields=None, line_item_fields=None):
+    def post_client_capability_mapping(self, client_id, document_type: str = DOCUMENT_TYPE_ADVICE,
+                                       file_type: str = FILE_TYPE_EXCEL, header_fields: Union[str, List[str]] = None,
+                                       line_item_fields: Union[str, List[str]] = None) -> dict:
         """
         Post the client capability mapping for the Identifier API provided by the customer to the entity client DB
         :param client_id: The ID of the client for which to upload the capability mapping
@@ -152,7 +153,7 @@ class DoxApiClient(CommonClient):
         options = create_capability_mapping_options(document_type, file_type, header_fields, line_item_fields)
         return self.post_client_capability_mapping_with_options(client_id, options)
 
-    def post_client_capability_mapping_with_options(self, client_id, options):
+    def post_client_capability_mapping_with_options(self, client_id, options: dict) -> dict:
         """
         Post the client capability mapping for the Identifier API provided by the customer to the entity client DB
         :param client_id: The ID of the client for which to upload the capability mapping
@@ -165,9 +166,10 @@ class DoxApiClient(CommonClient):
                              log_msg_after=f'Successfully created custom capability mapping for client {client_id}')
         return response.json()
 
-    def extract_information_from_document(self, document_path: str, client_id, document_type: str, header_fields=None,
-                                          line_item_fields=None, template_id=None, received_date=None,
-                                          enrichment=None, return_null_values=False):
+    def extract_information_from_document(self, document_path: str, client_id, document_type: str,
+                                          header_fields: Union[str, List[str]] = None,
+                                          line_item_fields: Union[str, List[str]] = None, template_id=None,
+                                          received_date=None, enrichment=None, return_null_values: bool = False) -> dict:
         """
         Extracts the information from a document. The function will run until a processing result can be returned or
         a timeout is reached
@@ -192,7 +194,7 @@ class DoxApiClient(CommonClient):
                                                             return_null_values=return_null_values, silent=True))
 
     def extract_information_from_document_with_options(self, document_path: str, options: dict,
-                                                       return_null_values=False):
+                                                       return_null_values: bool = False) -> dict:
         """
         Extracts the information from a document. The function will run until a processing result can be returned or
         a timeout is reached.
@@ -207,8 +209,10 @@ class DoxApiClient(CommonClient):
                                                                          silent=True))
 
     def extract_information_from_documents(self, document_paths: List[str], client_id, document_type: str,
-                                           header_fields=None, line_item_fields=None, template_id=None,
-                                           received_date=None, enrichment=None, return_null_values=False, silent=False):
+                                           header_fields: Union[str, List[str]] = None,
+                                           line_item_fields: Union[str, List[str]] = None, template_id=None,
+                                           received_date=None, enrichment=None, return_null_values: bool = False,
+                                           silent: bool = False) -> Iterator[dict]:
         """
         Extracts the information from multiple documents. The function will run until all documents have been processed
         or a timeout is reached. The given parameters will be used for all documents
@@ -235,7 +239,8 @@ class DoxApiClient(CommonClient):
         return self.extract_information_from_documents_with_options(document_paths, options, return_null_values, silent)
 
     def extract_information_from_documents_with_options(self, document_paths: List[str], options: dict,
-                                                        return_null_values=False, silent=False):
+                                                        return_null_values: bool = False,
+                                                        silent: bool = False) -> Iterator[dict]:
         """
         Extracts the information from multiple documents. The function will run until all documents have been processed
         or a timeout is reached. The given options will be used for all documents
@@ -282,7 +287,8 @@ class DoxApiClient(CommonClient):
             return document_id
         return function_wrap_errors(self.get_extraction_for_document, document_id, *args)
 
-    def get_extraction_for_document(self, document_id, extracted_values: bool = None, return_null_values: bool = False):
+    def get_extraction_for_document(self, document_id, extracted_values: bool = None,
+                                    return_null_values: bool = False) -> dict:
         """
         Gets the extracted information of an uploaded document by document ID. Raises an exception, when the document
         failed or didn't finish processing after the maximum number of requests
@@ -307,7 +313,7 @@ class DoxApiClient(CommonClient):
         return response.json()
 
     def get_extraction_for_documents(self, document_ids: list, extracted_values: bool = None,
-                                     return_null_values: bool = False, silent=False):
+                                     return_null_values: bool = False, silent: bool = False) -> Iterator[dict]:
         """
         Gets the extracted information for multiple documents given their document IDs
         :param document_ids: A list of IDs of documents
@@ -335,7 +341,7 @@ class DoxApiClient(CommonClient):
 
         return self._create_result_iterator(results)
 
-    def get_document_list(self, client_id: str = None):
+    def get_document_list(self, client_id=None) -> List[dict]:
         """
         Gets a list of  document jobs filtered by the client ID
         :param client_id: (optional) The client ID for which the document jobs should be get. Gets all document jobs if
@@ -349,11 +355,11 @@ class DoxApiClient(CommonClient):
         self.logger.info(f'Successfully got {len(response.json()[API_FIELD_RESULTS])} documents')
         return response.json()[API_FIELD_RESULTS]
 
-    def delete_documents(self, document_ids: list = None):
+    def delete_documents(self, document_ids: list = None) -> dict:
         """
         Deletes a list of documents or all documents
-        :param document_ids: (optional) A list of document IDs that shall be deleted. If this argument is not provided, all documents
-        are deleted.
+        :param document_ids: (optional) A list of document IDs that shall be deleted. If this argument is not provided,
+        all documents are deleted.
         :return: The API endpoint response as dictionary
         """
         payload = {API_FIELD_VALUE: document_ids} if (document_ids is not None) else {}
@@ -363,7 +369,7 @@ class DoxApiClient(CommonClient):
                                log_msg_after='Successfully deleted documents')
         return response.json()
 
-    def upload_enrichment_data(self, client_id, data, data_type: str, subtype: str = None):
+    def upload_enrichment_data(self, client_id, data, data_type: str, subtype: str = None) -> dict:
         """
         Creates one or more enrichment data records. The function returns after all data was created successfully or
         raises an exception if something went wrong.
@@ -391,7 +397,7 @@ class DoxApiClient(CommonClient):
         return response.json()
 
     def get_enrichment_data(self, client_id, data_type: str, subtype: str = None, top: int = None, skip: int = None,
-                            data_id=None, system=None, company_code=None):
+                            data_id=None, system=None, company_code=None) -> List[dict]:
         """
         Gets the enrichment data records filtered by the provided parameters
         :param client_id: The ID of the client for which the enrichment data was created
@@ -427,7 +433,7 @@ class DoxApiClient(CommonClient):
         self.logger.info(f'Successfully got {len(response.json()[API_FIELD_VALUE])} enrichment data records')
         return response.json()[API_FIELD_VALUE]
 
-    def delete_all_enrichment_data(self, data_type: str = None):
+    def delete_all_enrichment_data(self, data_type: str = None) -> dict:
         """
         This endpoint is deleting all master data records for the account
         :param data_type: (Optional) The type of enrichment data that should be deleted. For the available data types
@@ -447,7 +453,7 @@ class DoxApiClient(CommonClient):
         return response.json()
 
     def delete_enrichment_data(self, client_id, enrichment_records: list, data_type: str, subtype: str = None,
-                               delete_async: bool = False):
+                               delete_async: bool = False) -> dict:
         """
         Deletes the enrichment data records with the given IDs in the payload
         :param client_id: The client ID for which the enrichment data was created
@@ -479,7 +485,7 @@ class DoxApiClient(CommonClient):
                                           f"enrichment data records for client {client_id}")
         return response.json()
 
-    def activate_enrichment_data(self):
+    def activate_enrichment_data(self) -> dict:
         """
         Activates all enrichment data records for the current tenant
         :return: The API endpoint response as dictionary
@@ -492,12 +498,12 @@ class DoxApiClient(CommonClient):
                                       log_msg_after='Successfully activated enrichment data records')
         return response.json()
 
-    def get_image_for_document(self, document_id, page_no: int):
+    def get_image_for_document(self, document_id, page_no: int) -> bytes:
         """
         Gets the image of a document page for the given document ID and page number
         :param document_id: The ID of the document
         :param page_no: The page number for which to get the image
-        :return: The image of the document page in the PNG format as bytearray
+        :return: The image of the document page in the PNG format as bytes
         """
         headers = {API_HEADER_ACCEPT: CONTENT_TYPE_PNG}
         response = self.get(DOCUMENT_PAGE_ENDPOINT.format(document_id=document_id, page_number=page_no),
@@ -506,19 +512,19 @@ class DoxApiClient(CommonClient):
                             log_msg_after=f'Successfully got image for page {page_no} of document with ID {document_id}')
         return response.content
 
-    def get_document_page_text(self, document_id, page_no: int):
+    def get_document_page_text(self, document_id, page_no: int) -> List[dict]:
         """
         Gets the text for a document page for the given document ID and page number
         :param document_id: The ID of the document
         :param page_no: The page number for which to get the text
-        :return: The text for the page as dictionary
+        :return: The text for the page as a list of dictionaries
         """
         response = self.get(DOCUMENT_PAGE_TEXT_ENDPOINT.format(document_id=document_id, page_number=page_no),
                             log_msg_before=f'Getting text for page {page_no} of document with ID {document_id}',
                             log_msg_after=f'Successfully got text for page {page_no} of document with ID {document_id}')
         return response.json()[API_FIELD_VALUE]
 
-    def get_document_text(self, document_id):
+    def get_document_text(self, document_id) -> dict:
         """
         Gets the text for all pages of a document
         :param document_id: The ID of the document
@@ -529,7 +535,7 @@ class DoxApiClient(CommonClient):
                             log_msg_after=f'Successfully got text fot all pages of document with ID {document_id}')
         return response.json()[API_FIELD_RESULTS]
 
-    def get_request_for_document(self, document_id):
+    def get_request_for_document(self, document_id) -> dict:
         """
         Gets the request of a processed document
         :param document_id: The ID of the document
@@ -540,7 +546,7 @@ class DoxApiClient(CommonClient):
                             log_msg_after=f'Successfully got request information for document with ID {document_id}')
         return response.json()
 
-    def get_page_dimensions_for_document(self, document_id, page_no: int):
+    def get_page_dimensions_for_document(self, document_id, page_no: int) -> dict:
         """
         Gets the dimensions of a document page
         :param document_id: The ID of the document
@@ -552,7 +558,7 @@ class DoxApiClient(CommonClient):
                             log_msg_after=f'Successfully got dimensions for page {page_no} of document with ID {document_id}')
         return response.json()
 
-    def get_all_dimensions_for_document(self, document_id):
+    def get_all_dimensions_for_document(self, document_id) -> dict:
         """
         Gets the dimensions of all document pages
         :param document_id: The ID of the document
@@ -563,7 +569,7 @@ class DoxApiClient(CommonClient):
                             log_msg_after=f'Successfully got dimensions for all pages of document with ID {document_id}')
         return response.json()[API_FIELD_RESULTS]
 
-    def post_ground_truth_for_document(self, document_id, ground_truth):
+    def post_ground_truth_for_document(self, document_id, ground_truth: Union[str, dict]) -> dict:
         """
         Saves the ground truth for a document
         :param document_id: The ID of the document
@@ -577,7 +583,7 @@ class DoxApiClient(CommonClient):
                              log_msg_after=f'Successfully uploaded ground truth for document with ID {document_id}')
         return response.json()
 
-    def post_confirm_document(self, document_id, data_for_retraining=False):
+    def post_confirm_document(self, document_id, data_for_retraining=False) -> dict:
         """
         Sets the document status to confirmed
         :param document_id: The ID of the document
