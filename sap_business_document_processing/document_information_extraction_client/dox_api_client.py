@@ -14,7 +14,7 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     API_FIELD_DATA_FOR_RETRAINING, API_HEADER_ACCEPT, API_REQUEST_FIELD_CLIENT_START_WITH, API_REQUEST_FIELD_FILE, \
     API_REQUEST_FIELD_LIMIT, API_REQUEST_FIELD_OFFSET, API_REQUEST_FIELD_OPTIONS, API_REQUEST_FIELD_PAYLOAD, \
     API_REQUEST_FIELD_ENRICHMENT_COMPANYCODE, API_REQUEST_FIELD_ENRICHMENT_ID, API_REQUEST_FIELD_ENRICHMENT_SUBTYPE, \
-    API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PNG, \
+    API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PDF, CONTENT_TYPE_PNG, \
     DATA_TYPE_BUSINESS_ENTITY, DOCUMENT_TYPE_ADVICE, FILE_TYPE_EXCEL
 from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
     DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
@@ -167,6 +167,7 @@ class DoxApiClient(CommonClient):
         return response.json()
 
     def extract_information_from_document(self, document_path: str, client_id, document_type: str,
+                                          file_type: str = CONTENT_TYPE_PDF,
                                           header_fields: Union[str, List[str]] = None,
                                           line_item_fields: Union[str, List[str]] = None, template_id=None,
                                           received_date=None, enrichment=None, return_null_values: bool = False) -> dict:
@@ -176,6 +177,7 @@ class DoxApiClient(CommonClient):
         :param document_path: The path to the document
         :param client_id: The client ID for which the document should be uploaded
         :param document_type: The type of the document being uploaded. For available document types see documentation
+        :param file_type: Content type of the uploaded file. Default is 'application/pdf'.
         :param header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
         separated string. If none are given, no header fields will be extracted
         :param line_item_fields: A list of line item fields to be extracted. Can be given as list of strings or as comma
@@ -187,13 +189,13 @@ class DoxApiClient(CommonClient):
         Default is False
         :return: The extracted information of the document as dictionary
         """
-        return next(self.extract_information_from_documents([document_path], client_id, document_type,
+        return next(self.extract_information_from_documents([document_path], client_id, document_type, file_type,
                                                             header_fields=header_fields,
                                                             line_item_fields=line_item_fields, template_id=template_id,
                                                             received_date=received_date, enrichment=enrichment,
                                                             return_null_values=return_null_values, silent=True))
 
-    def extract_information_from_document_with_options(self, document_path: str, options: dict,
+    def extract_information_from_document_with_options(self, document_path: str, options: dict, file_type: str,
                                                        return_null_values: bool = False) -> dict:
         """
         Extracts the information from a document. The function will run until a processing result can be returned or
@@ -201,14 +203,16 @@ class DoxApiClient(CommonClient):
         :param document_path: The path to the document
         :param options: The options for processing the document as dictionary. It has to include at least a valid client
         ID and document type
+        :param file_type: Content type of the uploaded file. Default is 'application/pdf'.
         :param return_null_values: Flag if fields with null as value should be included in the response or not.
         Default is False
         :return: The extracted information of the document as dictionary
         """
-        return next(self.extract_information_from_documents_with_options([document_path], options, return_null_values,
-                                                                         silent=True))
+        return next(self.extract_information_from_documents_with_options([document_path], options, file_type,
+                                                                         return_null_values, silent=True))
 
     def extract_information_from_documents(self, document_paths: List[str], client_id, document_type: str,
+                                           file_type: str = CONTENT_TYPE_PDF,
                                            header_fields: Union[str, List[str]] = None,
                                            line_item_fields: Union[str, List[str]] = None, template_id=None,
                                            received_date=None, enrichment=None, return_null_values: bool = False,
@@ -219,6 +223,7 @@ class DoxApiClient(CommonClient):
         :param document_paths: A list of paths to the documents
         :param client_id: The client ID for which the documents should be uploaded
         :param document_type: The type of the document being uploaded. For available document types see documentation
+        :param file_type: Content type of the uploaded file. Default is 'application/pdf'.
         :param header_fields: A list of header fields to be extracted. Can be passed as list of strings or as comma
         separated string. If none are given, no header fields will be extracted
         :param line_item_fields: A list of line item fields to be extracted. Can be passed as list of strings
@@ -236,9 +241,11 @@ class DoxApiClient(CommonClient):
         """
         options = create_document_options(client_id, document_type, header_fields, line_item_fields, template_id,
                                           received_date, enrichment)
-        return self.extract_information_from_documents_with_options(document_paths, options, return_null_values, silent)
+        return self.extract_information_from_documents_with_options(document_paths, options, file_type,
+                                                                    return_null_values, silent)
 
     def extract_information_from_documents_with_options(self, document_paths: List[str], options: dict,
+                                                        file_type: str = CONTENT_TYPE_PDF,
                                                         return_null_values: bool = False,
                                                         silent: bool = False) -> Iterator[dict]:
         """
@@ -247,6 +254,7 @@ class DoxApiClient(CommonClient):
         :param document_paths: A list of paths to the documents
         :param options: The options for processing the documents as dictionary. It has to include at least a valid
         client ID and document type
+        :param file_type: Content type of the uploaded file. Default is 'application/pdf'.
         :param return_null_values: Flag if fields with null as value should be included in the responses or not.
         Default is False
         :param silent: If True, the functions returns even if some documents failed uploading or processing. If False,
@@ -263,7 +271,8 @@ class DoxApiClient(CommonClient):
             f'Starting upload of {number_of_documents} documents for client {client_id} in parallel using '
             f'{self.polling_threads} threads')
         with ThreadPoolExecutor(min(self.polling_threads, number_of_documents)) as pool:
-            upload_results = pool.map(self._single_upload_wrap_errors, document_paths, [options] * number_of_documents)
+            upload_results = pool.map(self._single_upload_wrap_errors, document_paths, [options] * number_of_documents,
+                                      [file_type] * number_of_documents)
         if not silent:
             upload_results = self._validate_results(upload_results, 'Some documents could not be uploaded successfully')
         self.logger.info(f'Finished uploading {number_of_documents} documents for client {client_id}')
@@ -272,15 +281,15 @@ class DoxApiClient(CommonClient):
         return self.get_extraction_for_documents(upload_ids, extracted_values=True,
                                                  return_null_values=return_null_values)
 
-    def _single_upload(self, document_path: str, options):
+    def _single_upload(self, document_path: str, options, file_type):
         with open(document_path, 'rb') as file:
             response = self.post(DOCUMENT_ENDPOINT,
-                                 files={API_REQUEST_FIELD_FILE: file},
+                                 files={API_REQUEST_FIELD_FILE: (file.name, file, file_type)},
                                  data={API_REQUEST_FIELD_OPTIONS: json.dumps(options)})
         return response.json()
 
-    def _single_upload_wrap_errors(self, document_path, options):
-        return function_wrap_errors(self._single_upload, document_path, options)
+    def _single_upload_wrap_errors(self, document_path, options, file_type):
+        return function_wrap_errors(self._single_upload, document_path, options, file_type)
 
     def _get_extraction_for_document_wrap_errors(self, document_id, *args):
         if isinstance(document_id, Exception):
