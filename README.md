@@ -27,6 +27,11 @@ This Python library should be consumed in the standard way by running
 or adding the library as a dependency of your code in `requirements.txt` file.
 
 ## Demo usage
+
+Prerequisites:
+* [Get an SAP Business Technology Plattform trial account](https://developers.sap.com/tutorials/hcp-create-trial-account.html)
+* [Create a DC service instance](https://developers.sap.com/tutorials/cp-aibus-dc-service-instance.html)
+
 To try out the Document classification service using the document classification client
 library you can also run the two demo links below:
 * Try out DC classification using default model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/main?filepath=examples%2Fclassification_default_model.ipynb)
