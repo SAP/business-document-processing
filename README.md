@@ -35,7 +35,7 @@ Prerequisites:
 To try out the Document classification service using the document classification client
 library you can also run the two demo links below:
 * Try out DC classification using default model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/main?filepath=examples%2Fclassification_default_model.ipynb)
-* Try out DC training and classification using custom model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/main?filepath=examples%2Ftrain_and_evaluate_custom_model.ipynb) (for this one an enterprise account is needed, trial account is not sufficient)
+* Try out DC training and classification using custom model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/main?filepath=examples%2Ftrain_and_evaluate_custom_model.ipynb) (requires an enterprise account, trial account is **not** sufficient)
 ## Known Issues
 
 Please see the [issues section](https://github.com/SAP/document-classification-client/issues).
