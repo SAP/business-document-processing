@@ -47,10 +47,10 @@ In case you would like to contribute to this project, ask any questions or get s
 # Document Information Extraction
 
 - [Document Information Extraction](doc_inf_ext_exercises/)
-    - [Exercise 1 - Set up Document Information Extraction Service and UI](doc_inf_ext_exercises#exercise-21---setup-document-information-extraction-service-and-ui)
-    - [Exercise 2 - Upload a document for extraction using UI application](doc_inf_ext_exercises#exercise-22---upload-documents-for-extraction-using-ui-application)
-    - [Exercise 3 - Visualize, correct extraction results and confirm document using UI application](doc_inf_ext_exercises#exercise-23---visualize-correct-extraction-results-and-confirm-document-using-ui-application)
-    - [Exercise 4 - Get Auth token to use Document Information Extraction Rest API](doc_inf_ext_exercises#exercise-24---get-auth-token-to-use-document-information-extraction-rest-api)
-    - [Exercise 5 - Get extraction results of document using Rest API](doc_inf_ext_exercises#exercise-25---get-extraction-results-of-document-using-rest-api)
-    - [Exercise 6 - Upload supplier Data for matching](doc_inf_ext_exercises#exercise-26---upload-supplier-data-for-matching)
-    - [Exercise 7 - Upload document through Rest API to enrich the extraction Results with supplier data](doc_inf_ext_exercises#exercise-27---upload-document-through-rest-api-to-enrich-the-extraction-results-with-supplier-data)
+    - [Exercise 1 - Set up Document Information Extraction Service and UI](doc_inf_ext_exercises#exercise-1---setup-document-information-extraction-service-and-ui)
+    - [Exercise 2 - Upload a document for extraction using UI application](doc_inf_ext_exercises#exercise-2---upload-documents-for-extraction-using-ui-application)
+    - [Exercise 3 - Visualize, correct extraction results and confirm document using UI application](doc_inf_ext_exercises#exercise-3---visualize-correct-extraction-results-and-confirm-document-using-ui-application)
+    - [Exercise 4 - Get Auth token to use Document Information Extraction Rest API](doc_inf_ext_exercises#exercise-4---get-auth-token-to-use-document-information-extraction-rest-api)
+    - [Exercise 5 - Get extraction results of document using Rest API](doc_inf_ext_exercises#exercise-5---get-extraction-results-of-document-using-rest-api)
+    - [Exercise 6 - Upload supplier Data for matching](doc_inf_ext_exercises#exercise-6---upload-supplier-data-for-matching)
+    - [Exercise 7 - Upload document through Rest API to enrich the extraction Results with supplier data](doc_inf_ext_exercises#exercise-7---upload-document-through-rest-api-to-enrich-the-extraction-results-with-supplier-data)
