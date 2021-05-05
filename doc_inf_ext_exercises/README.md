@@ -129,43 +129,43 @@ You will use Swagger UI, via any web browser, to call the Document Information E
 In the service key you downloaded for Document Information Extraction in Exercise 2.1, you should find (outside the uaa section of the service key) an entry called url and another entry called swagger (as highlighted in the image below).
 
 1. To access the Document Information Extraction Swagger UI, add the swagger value (**/document-information-extraction/v1**) to the url value, paste it in any web browser and press Enter.
-   <br>![](/exercises/ex2/images/02_05_1.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_1.png)
 
 2. To be able to use the Swagger UI endpoints you need to authorize yourself. In the top right corner, click **Authorize**.
-   <br>![](/exercises/ex2/images/02_05_2.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_2.png)
 
 3. Get the access_token value created in the previous exercise: Get Auth Token to use Document Information Extraction Rest API, then add **bearer** in front of it, and enter in the **Value** field. eg. `bearer <access_token>`
-   <br>![](/exercises/ex2/images/02_05_3.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_3.png)
 
 4. Click **Authorize**, and then click **Close**.
-   <br>![](/exercises/ex2/images/02_05_4.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_4.png)
 
 5. Expand the **GET /document/jobs** endpoint and click **Try it Out**.
-   <br>![](/exercises/ex2/images/02_05_5.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_5.png)
 
 6. Input value `default` in **clientId** parameter and click on **Execute**.
-   <br>![](/exercises/ex2/images/02_05_6.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_6.png)
 
 7. Check the **Response Body**, it will contain list of jobs in json format.
-   <br>![](/exercises/ex2/images/02_05_7.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_7.png)
 
 8. In the **Response Body**, find the document with `"status": "CONFIRMED"`, you'll find that this is the same **twitter.pdf** that we confirmed in Exercise 2.3.
-   <br>![](/exercises/ex2/images/02_05_8.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_8.png)
 
 9. Copy the value corresponding to `id` for **twitter.pdf**.
-   <br>![](/exercises/ex2/images/02_05_9.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_9.png)
 
 10. Collapse **GET /document/jobs** endpoint and Expand the **GET /document/jobs/{id}** endpoint.
 
 11. Click **Try it Out**
-   <br>![](/exercises/ex2/images/02_05_11.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_11.png)
 
 12. Paste the value of `id` copied in step 9 into the **id** parameter and click on **Execute**.
-   <br>![](/exercises/ex2/images/02_05_12.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_12.png)
 
 13. Check the **Reponse Body**, you'll find the information about job like `filename`, `status` etc. `headerFields` contains extraction results of Header fields. `lineItems` will contains results for Line items.
-   <br>![](/exercises/ex2/images/02_05_13a.png)
-   <br>![](/exercises/ex2/images/02_05_13b.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_13a.png)
+   <br>![](/doc_inf_ext_exercises/images/02_05_13b.png)
 
 Now, that you know how to retrive extracted value for a document you can consume these Rest API's in order to integrate with any other application.
 
@@ -181,7 +181,7 @@ We'll using Swagger UI to upload the master data via Rest API.
 After completing below steps you will have Supplier master data uploaded to the Service which can be matched with the sender details of the invoice documents.
 
 1. Expand the **POST /data/jobs** endpoint and click **Try it out**.
-<br>![](/exercises/ex2/images/02_06_1.png)
+<br>![](/doc_inf_ext_exercises/images/02_06_1.png)
 
 2. Define the data in the payload field, so that the system knows which extracted field (using, for example, supplier IDs from master data) should be enriched. The date is below.
    ```json
@@ -340,7 +340,7 @@ After completing below steps you will have Supplier master data uploaded to the 
       ]
    }
    ```
-   <br>![](/exercises/ex2/images/02_06_2.png)
+   <br>![](/doc_inf_ext_exercises/images/02_06_2.png)
 
 3. Choose the enrichment data **type** value `businessEntity`.
 
@@ -349,19 +349,19 @@ After completing below steps you will have Supplier master data uploaded to the 
 5. Choose the **subtype** value `supplier`.
 
 6. Click **Execute**.
-   <br>![](/exercises/ex2/images/02_06_6.png)
+   <br>![](/doc_inf_ext_exercises/images/02_06_6.png)
 
 7. You should receive a response like the following with status PENDING, copy the `id` from the Response body to see the result of the enrichment data status in the next step.
-   <br>![](/exercises/ex2/images/02_06_7.png)
+   <br>![](/doc_inf_ext_exercises/images/02_06_7.png)
 
 8. Expand the **GET /data/jobs/{id}** endpoint and click **Try it out**.
-   <br>![](/exercises/ex2/images/02_06_8.png)
+   <br>![](/doc_inf_ext_exercises/images/02_06_8.png)
 
 9. Paste the `id` copied in step 8, in `id` parameter and click **Execute**
-   <br>![](/exercises/ex2/images/02_06_9.png)
+   <br>![](/doc_inf_ext_exercises/images/02_06_9.png)
 
 10. You should receive a response like the following with status `SUCCESS`. If it's still `PENDING` try again in some time.
-   <br>![](/exercises/ex2/images/02_06_10.png)
+   <br>![](/doc_inf_ext_exercises/images/02_06_10.png)
 
 Now that you have uploaded the supplier data, we can use the service to find `id` of the Supplier that matches the extracted Supplier information for invoices.
 
@@ -374,10 +374,10 @@ NOTE: this configuration option is not avaible in the UI Application and is one 
 In this exercise we will again use Swagger UI to upload a Invoice document along with enrichment configuration via rest api for Extraction.
 
 1. Expand the **POST /document/jobs** endpoint and click **Try it out**.
-   <br>![](/exercises/ex2/images/02_07_1.png)
+   <br>![](/doc_inf_ext_exercises/images/02_07_1.png)
 
 2. Choose one of the invoice document file you want to enrich for **file** parameter.
-   <br>![](/exercises/ex2/images/02_07_2.png)
+   <br>![](/doc_inf_ext_exercises/images/02_07_2.png)
 
 3. In **options**, you'll enter the list of header and line items fields to be extracted from the uploaded file, the **clientId** as `default`, the **documentType** as `invoice`, the enrichment configuration to match **Supplier** information with data **type** as `businessEntity` and **subtype** as `supplier`. The Payload will be as following:
    ```json
