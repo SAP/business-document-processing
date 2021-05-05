@@ -31,8 +31,8 @@ or adding the library as a dependency of your code in `requirements.txt` file.
 #### Document Classification
 To try out the Document classification service using the document classification client
 library you can also run the two demo links below:
-* Try out DC classification using default model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/main?filepath=examples%2Fclassification_default_model.ipynb)
-* Try out DC training and classification using custom model [demo](https://mybinder.org/v2/gh/SAP/document-classification-client/main?filepath=examples%2Ftrain_and_evaluate_custom_model.ipynb)
+* Try out DC classification using default model [demo](https://mybinder.org/v2/gh/SAP/business-document-processing/main?filepath=examples%2Fdocument_classification_examples%2Fclassification_default_model.ipynb)
+* Try out DC training and classification using custom model [demo](https://mybinder.org/v2/gh/SAP/business-document-processing/main?filepath=examples%2Fdocument_classification_examples%2Ftrain_and_evaluate_custom_model.ipynb)
 
 #### Document Information Extraction
 (to be added)
