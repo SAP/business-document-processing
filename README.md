@@ -46,7 +46,7 @@ In case you would like to contribute to this project, ask any questions or get s
 
 # Document Information Extraction
 
-- [Document Information Extraction](exercises/ex2/)
+- [Document Information Extraction](doc_inf_ext_exercises/)
     - [Exercise 2.1 - Setup Document Information Extraction Service and UI](doc_inf_ext_exercises/ex2#exercise-21---setup-document-information-extraction-service-and-ui)
     - [Exercise 2.2 - Upload a document for Extraction using UI Application](doc_inf_ext_exercises/ex2#exercise-22---upload-documents-for-extraction-using-ui-application)
     - [Exercise 2.3 - Visualize, Correct Extraction Results and Confirm Document using UI Application](doc_inf_ext_exercises/ex2#exercise-23---visualize-correct-extraction-results-and-confirm-document-using-ui-application)
