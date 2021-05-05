@@ -24,7 +24,7 @@ Following step will guide you on how to use Document Information Extraction Serv
 **Please make sure you have downloaded the [data.zip](https://github.com/SAP/business-document-processing/raw/main/doc_inf_ext_exercises/data.zip) folder which contains the test documents and unziped it**
 
 1.	In the top right, click + (Upload a new document) and choose all the pdf documents in [data/invoice](/data/Invoice) folder
-   <br>![](/exercises/ex2/images/02_02_1.png)
+   <br>![](/images/02_02_1.png)
 
 2.	In the Select Document screen, drop Invoice files directly or click + to upload one or more document files.
    <br>![](/exercises/ex2/images/02_02_2.png)
