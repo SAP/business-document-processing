@@ -43,3 +43,7 @@ Please see the [issues section](https://github.com/SAP/document-classification-c
 ## How to obtain support
 
 In case you would like to contribute to this project, ask any questions or get support, please open an issue containing the description of your question or planned contribution in GitHub and we will get in touch.
+
+# Document Information Extraction
+
+
