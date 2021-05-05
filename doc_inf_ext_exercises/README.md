@@ -1,4 +1,4 @@
-# Exercise 2 - Document Information Extraction
+# Document Information Extraction: Exercises
 
 In this exercise, we will use Document Information Extraction Service to do following:
 
@@ -8,7 +8,7 @@ In this exercise, we will use Document Information Extraction Service to do foll
 - Upload supplier Master Data for invoices.
 - Upload document for extraction using REST API and enable enrichments for matching supplier id with Sender information.
 
-## Exercise 2.1 - Set up Document Information Extraction Service and UI
+## Exercise 1 - Set up Document Information Extraction Service and UI
 
 After completing below step you will have access for Document Information Extraction Service and its UI Application
 
@@ -17,7 +17,7 @@ After completing below step you will have access for Document Information Extrac
 Now that we have access to UI Application, we'll goto the UI Application for our next exercise.
 **Make sure you also download the service key, since we'll be using it in subsequent exercises.**
 
-## Exercise 2.2 - Upload documents for Extraction using UI Application
+## Exercise 2 - Upload documents for Extraction using UI Application
 
 Following step will guide you on how to use Document Information Extraction Service UI to extract information from Invoices and Payment Advices.
 
@@ -75,7 +75,7 @@ Following step will guide you on how to use Document Information Extraction Serv
 Now that you have uploaded document for extraction in the next section we'll see the extraction results on UI Application.
 
 
-## Exercise 2.3 - Visualize, Correct Extraction Results and Confirm Document using UI Application
+## Exercise 3 - Visualize, Correct Extraction Results and Confirm Document using UI Application
 
 Following Steps will guide to use UI Application for viewing and correcting extraction results of document and mark it as Confirmed.
 
@@ -112,7 +112,7 @@ NOTE: A document that is **CONFIRMED** indicates that the results are reviewed a
 
 Now that you've marked **twitter.pdf** as CONFIRMED it means that values of Header Fields and Line Items are correct as per the content of Document. In the upcoming sections we'll try access these values through the Rest API.
 
-## Exercise 2.4 - Get Auth Token to use Document Information Extraction Rest API
+## Exercise 4 - Get Auth Token to use Document Information Extraction Rest API
 
 In order to use the Rest API of Document Information Extraction we'll need the Auth Token.
 
@@ -122,7 +122,7 @@ Follow this [tutorial](https://developers.sap.com/tutorials/cp-aibus-dox-web-oau
 
 NOTE: Keep the tab open since we'll need access token in next steps
 
-## Exercise 2.5 - Get Extraction Results of Document using Rest API
+## Exercise 5 - Get Extraction Results of Document using Rest API
 
 You will use Swagger UI, via any web browser, to call the Document Information Extraction Rest APIs. Swagger UI allows developers to effortlessly interact and try out every single operation an API exposes for easy consumption. For more information, see [Swagger UI](https://swagger.io/tools/swagger-ui/).
 
@@ -171,7 +171,7 @@ Now, that you know how to retrive extracted value for a document you can consume
 
 Currently SAP products like Concur, S4 Payment Advice Management, IRPA, etc have integrated with the service using the API's.
 
-## Exercise 2.6 - Upload Supplier Data for matching
+## Exercise 6 - Upload Supplier Data for matching
 
 One of the important features of Document Information Extraction Service is that it could match extraction information with relevent master data provided by the customers.
 
@@ -365,7 +365,7 @@ After completing below steps you will have Supplier master data uploaded to the 
 
 Now that you have uploaded the supplier data, we can use the service to find `id` of the Supplier that matches the extracted Supplier information for invoices.
 
-## Exercise 2.7 - Upload Document through Rest API to enrich the Extraction results with Supplier Data
+## Exercise 7 - Upload Document through Rest API to enrich the Extraction results with Supplier Data
 
 In order to predict the Master data based on Extraction Result, We need to add **enrichment** configuration when we upload the document for extraction. We can provide this configuration when we upload the document via Rest API.
 
