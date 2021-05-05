@@ -2,11 +2,11 @@
 
 In this exercise, we will use Document Information Extraction Service to do following:
 
-- Upload documents for extraction using UI.
-- Correct and confirm extracted information using UI.
-- Retrieve extracted information using REST API.
-- Upload supplier Master Data for invoices.
-- Upload document for extraction using REST API and enable enrichments for matching supplier id with Sender information.
+- Upload documents for extraction using UI
+- Correct and confirm extracted information using UI
+- Retrieve extracted information using REST API
+- Upload supplier Master Data for invoices
+- Upload document for extraction using REST API and enable enrichments for matching supplier id with Sender information
 
 ## Exercise 1 - Set up Document Information Extraction Service and UI
 
