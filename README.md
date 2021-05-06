@@ -28,18 +28,31 @@ or adding the library as a dependency of your code in `requirements.txt` file.
 
 ## Demo usage
 
+Prerequisites:
+* [Get an SAP Business Technology Plattform trial account](https://developers.sap.com/tutorials/hcp-create-trial-account.html)
+* [Create a DC service instance](https://developers.sap.com/tutorials/cp-aibus-dc-service-instance.html)
+* [Create a Dox service instance](https://developers.sap.com/tutorials/cp-aibus-dox-service-instance.html)
+
 #### Document Classification
+
 To try out the Document classification service using the document classification client
 library you can also run the two demo links below:
 * Try out DC classification using default model [demo](https://mybinder.org/v2/gh/SAP/business-document-processing/main?filepath=examples%2Fdocument_classification_examples%2Fclassification_default_model.ipynb)
-* Try out DC training and classification using custom model [demo](https://mybinder.org/v2/gh/SAP/business-document-processing/main?filepath=examples%2Fdocument_classification_examples%2Ftrain_and_evaluate_custom_model.ipynb)
+* Try out DC training and classification using custom model [demo](https://mybinder.org/v2/gh/SAP/business-document-processing/main?filepath=examples%2Fdocument_classification_examples%2Ftrain_and_evaluate_custom_model.ipynb) (requires an enterprise account, trial account is **not** sufficient)
 
 #### Document Information Extraction
-(to be added)
+- [Exercises](doc_inf_ext_exercises/)
+    - [Exercise 1 - Set up Document Information Extraction Service and UI](doc_inf_ext_exercises#exercise-1---set-up-document-information-extraction-service-and-ui)
+    - [Exercise 2 - Upload a document for extraction using UI application](doc_inf_ext_exercises#exercise-2---upload-documents-for-extraction-using-ui-application)
+    - [Exercise 3 - Visualize, correct extraction results and confirm document using UI application](doc_inf_ext_exercises#exercise-3---visualize-correct-extraction-results-and-confirm-document-using-ui-application)
+    - [Exercise 4 - Get Auth token to use Document Information Extraction Rest API](doc_inf_ext_exercises#exercise-4---get-auth-token-to-use-document-information-extraction-rest-api)
+    - [Exercise 5 - Get extraction results of document using Rest API](doc_inf_ext_exercises#exercise-5---get-extraction-results-of-document-using-rest-api)
+    - [Exercise 6 - Upload supplier Data for matching](doc_inf_ext_exercises#exercise-6---upload-supplier-data-for-matching)
+    - [Exercise 7 - Upload document through Rest API to enrich the extraction Results with supplier data](doc_inf_ext_exercises#exercise-7---upload-document-through-rest-api-to-enrich-the-extraction-results-with-supplier-data)
 
 ## Known Issues
 
-Please see the [issues section](https://github.com/SAP/document-classification-client/issues).
+Please see the [issues section](https://github.com/SAP/business-document-processing/issues).
 
 ## How to obtain support
 
