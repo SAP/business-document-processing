@@ -110,17 +110,17 @@ You will notice that the document status has change to **CONFIRMED**.
 
 NOTE: A document that is **CONFIRMED** indicates that the results are reviewed and corrected(if needed) by a User.
 
-Now that you have marked **twitter.pdf** as CONFIRMED it means that values of Header Fields and Line Items are correct as per the content of Document. In the upcoming sections we will try access these values through the Rest API.
+Now that you have marked **twitter.pdf** as CONFIRMED, it means that values of Header Fields and Line Items are correct as per the content of document. In the upcoming sections, we will try to access these values through the Rest API.
 
 ## Exercise 4 - Get Auth Token to use Document Information Extraction Rest API
 
-In order to use the Rest API of Document Information Extraction we will need the Auth Token.
+In order to use the Rest API of Document Information Extraction, we will need the Auth Token.
 
 Here we will need the service key that you downloaded in Exercise 1.
 
 Follow this [tutorial](https://developers.sap.com/tutorials/cp-aibus-dox-web-oauth-token.html) to get the Auth Token.
 
-NOTE: Keep the tab open since we will need access token in the next steps.
+**NOTE: Keep the tab open since we will need access token in the next steps.**
 
 ## Exercise 5 - Get Extraction Results of Document using Rest API
 
