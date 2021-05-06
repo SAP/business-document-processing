@@ -120,7 +120,7 @@ Here we will need the service key that you downloaded in Exercise 1.
 
 Follow this [tutorial](https://developers.sap.com/tutorials/cp-aibus-dox-web-oauth-token.html) to get the Auth Token.
 
-**NOTE: Keep the tab open since we will need access token in the next steps.**
+**Keep the tab with the Auth Token information open since we will need it in the next steps.**
 
 ## Exercise 5 - Get Extraction Results of Document using Rest API
 
