@@ -14,8 +14,8 @@ After completing below step you will have access for Document Information Extrac
 
 1. Follow this [tutorial](https://developers.sap.com/tutorials/cp-aibus-dox-booster-app.html) to create instance of Document Information Extraction Service and Subscribe to UI.
 
-Now that we have access to UI Application, we'll goto the UI Application for our next exercise.
-**Make sure you also download the service key, since we'll be using it in subsequent exercises.**
+Now that we have access to UI Application, we will go to the UI Application for our next exercise.
+**Make sure you also download the service key, since we will be using it in subsequent exercises.**
 
 ## Exercise 2 - Upload documents for Extraction using UI Application
 
@@ -35,7 +35,7 @@ Following step will guide you on how to use Document Information Extraction Serv
 4. Click **Step 2** button.
    <br>![](/doc_inf_ext_exercises/images/02_02_4.png)
 
-5. In Step 2, select the **Header Fields** you want to extract from the invoice documents. We'll be extracting following header fields from invoice documents.
+5. In Step 2, select the **Header Fields** you want to extract from the invoice documents. We will be extracting following header fields from invoice documents.
    - Invoice Number
    - Invoice Date
    - Purchase Order Number
@@ -53,7 +53,7 @@ Following step will guide you on how to use Document Information Extraction Serv
    Click **Step 3** button.
    <br>![](/doc_inf_ext_exercises/images/02_02_5.png)
 
-6. In Step 3, select the **Line Items Fields** you want to extract from the invoice documents. We'll be extracting following line items fields from invoice documents.
+6. In Step 3, select the **Line Items Fields** you want to extract from the invoice documents. We will be extracting following line items fields from invoice documents.
    - Description
    - Amount
    - Quantity
@@ -65,14 +65,14 @@ Following step will guide you on how to use Document Information Extraction Serv
 7. Review your selection. Click **Confirm** button.
    <br>![](/doc_inf_ext_exercises/images/02_02_7.png)
 
-8. You'll see the Document Name, Upload Date and Status of the documents you have just uploaded.
+8. You will see the Document Name, Upload Date and Status of the documents you have just uploaded.
    <br>![](/doc_inf_ext_exercises/images/02_02_8.png)
    Status changes from PENDING to READY. This means the selected header fields and line items have been extracted, and the extraction results are ready to be validated and changed if necessary. If status changes from PENDING to FAILED, this means it was not possible to get the extraction results, and you need to upload the document once again.
    <br>![](/doc_inf_ext_exercises/images/02_02_9.png)
 
 9. *[Try this later] Repeat above steps 1-7 for Payment Advice Documents. Only difference is, in Step 3 Select Document Type **Payment Advices** and select header fields and line items relevant for Payment Advice documents.*
 
-Now that you have uploaded document for extraction in the next section we'll see the extraction results on UI Application.
+Now that you have uploaded document for extraction in the next section we will see the extraction results on UI Application.
 
 
 ## Exercise 3 - Visualize, Correct Extraction Results and Confirm Document using UI Application
@@ -105,22 +105,22 @@ Following Steps will guide to use UI Application for viewing and correcting extr
 9. Now that all the information is correct, Click on **Confirm** button and then again click **Confirm** button in the **Confirm Extracted Values?** dialog box to save the information and mark the results as **Confirmed**.
    <br>![](/doc_inf_ext_exercises/images/02_03_9.png)
 
-You'll notice that the document status has change to **CONFIRMED**.
+You will notice that the document status has change to **CONFIRMED**.
 <br>![](/doc_inf_ext_exercises/images/02_03_10.png)
 
 NOTE: A document that is **CONFIRMED** indicates that the results are reviewed and corrected(if needed) by a User.
 
-Now that you've marked **twitter.pdf** as CONFIRMED it means that values of Header Fields and Line Items are correct as per the content of Document. In the upcoming sections we'll try access these values through the Rest API.
+Now that you have marked **twitter.pdf** as CONFIRMED it means that values of Header Fields and Line Items are correct as per the content of Document. In the upcoming sections we will try access these values through the Rest API.
 
 ## Exercise 4 - Get Auth Token to use Document Information Extraction Rest API
 
-In order to use the Rest API of Document Information Extraction we'll need the Auth Token.
+In order to use the Rest API of Document Information Extraction we will need the Auth Token.
 
-Here we'll will need the service key that you downloaded in Exercise 1.
+Here we will need the service key that you downloaded in Exercise 1.
 
 Follow this [tutorial](https://developers.sap.com/tutorials/cp-aibus-dox-web-oauth-token.html) to get the Auth Token.
 
-NOTE: Keep the tab open since we'll need access token in next steps
+NOTE: Keep the tab open since we will need access token in the next steps.
 
 ## Exercise 5 - Get Extraction Results of Document using Rest API
 
@@ -149,7 +149,7 @@ In the service key you downloaded for Document Information Extraction in Exercis
 7. Check the **Response Body**, it will contain list of jobs in json format.
    <br>![](/doc_inf_ext_exercises/images/02_05_7.png)
 
-8. In the **Response Body**, find the document with `"status": "CONFIRMED"`, you'll find that this is the same **twitter.pdf** that we confirmed in Exercise 3.
+8. In the **Response Body**, find the document with `"status": "CONFIRMED"`, you will find that this is the same **twitter.pdf** that we confirmed in Exercise 3.
    <br>![](/doc_inf_ext_exercises/images/02_05_8.png)
 
 9. Copy the value corresponding to `id` for **twitter.pdf**.
@@ -163,7 +163,7 @@ In the service key you downloaded for Document Information Extraction in Exercis
 12. Paste the value of `id` copied in step 9 into the **id** parameter and click on **Execute**.
    <br>![](/doc_inf_ext_exercises/images/02_05_12.png)
 
-13. Check the **Reponse Body**, you'll find the information about job like `filename`, `status` etc. `headerFields` contains extraction results of Header fields. `lineItems` will contains results for Line items.
+13. Check the **Response Body**, you'll find the information about job like `filename`, `status` etc. `headerFields` contains extraction results of Header fields. `lineItems` will contains results for Line items.
    <br>![](/doc_inf_ext_exercises/images/02_05_13a.png)
    <br>![](/doc_inf_ext_exercises/images/02_05_13b.png)
 
