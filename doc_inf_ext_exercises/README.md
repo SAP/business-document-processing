@@ -163,20 +163,20 @@ In the service key you downloaded for Document Information Extraction in Exercis
 12. Paste the value of `id` copied in step 9 into the **id** parameter and click on **Execute**.
    <br>![](/doc_inf_ext_exercises/images/02_05_12.png)
 
-13. Check the **Response Body**, you'll find the information about job like `filename`, `status` etc. `headerFields` contains extraction results of Header fields. `lineItems` will contains results for Line items.
+13. Check the **Response Body**, you will find the information about job like `filename`, `status` etc. `headerFields` contains extraction results of Header fields. `lineItems` will contains results for Line items.
    <br>![](/doc_inf_ext_exercises/images/02_05_13a.png)
    <br>![](/doc_inf_ext_exercises/images/02_05_13b.png)
 
-Now, that you know how to retrive extracted value for a document you can consume these Rest API's in order to integrate with any other application.
+Now, that you know how to retrive extracted value for a document you can consume this Rest API in order to integrate with any other application.
 
-Currently SAP products like Concur, S4 Payment Advice Management, IRPA, etc have integrated with the service using the API's.
+Currently SAP products like Concur, S4 Payment Advice Management, IRPA, etc have integrated with the service using our API.
 
 ## Exercise 6 - Upload Supplier Data for matching
 
 One of the important features of Document Information Extraction Service is that it could match extraction information with relevent master data provided by the customers.
 
 In order to achive this we need to Upload the master data into Service and this exercise will guide you to do so. 
-We'll using Swagger UI to upload the master data via Rest API.
+We will be using Swagger UI to upload the master data via Rest API.
 
 After completing below steps you will have Supplier master data uploaded to the Service which can be matched with the sender details of the invoice documents.
 
@@ -360,7 +360,7 @@ After completing below steps you will have Supplier master data uploaded to the 
 9. Paste the `id` copied in step 8, in `id` parameter and click **Execute**
    <br>![](/doc_inf_ext_exercises/images/02_06_9.png)
 
-10. You should receive a response like the following with status `SUCCESS`. If it's still `PENDING` try again in some time.
+10. You should receive a response like the following with status `SUCCESS`. If it is still `PENDING` try again in some time.
    <br>![](/doc_inf_ext_exercises/images/02_06_10.png)
 
 Now that you have uploaded the supplier data, we can use the service to find `id` of the Supplier that matches the extracted Supplier information for invoices.
@@ -379,7 +379,7 @@ In this exercise we will again use Swagger UI to upload a Invoice document along
 2. Choose one of the invoice document file you want to enrich for **file** parameter.
    <br>![](/doc_inf_ext_exercises/images/02_07_2.png)
 
-3. In **options**, you'll enter the list of header and line items fields to be extracted from the uploaded file, the **clientId** as `default`, the **documentType** as `invoice`, the enrichment configuration to match **Supplier** information with data **type** as `businessEntity` and **subtype** as `supplier`. The Payload will be as following:
+3. In **options**, you will enter the list of header and line items fields to be extracted from the uploaded file, the **clientId** as `default`, the **documentType** as `invoice`, the enrichment configuration to match **Supplier** information with data **type** as `businessEntity` and **subtype** as `supplier`. The Payload will be as following:
    ```json
    {
       "extraction":{
@@ -420,7 +420,7 @@ In this exercise we will again use Swagger UI to upload a Invoice document along
 
 4. Click **Execute**.
 
-5. You'll get a response with **status** as `PENDING`. Copy the value of `id` in response payload.
+5. You will get a response with **status** as `PENDING`. Copy the value of `id` in response payload.
    <br>![](/doc_inf_ext_exercises/images/02_07_5.png)
 
 6. Expand the **GET /document/jobs/{id}** endpoint, and click **Try it out**.
@@ -429,7 +429,7 @@ In this exercise we will again use Swagger UI to upload a Invoice document along
 7. Paste the id copied in step 5 as the **id** in parameter. click on **Execute**.
    <br>![](/doc_inf_ext_exercises/images/02_07_7.png)
 
-8. Check the response body, if the status is **DONE**, within `extractions.headerFields` one of the extracted fields is `senderName` with value `Twitter UK,`. Within `enrichtment.sender` you'll see the supplier ID predictions from master data uploaded in **exercise 6**. The prediction suggests supplier ID `BE0002` which corresponds to `Twitter UK`.
+8. Check the response body, if the status is **DONE**, within `extractions.headerFields` one of the extracted fields is `senderName` with value `Twitter UK,`. Within `enrichtment.sender` you will see the supplier ID predictions from master data uploaded in **exercise 6**. The prediction suggests supplier ID `BE0002` which corresponds to `Twitter UK`.
    <br>![](/doc_inf_ext_exercises/images/02_07_8.png)
 
 Now that you know how to enrich extraction results with master data, you can use this matching provided by Document Information Service to automatically link the Extracted Information with Suppliers.
