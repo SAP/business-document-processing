@@ -23,7 +23,7 @@ Now that we have access to UI Application, we can have a look at it for our next
 
 The following steps will guide you on how to use Document Information Extraction Service UI to extract information from Invoices and Payment Advices.
 
-1.	In the top right, click + (Upload a new document) and choose all the pdf documents in [data/invoice](/data/Invoice) folder
+1.	In the top right, click + (Upload a new document) and choose all the pdf documents in data/Invoice folder
    <br>![](/doc_inf_ext_exercises/images/02_02_1.png)
 
 2.	In the Select Document screen, drop Invoice files directly or click + to upload one or more document files.
