@@ -149,7 +149,7 @@ In the service key you downloaded for Document Information Extraction in Exercis
 7. Check the **Response Body**, it will contain list of jobs in json format.
    <br>![](/doc_inf_ext_exercises/images/02_05_7.png)
 
-8. In the **Response Body**, find the document with `"status": "CONFIRMED"`, you'll find that this is the same **twitter.pdf** that we confirmed in Exercise 2.3.
+8. In the **Response Body**, find the document with `"status": "CONFIRMED"`, you'll find that this is the same **twitter.pdf** that we confirmed in Exercise 3.
    <br>![](/doc_inf_ext_exercises/images/02_05_8.png)
 
 9. Copy the value corresponding to `id` for **twitter.pdf**.
@@ -429,7 +429,7 @@ In this exercise we will again use Swagger UI to upload a Invoice document along
 7. Paste the id copied in step 5 as the **id** in parameter. click on **Execute**.
    <br>![](/doc_inf_ext_exercises/images/02_07_7.png)
 
-8. Check the response body, if the status is **DONE**, within `extractions.headerFields` one of the extracted fields is `senderName` with value `Twitter UK,`. Within `enrichtment.sender` you'll see the supplier ID predictions from master data uploaded in **excersice 2.6**. The prediction suggests supplier ID `BE0002` which corresponds to `Twitter UK`.
+8. Check the response body, if the status is **DONE**, within `extractions.headerFields` one of the extracted fields is `senderName` with value `Twitter UK,`. Within `enrichtment.sender` you'll see the supplier ID predictions from master data uploaded in **exercise 6**. The prediction suggests supplier ID `BE0002` which corresponds to `Twitter UK`.
    <br>![](/doc_inf_ext_exercises/images/02_07_8.png)
 
 Now that you know how to enrich extraction results with master data, you can use this matching provided by Document Information Service to automatically link the Extracted Information with Suppliers.
