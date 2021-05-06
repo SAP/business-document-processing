@@ -19,7 +19,7 @@ Now that we have access to UI Application, we can have a look at it for our next
 
 ## Exercise 2 - Upload documents for Extraction using UI Application
 
-**Please make sure you have downloaded the [data.zip](https://github.com/SAP/business-document-processing/raw/main/doc_inf_ext_exercises/data.zip) folder which contains the test documents and unzipped it.**
+**Before proceeding further, please download the [data.zip](https://github.com/SAP/business-document-processing/raw/main/doc_inf_ext_exercises/data.zip) folder which contains the test documents and unzip it.**
 
 The following steps will guide you on how to use Document Information Extraction Service UI to extract information from Invoices and Payment Advices.
 
