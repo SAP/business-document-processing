@@ -21,7 +21,7 @@ Now that we have access to UI Application, we'll goto the UI Application for our
 
 Following step will guide you on how to use Document Information Extraction Service UI to extract information from Invoices and Payment Advices.
 
-**Please make sure you have downloaded the [data.zip](https://github.com/SAP/business-document-processing/raw/main/doc_inf_ext_exercises/data.zip) folder which contains the test documents and unzipped it**
+**Please make sure you have downloaded the [data.zip](https://github.com/SAP/business-document-processing/raw/main/doc_inf_ext_exercises/data.zip) folder which contains the test documents and unzipped it.**
 
 1.	In the top right, click + (Upload a new document) and choose all the pdf documents in [data/invoice](/data/Invoice) folder
    <br>![](/doc_inf_ext_exercises/images/02_02_1.png)
