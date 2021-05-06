@@ -53,6 +53,8 @@ def create_capability_mapping_options(document_type, file_type, header_fields=No
 
     if header_fields is None:
         header_fields = []
+    elif isinstance(header_fields, str):
+        header_fields = [s.strip() for s in header_fields.split(',')]
     elif not isinstance(header_fields, list):
         raise TypeError(f'Input variable \'header_fields\' has wrong type: {type(header_fields)}. Should be a string '
                         f'of comma separated values or a list of strings')
@@ -60,6 +62,8 @@ def create_capability_mapping_options(document_type, file_type, header_fields=No
 
     if line_item_fields is None:
         line_item_fields = []
+    elif isinstance(line_item_fields, str):
+        line_item_fields = [s.strip() for s in line_item_fields.split(',')]
     elif not isinstance(line_item_fields, list):
         raise TypeError(f'Input variable \'line_item_fields\' has wrong type: {type(line_item_fields)}. Should be a '
                         f'string of comma separated values or a list of strings')
