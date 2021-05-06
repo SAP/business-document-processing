@@ -116,7 +116,7 @@ Now that you've marked **twitter.pdf** as CONFIRMED it means that values of Head
 
 In order to use the Rest API of Document Information Extraction we'll need the Auth Token.
 
-Here we'll will need the service key that you downloaded in Exercise 2.1.
+Here we'll will need the service key that you downloaded in Exercise 1.
 
 Follow this [tutorial](https://developers.sap.com/tutorials/cp-aibus-dox-web-oauth-token.html) to get the Auth Token.
 
@@ -126,7 +126,7 @@ NOTE: Keep the tab open since we'll need access token in next steps
 
 You will use Swagger UI, via any web browser, to call the Document Information Extraction Rest APIs. Swagger UI allows developers to effortlessly interact and try out every single operation an API exposes for easy consumption. For more information, see [Swagger UI](https://swagger.io/tools/swagger-ui/).
 
-In the service key you downloaded for Document Information Extraction in Exercise 2.1, you should find (outside the uaa section of the service key) an entry called url and another entry called swagger (as highlighted in the image below).
+In the service key you downloaded for Document Information Extraction in Exercise 1, you should find (outside the uaa section of the service key) an entry called url and another entry called swagger (as highlighted in the image below).
 
 1. To access the Document Information Extraction Swagger UI, add the swagger value (**/document-information-extraction/v1**) to the url value, paste it in any web browser and press Enter.
    <br>![](/doc_inf_ext_exercises/images/02_05_1.png)
