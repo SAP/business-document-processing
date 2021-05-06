@@ -193,7 +193,7 @@ class DoxApiClient(CommonClient):
                                                             header_fields=header_fields,
                                                             line_item_fields=line_item_fields, template_id=template_id,
                                                             received_date=received_date, enrichment=enrichment,
-                                                            return_null_values=return_null_values, silent=True))
+                                                            return_null_values=return_null_values))
 
     def extract_information_from_document_with_options(self, document_path: str, options: dict, file_type: str,
                                                        return_null_values: bool = False) -> dict:
@@ -209,14 +209,14 @@ class DoxApiClient(CommonClient):
         :return: The extracted information of the document as dictionary
         """
         return next(self.extract_information_from_documents_with_options([document_path], options, file_type,
-                                                                         return_null_values, silent=True))
+                                                                         return_null_values))
 
     def extract_information_from_documents(self, document_paths: List[str], client_id, document_type: str,
                                            file_type: str = CONTENT_TYPE_PDF,
                                            header_fields: Union[str, List[str]] = None,
                                            line_item_fields: Union[str, List[str]] = None, template_id=None,
-                                           received_date=None, enrichment=None, return_null_values: bool = False,
-                                           silent: bool = False) -> Iterator[dict]:
+                                           received_date=None, enrichment=None,
+                                           return_null_values: bool = False) -> Iterator[dict]:
         """
         Extracts the information from multiple documents. The function will run until all documents have been processed
         or a timeout is reached. The given parameters will be used for all documents
@@ -234,20 +234,17 @@ class DoxApiClient(CommonClient):
         see documentation
         :param return_null_values: Flag if fields with null as value should be included in the responses or not.
         Default is False
-        :param silent: If True, the functions returns even if some documents failed uploading or processing. If False,
-        will raise an exception if at least one document failed. Default is False
         :return: An iterator with extracted information for successful documents and exceptions for failed documents.
         Use next(iterator) within a try-catch block to filter the failed documents.
         """
         options = create_document_options(client_id, document_type, header_fields, line_item_fields, template_id,
                                           received_date, enrichment)
         return self.extract_information_from_documents_with_options(document_paths, options, file_type,
-                                                                    return_null_values, silent)
+                                                                    return_null_values)
 
     def extract_information_from_documents_with_options(self, document_paths: List[str], options: dict,
                                                         file_type: str = CONTENT_TYPE_PDF,
-                                                        return_null_values: bool = False,
-                                                        silent: bool = False) -> Iterator[dict]:
+                                                        return_null_values: bool = False) -> Iterator[dict]:
         """
         Extracts the information from multiple documents. The function will run until all documents have been processed
         or a timeout is reached. The given options will be used for all documents
@@ -257,9 +254,8 @@ class DoxApiClient(CommonClient):
         :param file_type: Content type of the uploaded file. Default is 'application/pdf'.
         :param return_null_values: Flag if fields with null as value should be included in the responses or not.
         Default is False
-        :param silent: If True, the functions returns even if some documents failed uploading or processing. If False,
-        will raise an exception if at least one document failed. Default is False
-        :return:
+        :return: An iterator with extracted information for successful documents and exceptions for failed documents.
+        Use next(iterator) within a try-catch block to filter the failed documents.
         """
         if not isinstance(document_paths, list) or len(document_paths) == 0:
             raise ValueError(f'Expected argument \'document_paths\' to be a non-empty list of paths to documents to be '
@@ -273,8 +269,6 @@ class DoxApiClient(CommonClient):
         with ThreadPoolExecutor(min(self.polling_threads, number_of_documents)) as pool:
             upload_results = pool.map(self._single_upload_wrap_errors, document_paths, [options] * number_of_documents,
                                       [file_type] * number_of_documents)
-        if not silent:
-            upload_results = self._validate_results(upload_results, 'Some documents could not be uploaded successfully')
         self.logger.info(f'Finished uploading {number_of_documents} documents for client {client_id}')
 
         upload_ids = [result if isinstance(result, Exception) else result[API_FIELD_ID] for result in upload_results]
@@ -322,7 +316,7 @@ class DoxApiClient(CommonClient):
         return response.json()
 
     def get_extraction_for_documents(self, document_ids: list, extracted_values: bool = None,
-                                     return_null_values: bool = False, silent: bool = False) -> Iterator[dict]:
+                                     return_null_values: bool = False) -> Iterator[dict]:
         """
         Gets the extracted information for multiple documents given their document IDs
         :param document_ids: A list of IDs of documents
@@ -332,8 +326,6 @@ class DoxApiClient(CommonClient):
         if available
         :param return_null_values: Flag if fields with null as value should be included in the response or not.
         Default is False
-        :param silent: If True, the functions returns even if some documents failed. If False, will raise an exception
-        if at least one document failed. Default is False
         :return: An iterator with extracted information or ground truths for successful documents and exceptions
         for failed documents. Use next(iterator) within a try-catch block to filter the failed documents.
         """
@@ -344,8 +336,6 @@ class DoxApiClient(CommonClient):
         with ThreadPoolExecutor(min(self.polling_threads, len(document_ids))) as pool:
             results = pool.map(self._get_extraction_for_document_wrap_errors, document_ids,
                                [extracted_values] * len(document_ids), [return_null_values] * len(document_ids))
-        if not silent:
-            results = self._validate_results(results, 'Information extraction failed for some documents')
         self.logger.info(f'Successfully got extracted information for {len(document_ids)} documents')
 
         return self._create_result_iterator(results)

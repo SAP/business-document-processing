@@ -113,7 +113,7 @@ class DCApiClient(CommonClient):
             result['document_path'] = document_path
         return result
 
-    def classify_documents(self, documents_paths, model_name, model_version, silent=False):
+    def classify_documents(self, documents_paths, model_name, model_version):
         """
         Submits requests for classification of multiple documents, checks the response and returns the reference ID
         for the classified documents
@@ -121,7 +121,6 @@ class DCApiClient(CommonClient):
         :param documents_paths: Paths to the PDF files on the disk
         :param model_name: The name of the model that was successfully deployed to be used for the classification
         :param model_version: The version of the model that was successfully deployed to be used for the classification
-        :param silent: If set to True will not throw an exception if classification for one or more documents failed
         :return: An iterator of objects containing the reference ID of the classified document and the classification
         results
         """
@@ -134,8 +133,6 @@ class DCApiClient(CommonClient):
                                [model_version] * number_of_documents)
         self.logger.info(f'Finished classification of {number_of_documents} documents against the model {model_name} '
                          f'with version {model_version}')
-        if not silent:
-            results = self._validate_results(results, 'Some documents could not be successfully classified')
         return self._create_result_iterator(results)
 
     # Training
@@ -275,12 +272,10 @@ class DCApiClient(CommonClient):
             result['document_path'] = document_path
         return result
 
-    def upload_documents_directory_to_dataset(self, dataset_id, path, silent=False):
+    def upload_documents_directory_to_dataset(self, dataset_id, path):
         """
         :param dataset_id: The ID of the dataset to upload the documents to
         :param path: The path has to contain document data files and JSON file with GT with corresponding names
-        :param silent: If set to True will not throw exception when upload of one of the documents fails,
-        in this case the upload statuses in the results array have to be validated manually
         :return: An iterator with the upload results
         """
         files = self._find_files(path)
@@ -291,17 +286,14 @@ class DCApiClient(CommonClient):
                                                          'ground truths'
         return self.upload_documents_to_dataset(dataset_id=dataset_id,
                                                 documents_paths=files,
-                                                ground_truths_paths=ground_truth_files,
-                                                silent=silent)
+                                                ground_truths_paths=ground_truth_files)
 
-    def upload_documents_to_dataset(self, dataset_id, documents_paths, ground_truths_paths, silent=False):
+    def upload_documents_to_dataset(self, dataset_id, documents_paths, ground_truths_paths):
         """
 
         :param dataset_id: The ID of the dataset to upload the documents to
         :param documents_paths: The paths of the PDF files
         :param ground_truths_paths: The paths of the JSON files containing the ground truths
-        :param silent: If set to True will not throw exception when upload of one of the documents fails,
-        in this case the upload statuses in the results array have to be validated manually
         :return: An iterator with the upload results
         """
         number_of_documents = len(documents_paths)
@@ -312,8 +304,6 @@ class DCApiClient(CommonClient):
             results = pool.map(self._upload_document_to_dataset_wrap_errors, [dataset_id] * number_of_documents,
                                documents_paths, ground_truths_paths)
         self.logger.info(f'Finished uploading of {number_of_documents} documents to the dataset {dataset_id}')
-        if not silent:
-            results = self._validate_results(results, 'Some documents could not be successfully uploaded to the dataset')
         return self._create_result_iterator(results)
 
     # Model training and management

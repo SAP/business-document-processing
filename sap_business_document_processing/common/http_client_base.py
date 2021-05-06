@@ -8,7 +8,7 @@ import time
 from oauthlib.oauth2 import BackendApplicationClient, MissingTokenError
 from requests_oauthlib import OAuth2Session
 
-from .constants import API_DOCUMENT_EXTRACTED_TEXT_FIELD, MIN_POLLING_INTERVAL, FAILED_STATUSES, SUCCEEDED_STATUSES
+from .constants import MIN_POLLING_INTERVAL, FAILED_STATUSES, SUCCEEDED_STATUSES
 from .exceptions import BDPApiException, BDPClientException, BDPFailedAsynchronousOperationException, \
     BDPPollingTimeoutException, BDPServerException, BDPUnauthorizedException
 from .helpers import add_retry_to_session, make_url, make_oauth_url
@@ -135,41 +135,6 @@ class CommonClient:
 
     def delete(self, path: str, validate=True, **kwargs):
         return self._request(self.session.delete, path, validate, **kwargs)
-
-    @staticmethod
-    def _validate_results(results, error_message):
-        failed_results = []
-        valid_results = []
-        for result in results:
-            failed_result = None
-            if isinstance(result, BDPClientException):
-                try:
-                    failed_result = result.response.json()
-                    failed_result['status_code'] = result.status_code
-                    if failed_result.get(API_DOCUMENT_EXTRACTED_TEXT_FIELD):
-                        failed_result[API_DOCUMENT_EXTRACTED_TEXT_FIELD] = failed_result[
-                                                                               API_DOCUMENT_EXTRACTED_TEXT_FIELD][
-                                                                           :50] + '... truncated'
-                except json.JSONDecodeError:
-                    failed_result = {'error': result.args[0],
-                                     'status_code': result.status_code}
-            elif isinstance(result, BDPApiException):
-                failed_result = {'error': result.args[0]}
-                if result.status_code:
-                    failed_result['status_code'] = result.status_code
-            elif isinstance(result, Exception):
-                failed_result = {'error': result.args[0]}
-
-            if failed_result:
-                if hasattr(result, 'document_path'):
-                    failed_result['document_path'] = result.document_path
-                failed_results.append(failed_result)
-            else:
-                valid_results.append(result)
-
-        if len(failed_results) > 0:
-            raise BDPApiException(error_message + ': ' + str(failed_results))
-        return valid_results
 
     def raise_for_status_with_logging(self, response):
         e = None
