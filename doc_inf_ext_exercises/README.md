@@ -1,6 +1,6 @@
 # Document Information Extraction: Exercises
 
-In this exercise, we will use Document Information Extraction Service to do following:
+In these exercises, we will use Document Information Extraction Service to do following:
 
 - Upload documents for extraction using UI
 - Correct and confirm extracted information using UI
