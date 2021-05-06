@@ -23,7 +23,7 @@ Now that we have access to UI Application, we can have a look at it for our next
 
 The following steps will guide you on how to use Document Information Extraction Service UI to extract information from Invoices and Payment Advices.
 
-1.	In the top right, click + (Upload a new document) and choose all the pdf documents in `data/Invoice` folder
+1.	In the top right, click + (Upload a new document) and choose all the pdf documents in `data/Invoice` folder.
    <br>![](/doc_inf_ext_exercises/images/02_02_1.png)
 
 2.	In the Select Document screen, drop Invoice files directly or click + to upload one or more document files.
@@ -35,7 +35,7 @@ The following steps will guide you on how to use Document Information Extraction
 4. Click **Step 2** button.
    <br>![](/doc_inf_ext_exercises/images/02_02_4.png)
 
-5. In Step 2, select the **Header Fields** you want to extract from the invoice documents. We will be extracting following header fields from invoice documents.
+5. In Step 2, select the **Header Fields** you want to extract from the invoice documents. We will be extracting following header fields from invoice documents:
    - Invoice Number
    - Invoice Date
    - Purchase Order Number
@@ -53,7 +53,7 @@ The following steps will guide you on how to use Document Information Extraction
    Click **Step 3** button.
    <br>![](/doc_inf_ext_exercises/images/02_02_5.png)
 
-6. In Step 3, select the **Line Items Fields** you want to extract from the invoice documents. We will be extracting following line items fields from invoice documents.
+6. In Step 3, select the **Line Items Fields** you want to extract from the invoice documents. We will be extracting following line items fields from invoice documents:
    - Description
    - Amount
    - Quantity
@@ -72,12 +72,12 @@ The following steps will guide you on how to use Document Information Extraction
 
 9. *[Try this later] Repeat above steps 1-7 for Payment Advice Documents. Only difference is, in Step 3 Select Document Type **Payment Advices** and select header fields and line items relevant for Payment Advice documents.*
 
-Now that you have uploaded document for extraction in the next section we will see the extraction results on UI Application.
+Now that you have uploaded document for extraction, in the next section, we will see the extraction results on UI Application.
 
 
 ## Exercise 3 - Visualize, Correct Extraction Results and Confirm Document using UI Application
 
-Following Steps will guide to use UI Application for viewing and correcting extraction results of document and mark it as Confirmed.
+Following steps will guide you through the UI Application for viewing and correcting extraction results of a document and mark it as Confirmed:
 
 1. Click on **twitter.pdf (Invoice)** in the Documents list to open the Preview if the document.
 
