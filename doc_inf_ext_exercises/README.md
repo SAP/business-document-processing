@@ -436,9 +436,9 @@ Now that you know how to enrich extraction results with master data, you can use
 
 ## Summary
 
-You've now completed the Exercise and learned 
-- How to consume Document Information Extraction Service using Rest API.
-- How to visualize and validated extraction results using the UI Application.
+You have now completed the exercises and learned: 
+- How to consume Document Information Extraction Service using Rest API
+- How to visualize and validated extraction results using the UI Application
 
 Useful Links 
 - [Tutorials](https://developers.sap.com/tutorial-navigator.html?tag=products:technology-platform/sap-ai-business-services/document-information-extraction) for Document Information Extraction
