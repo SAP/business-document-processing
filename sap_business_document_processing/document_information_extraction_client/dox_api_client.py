@@ -97,19 +97,19 @@ class DoxApiClient(CommonClient):
                              log_msg_after=f'Successfully created {len(clients)} clients')
         return response.json()
 
-    def get_clients(self, top: int = 100, offset: int = None, client_id_starts_with: str = None) -> List[dict]:
+    def get_clients(self, top: int = 100, skip: int = None, client_id_starts_with: str = None) -> List[dict]:
         """
         Gets all existing clients filtered by the parameters
         :param top: The maximum number of clients to get. Default is 100
-        :param offset: (optional) Index of the first client to get
+        :param skip: (optional) Index of the first client to get
         :param client_id_starts_with: (optional) Filters the clients by the characters the ID starts with
         :return: List of existing clients as dictionaries corresponding to the 'payload' part of the json response
         """
         params = {API_FIELD_CLIENT_LIMIT: top}
         if client_id_starts_with is not None:
             params[API_REQUEST_FIELD_CLIENT_START_WITH] = client_id_starts_with
-        if offset is not None:
-            params[API_REQUEST_FIELD_OFFSET] = int(offset)
+        if skip is not None:
+            params[API_REQUEST_FIELD_OFFSET] = skip
 
         response = self.get(CLIENT_ENDPOINT, params=params,
                             log_msg_before='Getting up to {} clients{}'.format(
@@ -158,7 +158,7 @@ class DoxApiClient(CommonClient):
         """
         Post the client capability mapping for the Identifier API provided by the customer to the entity client DB
         :param client_id: The ID of the client for which to upload the capability mapping
-        :param options: The mapping that should be uploaded.  For the format see documentation
+        :param options: The mapping that should be uploaded. For the format see documentation
         :return: The API endpoint response as dictionary
         """
         response = self.post(CLIENT_MAPPING_ENDPOINT, params={API_FIELD_CLIENT_ID: client_id},
