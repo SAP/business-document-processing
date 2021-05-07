@@ -26,14 +26,15 @@ from .helpers import create_document_options, create_capability_mapping_options
 
 class DoxApiClient(CommonClient):
     """
-    This class is the main entry point to consume the SAP Document Information Extraction REST API from a Python
-    application.
+    This class provides an interface to access SAP Document Information Extraction REST API from a Python application.
+    The structure of the values returned by all the methods is documented in the API reference:
+    https://help.sap.com/viewer/5fa7265b9ff64d73bac7cec61ee55ae6/SHIP/en-US/ded7d34e60f1422ba2e04e892a7f0e25.html
 
     :param base_url: The service URL taken from the service key (key 'url' in service key JSON)
     :param client_id: The XSUAA client ID taken from the service key (key 'uaa.clientid' in service key JSON)
     :param client_secret: The XSUAA client secret taken from the service key (key 'uaa.clientsecret' in service key JSON)
     :param uaa_url: The XSUAA URL taken from the service key (key 'uaa.url' in the service key JSON)
-    :param polling_threads: Number of threads used to poll for asynchronous APIs, the maximal value is 15
+    :param polling_threads: Number of threads used to poll for asynchronous APIs
     :param polling_sleep: Number of seconds to wait between the polling attempts for APIs, the minimal value is 0.2
     :param polling_max_attempts: Maximum number of attempts used to poll for asynchronous APIs
     :param logging_level: INFO level will log the operations progress, the default level WARNING should not
@@ -102,7 +103,7 @@ class DoxApiClient(CommonClient):
         :param top: The maximum number of clients to get. Default is 100
         :param offset: (optional) Index of the first client to get
         :param client_id_starts_with: (optional) Filters the clients by the characters the ID starts with
-        :return: List of existing clients as dictionaries
+        :return: List of existing clients as dictionaries corresponding to the 'payload' part of the json response
         """
         params = {API_FIELD_CLIENT_LIMIT: top}
         if client_id_starts_with is not None:
@@ -302,7 +303,7 @@ class DoxApiClient(CommonClient):
         if available
         :param return_null_values: Flag if fields with null as value should be included in the response or not.
         Default is False
-        :return: The extracted information processed document or the ground truth as dictionary
+        :return: The extracted information of the processed document or the ground truth as dictionary
         """
         params = {
             API_FIELD_RETURN_NULL: return_null_values
@@ -345,7 +346,7 @@ class DoxApiClient(CommonClient):
         Gets a list of  document jobs filtered by the client ID
         :param client_id: (optional) The client ID for which the document jobs should be get. Gets all document jobs if
         no client ID is given
-        :return: A list of document jobs as dictionaries
+        :return: A list of document jobs as dictionaries corresponding to the 'results' part of the json response
         """
         params = {API_FIELD_CLIENT_ID: client_id} if client_id else None
 
@@ -408,7 +409,8 @@ class DoxApiClient(CommonClient):
         :param data_id: (optional) The ID of a single data record. Only one will be returned
         :param system: (optional) The system of a single record
         :param company_code: (optional) The company code of a single record
-        :return: A list of enrichment data records. Returns a list with one item when data_id is given
+        :return: A list of enrichment data records corresponding to the 'value' part of the json response. Returns a
+        list with one item when data_id is given
         """
         params = {
             API_FIELD_CLIENT_ID: client_id,
@@ -516,7 +518,7 @@ class DoxApiClient(CommonClient):
         Gets the text for a document page for the given document ID and page number
         :param document_id: The ID of the document
         :param page_no: The page number for which to get the text
-        :return: The text for the page as a list of dictionaries
+        :return: The text for the page as a list of dictionaries corresponding to the 'value' part of the json response
         """
         response = self.get(DOCUMENT_PAGE_TEXT_ENDPOINT.format(document_id=document_id, page_number=page_no),
                             log_msg_before=f'Getting text for page {page_no} of document with ID {document_id}',
@@ -527,7 +529,7 @@ class DoxApiClient(CommonClient):
         """
         Gets the text for all pages of a document
         :param document_id: The ID of the document
-        :return: A dictionary mapping the page numbers to the text
+        :return: A dictionary mapping the page numbers to the text corresponding to the 'results' part of the json reponse
         """
         response = self.get(DOCUMENT_PAGES_TEXT_ENDPOINT.format(document_id=document_id),
                             log_msg_before=f'Getting text for all pages of document with ID {document_id}',
@@ -561,7 +563,8 @@ class DoxApiClient(CommonClient):
         """
         Gets the dimensions of all document pages
         :param document_id: The ID of the document
-        :return: The height and width of all document pages as dictionary with page number as key
+        :return: The height and width of all document pages as dictionary with page number as key corresponding to the
+        'results' part of the json response
         """
         response = self.get(DOCUMENT_PAGES_DIMENSIONS_ENDPOINT.format(document_id=document_id),
                             log_msg_before=f'Getting dimensions for all pages of document with ID {document_id}',

@@ -22,14 +22,14 @@ from .constants import API_DATASET_ID_FIELD, API_DATASETS_FIELD, API_DEPLOYMENT_
 class DCApiClient(CommonClient):
     """
     This class provides an interface to access SAP Document Classification REST API from a Python application.
-    Structure of values returned by all the methods is documented in Swagger. See Swagger UI by adding:
-    /document-classification/v1 to your Document Classification service key URL value (from outside the uaa section).
+    The structure of values returned by all the methods is documented in the APi reference:
+    https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html
 
     :param base_url: The service URL taken from the service key (key 'url' in service key JSON)
     :param client_id: The XSUAA client ID taken from the service key (key 'uaa.clientid' in service key JSON)
     :param client_secret: The XSUAA client secret taken from the service key (key 'uaa.clientsecret' in service key JSON)
     :param uaa_url: The XSUAA URL taken from the service key (key 'uaa.url' in service key JSON)
-    :param polling_threads: Number of threads used to poll for asynchronous DC APIs, the maximal value is 15
+    :param polling_threads: Number of threads used to poll for asynchronous DC APIs
     :param polling_sleep: Number of seconds to wait between the polling attempts for most of the APIs,
     the minimal value is 0.2
     :param polling_long_sleep: Number of seconds to wait between the polling attempts for model training and
@@ -185,7 +185,7 @@ class DCApiClient(CommonClient):
     def get_datasets_info(self):
         """
         Gets summary information about the existing datasets
-        :return: An array of datasets
+        :return: An array of datasets corresponding to the 'datasets' part of the json response
         """
         response = self.get(DATASETS_ENDPOINT,
                             log_msg_before='Getting information about datasets',
@@ -219,8 +219,8 @@ class DCApiClient(CommonClient):
         Gets the information about recently classified documents
         :param model_name: The name of the model against which the documents were classified
         :param model_version: The version of the model against which the documents were classified
-        :return: An array of document information, each document information includes its reference ID and the
-        classification status
+        :return: An array of document information correspond to the 'results' part of the json response. Each document
+        information includes its reference ID and the classification status.
         """
         response = self.get(DOCUMENTS_ENDPOINT(modelName=model_name, modelVersion=model_version),
                             log_msg_before=f'Getting information about documents that were recently classified against '
@@ -347,7 +347,8 @@ class DCApiClient(CommonClient):
     def get_trained_models_info(self):
         """
         Gets information about all trained models
-        :return: An array of trained models, each model information contains training status and training accuracy data
+        :return: An array of trained models corresponding to the 'models' part of the json response . Each model
+        information contains training status and training accuracy data.
         """
         response = self.get(TRAINED_MODELS_ENDPOINT,
                             log_msg_before='Getting information about all trained models',
@@ -396,7 +397,7 @@ class DCApiClient(CommonClient):
     def get_deployed_models_info(self):
         """
         Gets information about all deployed model servings
-        :return: An array of all deployed model servings
+        :return: An array of all deployed model servings corresponding to the 'deployments' part if the json response
         """
         response = self.get(DEPLOYMENTS_ENDPOINT,
                             log_msg_before='Getting information about all deployed models',
