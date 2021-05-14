@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import time
+from typing import Iterator, List, Union
 
 from sap_business_document_processing.common.http_client_base import CommonClient
 from sap_business_document_processing.common.helpers import get_ground_truth_json, function_wrap_errors
@@ -65,7 +66,7 @@ class DCApiClient(CommonClient):
                                           logging_level=logging_level)
 
     # Inference
-    def classify_document(self, document_path, model_name, model_version, reference_id=None, mime_type=None):
+    def classify_document(self, document_path: str, model_name, model_version, reference_id=None, mime_type=None) -> dict:
         """
         Submits request for document classification, checks the response and returns the reference ID for the
         uploaded document
@@ -113,7 +114,7 @@ class DCApiClient(CommonClient):
             result['document_path'] = document_path
         return result
 
-    def classify_documents(self, documents_paths, model_name, model_version):
+    def classify_documents(self, documents_paths: List[str], model_name, model_version) -> Iterator[dict]:
         """
         Submits requests for classification of multiple documents, checks the response and returns the reference ID
         for the classified documents
@@ -136,7 +137,7 @@ class DCApiClient(CommonClient):
         return self._create_result_iterator(results)
 
     # Training
-    def create_dataset(self):
+    def create_dataset(self) -> dict:
         """
         Creates an empty dataset
         :return: Object containing the dataset id
@@ -146,7 +147,7 @@ class DCApiClient(CommonClient):
                              log_msg_after='Successfully created a new dataset')
         return response.json()
 
-    def delete_dataset(self, dataset_id):
+    def delete_dataset(self, dataset_id) -> dict:
         """
         Deletes a dataset with a given ID
         :param dataset_id: The ID of the dataset to delete
@@ -157,7 +158,7 @@ class DCApiClient(CommonClient):
                                log_msg_after=f'Successfully deleted the dataset {dataset_id}')
         return response.json()
 
-    def delete_training_document(self, dataset_id, document_id):
+    def delete_training_document(self, dataset_id, document_id) -> {}:
         """
         Deletes a training document from a dataset
         :param dataset_id: The ID of the dataset where the document is located
@@ -170,7 +171,7 @@ class DCApiClient(CommonClient):
                                f'dataset {dataset_id}')
         return response.json()
 
-    def get_dataset_info(self, dataset_id):
+    def get_dataset_info(self, dataset_id) -> dict:
         """
         Gets statistical information about a dataset with a given ID
         :param dataset_id: The ID of the dataset
@@ -182,7 +183,7 @@ class DCApiClient(CommonClient):
                             log_msg_after=f'Successfully got the information about the dataset {dataset_id}')
         return response.json()
 
-    def get_datasets_info(self):
+    def get_datasets_info(self) -> List[dict]:
         """
         Gets summary information about the existing datasets
         :return: An array of datasets corresponding to the 'datasets' part of the json response
@@ -192,7 +193,7 @@ class DCApiClient(CommonClient):
                             log_msg_after='Successfully got the information about the datasets')
         return response.json()[API_DATASETS_FIELD]
 
-    def get_dataset_documents_info(self, dataset_id, top=None, skip=None, count=None):
+    def get_dataset_documents_info(self, dataset_id, top: int = None, skip: int = None, count: bool = None) -> dict:
         """
         Gets the information about all the documents in a specific dataset
         :param dataset_id: The ID of an existing dataset
@@ -214,7 +215,7 @@ class DCApiClient(CommonClient):
                             f'dataset {dataset_id}')
         return response.json()
 
-    def get_classification_documents_info(self, model_name, model_version):
+    def get_classification_documents_info(self, model_name, model_version) -> List[dict]:
         """
         Gets the information about recently classified documents
         :param model_name: The name of the model against which the documents were classified
@@ -229,8 +230,8 @@ class DCApiClient(CommonClient):
                             f'classified against the model {model_name} with version {model_version}')
         return response.json()[API_RESULTS_FIELD]
 
-    def upload_document_to_dataset(self, dataset_id, document_path, ground_truth, document_id=None, mime_type=None,
-                                   stratification_set=None):
+    def upload_document_to_dataset(self, dataset_id, document_path: str, ground_truth: Union[str, dict],
+                                   document_id=None, mime_type=None, stratification_set=None) -> dict:
         """
         Uploads a single document and its ground truth to a specific dataset
         :param dataset_id: The ID of the dataset
@@ -288,7 +289,8 @@ class DCApiClient(CommonClient):
                                                 documents_paths=files,
                                                 ground_truths_paths=ground_truth_files)
 
-    def upload_documents_to_dataset(self, dataset_id, documents_paths, ground_truths_paths):
+    def upload_documents_to_dataset(self, dataset_id, documents_paths: List[str],
+                                    ground_truths_paths: List[Union[str, dict]]) -> Iterator[dict]:
         """
 
         :param dataset_id: The ID of the dataset to upload the documents to
@@ -307,7 +309,7 @@ class DCApiClient(CommonClient):
         return self._create_result_iterator(results)
 
     # Model training and management
-    def train_model(self, model_name, dataset_id):
+    def train_model(self, model_name, dataset_id) -> dict:
         """
         Trigger the process to train a new model version for documents classification, based on the documents in the
         specific dataset and wait until this process is finished. The process may take significant time to complete
@@ -332,7 +334,7 @@ class DCApiClient(CommonClient):
                                   wait_status=409,
                                   sleep_interval=self.polling_long_sleep).json()
 
-    def delete_trained_model(self, model_name, model_version):
+    def delete_trained_model(self, model_name, model_version) -> {}:
         """
         Deletes an existing trained model
         :param model_name: Name of the existing model to delete
@@ -344,7 +346,7 @@ class DCApiClient(CommonClient):
                                log_msg_after=f'Successfully deleted the model {model_name} with version {model_version}')
         return response.json()
 
-    def get_trained_models_info(self):
+    def get_trained_models_info(self) -> List[dict]:
         """
         Gets information about all trained models
         :return: An array of trained models corresponding to the 'models' part of the json response . Each model
@@ -355,7 +357,7 @@ class DCApiClient(CommonClient):
                             log_msg_after='Getting information about all trained models')
         return response.json()[API_MODELS_FIELD]
 
-    def get_trained_model_info(self, model_name, model_version):
+    def get_trained_model_info(self, model_name, model_version) -> dict:
         """
         Gets information about a specific trained model
         :param model_name: The name of the model
@@ -368,7 +370,7 @@ class DCApiClient(CommonClient):
         return response.json()
 
     # Model deployment
-    def deploy_model(self, model_name, model_version):
+    def deploy_model(self, model_name, model_version) -> dict:
         """
         Deploys a trained model to be available for inference
         :param model_name: The name of the trained model
@@ -394,7 +396,7 @@ class DCApiClient(CommonClient):
                                   wait_status=409,
                                   sleep_interval=self.polling_long_sleep).json()
 
-    def get_deployed_models_info(self):
+    def get_deployed_models_info(self) -> List[dict]:
         """
         Gets information about all deployed model servings
         :return: An array of all deployed model servings corresponding to the 'deployments' part if the json response
@@ -404,7 +406,7 @@ class DCApiClient(CommonClient):
                             log_msg_after='Successfully got information about all deployed models')
         return response.json()[API_DEPLOYMENTS_FIELD]
 
-    def get_deployed_model_info(self, model_name_or_deployment_id, model_version=None):
+    def get_deployed_model_info(self, model_name_or_deployment_id, model_version=None) -> dict:
         """
         Gets information about a specific deployed model serving. This method can be called either with the ID of the
         deployed model or with the model name and version
@@ -431,7 +433,7 @@ class DCApiClient(CommonClient):
                                 f'ID {model_name_or_deployment_id}')
             return response.json()
 
-    def undeploy_model(self, model_name_or_deployment_id, model_version=None):
+    def undeploy_model(self, model_name_or_deployment_id, model_version=None) -> {}:
         """
         Removes a deployment of the specific model serving. This method can be called either with the ID of the
         deployed model or with the model name and version
