@@ -1,6 +1,6 @@
 name: Release to Pypi
 
-on: push  # change to on push main only
+on: push
 
 jobs:
   release:
@@ -28,12 +28,12 @@ jobs:
           add: './API.md'
           message: 'Update API documentation'
       - name: Bump version
-        run: python -m bumpversion build  # change when merging to real repo. Pay attention to the versions!
+        run: python -m bumpversion build
       - name: Build release distribution
         run: python -m build .
-      - name: Publish to TEST Pypi  # change to real PyPI
+      - name: Publish to TEST Pypi
         uses: pypa/gh-action-pypi-publish@master
         with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}  # add real PyPI token to repo
-          repository_url: https://test.pypi.org/legacy/  # not needed when publishing to real PyPI
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
 
