@@ -1,6 +1,9 @@
 name: Release to Pypi
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   release:
