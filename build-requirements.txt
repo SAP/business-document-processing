@@ -1,0 +1,5 @@
+build
+bump2version
+pydoc-markdown==2.1.3
+requests
+requests_oauthlib
