@@ -28,9 +28,9 @@ jobs:
         uses: EndBug/add-and-commit@v7
         with:
           add: |
-            ./API.md
-            ./VERSION
-            ./.bumpversion.cfg
+            API.md
+            VERSION
+            .bumpversion.cfg
           message: 'Update version and API.md'
       - name: Build release distribution
         run: python -m build .
