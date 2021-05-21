@@ -20,7 +20,7 @@ DCApiClient(self,
 ```
 
 This class provides an interface to access SAP Document Classification REST API from a Python application.
-The structure of values returned by all the methods is documented in the APi reference:
+The structure of values returned by all the methods is documented in the API reference:
 https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html
 
 - Argument base_url: The service URL taken from the service key (key 'url' in service key JSON)
