@@ -42,7 +42,7 @@ library you can also run the two demo links below:
 
 #### Document Information Extraction
 
-Try out the Document Information Extraction service with this [showcase](https://mybider.org/v2/gh/tillgeissler/business-document-processing/main?filepath=examples%F2document_information_extraction_examples%2Finformation_extraction_showcase.ipynb)
+Try out the Document Information Extraction service with this [showcase](https://mybinder.org/v2/gh/tillgeissler/business-document-processing/main?filepath=examples%2Fdocument_information_extraction_examples%2Finformation_extraction_showcase.ipynb)
 
 - [Exercises](doc_inf_ext_exercises/)
     - [Exercise 1 - Set up Document Information Extraction Service and UI](doc_inf_ext_exercises#exercise-1---set-up-document-information-extraction-service-and-ui)
