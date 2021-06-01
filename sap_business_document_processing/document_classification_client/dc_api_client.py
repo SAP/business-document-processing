@@ -17,7 +17,7 @@ from .constants import API_DATASET_ID_FIELD, API_DATASETS_FIELD, API_DEPLOYMENT_
     API_PAGINATION_TOP_PARAM, API_PARAMETERS_FIELD, API_RESULTS_FIELD, API_STRATIFICATION_SET_FIELD, DATASETS_ENDPOINT,\
     DATASET_DOCUMENTS_ENDPOINT, DATASET_DOCUMENT_ENDPOINT, DATASET_ENDPOINT, DEPLOYMENTS_ENDPOINT, DOCUMENTS_ENDPOINT, \
     DOCUMENT_RESULT_ENDPOINT, MODEL_DEPLOYMENT_ENDPOINT, MODEL_TRAINING_JOBS_ENDPOINT, TRAINED_MODELS_ENDPOINT, \
-    TRAINED_MODEL_ENDPOINT, FILE_EXTENSIONS_FOR_FOLDER_UPLOAD
+    TRAINED_MODEL_ENDPOINT
 
 
 class DCApiClient(CommonClient):
@@ -273,13 +273,14 @@ class DCApiClient(CommonClient):
             result['document_path'] = document_path
         return result
 
-    def upload_documents_directory_to_dataset(self, dataset_id, path):
+    def upload_documents_directory_to_dataset(self, dataset_id, path, file_extension='.pdf'):
         """
         :param dataset_id: The ID of the dataset to upload the documents to
         :param path: The path has to contain document data files and JSON file with GT with corresponding names
+        :param file_extension: The file format of the documents to be uploaded. Default is '.pdf'
         :return: An iterator with the upload results
         """
-        files = self._find_files(path)
+        files = self._find_files(path, file_extension)
         files_id = [os.path.splitext(os.path.basename(f))[0] for f in files]
         assert len(files_id) > 0, 'No training data found'
         ground_truth_files = [os.path.join(path, f + '.json') for f in files_id]
@@ -453,6 +454,6 @@ class DCApiClient(CommonClient):
                                   200).json()
 
     @staticmethod
-    def _find_files(directory):
+    def _find_files(directory, file_extension):
         return [os.path.join(directory, name) for name in os.listdir(directory)
-                if name.lower().endswith(FILE_EXTENSIONS_FOR_FOLDER_UPLOAD)]
+                if name.lower().endswith(file_extension)]

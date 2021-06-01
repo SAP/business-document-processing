@@ -37,6 +37,3 @@ API_MODEL_VERSION_FIELD = 'modelVersion'
 API_PARAMETERS_FIELD = 'parameters'
 API_RESULTS_FIELD = 'results'
 API_STRATIFICATION_SET_FIELD = 'stratificationSet'
-
-# NOTE: Equivalent uppercase/mixed case will be picked up as well
-FILE_EXTENSIONS_FOR_FOLDER_UPLOAD = ('.pdf', '.png', '.jpeg', '.jpg')
