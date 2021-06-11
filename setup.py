@@ -11,7 +11,7 @@ setup(
   download_url='https://github.com/sap/document-classification-client/archive/v_01.tar.gz',
   keywords=['business', 'document', 'classification', 'machine learning', 'SAP'],
   install_requires=[
-          'requests==2.23.0'
+          'requests==2.25.1'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',
