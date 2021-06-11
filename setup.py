@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name='sap-document-classification-client',
   packages=['sap_document_classification_client'],
-    version='0.1.22',
+    version='0.1.23',
   license='apache-2.0',
   description='Python client library for convenient usage of SAP Document Classification service REST API',
   author='Alexander Bolshakov',
@@ -11,7 +11,7 @@ setup(
   download_url='https://github.com/sap/document-classification-client/archive/v_01.tar.gz',
   keywords=['business', 'document', 'classification', 'machine learning', 'SAP'],
   install_requires=[
-          'requests==2.23.0'
+          'requests==2.25.1'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',
