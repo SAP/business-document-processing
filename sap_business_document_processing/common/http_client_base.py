@@ -8,7 +8,7 @@ import time
 from oauthlib.oauth2 import BackendApplicationClient, MissingTokenError
 from requests_oauthlib import OAuth2Session
 
-from .constants import MIN_POLLING_INTERVAL, FAILED_STATUSES, SUCCEEDED_STATUSES
+from .constants import API_STATUS_FIELD, MIN_POLLING_INTERVAL, FAILED_STATUSES, SUCCEEDED_STATUSES
 from .exceptions import BDPApiException, BDPClientException, BDPFailedAsynchronousOperationException, \
     BDPPollingTimeoutException, BDPServerException, BDPUnauthorizedException
 from .helpers import add_retry_to_session, make_url, make_oauth_url
@@ -79,7 +79,7 @@ class CommonClient:
                       success_status=200,
                       wait_status=None,
                       sleep_interval=None,
-                      get_status=lambda r: r['status'],
+                      get_status=lambda r: r[API_STATUS_FIELD],
                       log_msg_before=None,
                       log_msg_after=None,
                       **kwargs):
