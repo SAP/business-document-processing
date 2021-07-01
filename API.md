@@ -185,11 +185,13 @@ Uploads a single document and its ground truth to a specific dataset
 
 ### upload_documents_directory_to_dataset
 ```python
-DCApiClient.upload_documents_directory_to_dataset(dataset_id, path)
+DCApiClient.upload_documents_directory_to_dataset(
+  dataset_id, path, file_extension='.pdf')
 ```
 
 - Argument dataset_id: The ID of the dataset to upload the documents to
 - Argument path: The path has to contain document data files and JSON file with GT with corresponding names
+- Argument file_extension: The file format of the documents to be uploaded. Default is '.pdf'
 
 **Returns**: An iterator with the upload results
 
@@ -452,7 +454,7 @@ DoxApiClient.extract_information_from_document(
   document_path: str,
   client_id,
   document_type: str,
-  file_type: str = 'application/pdf',
+  mime_type: str = 'application/pdf',
   header_fields: typing.Union[str, typing.List[str]] = None,
   line_item_fields: typing.Union[str, typing.List[str]] = None,
   template_id=None,
@@ -466,7 +468,7 @@ a timeout is reached
 - Argument document_path: The path to the document
 - Argument client_id: The client ID for which the document should be uploaded
 - Argument document_type: The type of the document being uploaded. For available document types see documentation
-- Argument file_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
 - Argument header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
 separated string. If none are given, no header fields will be extracted
 - Argument line_item_fields: A list of line item fields to be extracted. Can be given as list of strings or as comma
@@ -485,7 +487,7 @@ Default is False
 DoxApiClient.extract_information_from_document_with_options(
   document_path: str,
   options: dict,
-  file_type: str,
+  mime_type: str,
   return_null_values: bool = False)
 ```
 
@@ -494,7 +496,7 @@ a timeout is reached.
 - Argument document_path: The path to the document
 - Argument options: The options for processing the document as dictionary. It has to include at least a valid client
 ID and document type
-- Argument file_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
 - Argument return_null_values: Flag if fields with null as value should be included in the response or not.
 Default is False
 
@@ -507,7 +509,7 @@ DoxApiClient.extract_information_from_documents(
   document_paths: typing.List[str],
   client_id,
   document_type: str,
-  file_type: str = 'application/pdf',
+  mime_type: str = 'application/pdf',
   header_fields: typing.Union[str, typing.List[str]] = None,
   line_item_fields: typing.Union[str, typing.List[str]] = None,
   template_id=None,
@@ -521,7 +523,7 @@ or a timeout is reached. The given parameters will be used for all documents
 - Argument document_paths: A list of paths to the documents
 - Argument client_id: The client ID for which the documents should be uploaded
 - Argument document_type: The type of the document being uploaded. For available document types see documentation
-- Argument file_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
 - Argument header_fields: A list of header fields to be extracted. Can be passed as list of strings or as comma
 separated string. If none are given, no header fields will be extracted
 - Argument line_item_fields: A list of line item fields to be extracted. Can be passed as list of strings
@@ -542,7 +544,7 @@ Use next(iterator) within a try-catch block to filter the failed documents.
 DoxApiClient.extract_information_from_documents_with_options(
   document_paths: typing.List[str],
   options: dict,
-  file_type: str = 'application/pdf',
+  mime_type: str = 'application/pdf',
   return_null_values: bool = False)
 ```
 
@@ -551,7 +553,7 @@ or a timeout is reached. The given options will be used for all documents
 - Argument document_paths: A list of paths to the documents
 - Argument options: The options for processing the documents as dictionary. It has to include at least a valid
 client ID and document type
-- Argument file_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
 - Argument return_null_values: Flag if fields with null as value should be included in the responses or not.
 Default is False
 
