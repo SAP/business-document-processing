@@ -436,7 +436,7 @@ class DoxApiClient(CommonClient):
 
     def delete_all_enrichment_data(self, data_type: str = None) -> dict:
         """
-        This endpoint is deleting all master data records for the account
+        This endpoint is deleting all enrichment data records for the account
         :param data_type: (Optional) The type of enrichment data that should be deleted. For the available data types
         see documentation
         :return: The API endpoint response as dictionary

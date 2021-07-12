@@ -4,6 +4,7 @@
 import json
 import requests
 from requests.adapters import HTTPAdapter
+from urllib.parse import urljoin
 from urllib3.util.retry import Retry
 
 
@@ -12,7 +13,7 @@ def make_url(base, extension):
         base = base[:-1]
     if not extension.startswith('/'):
         extension = '/' + extension
-    return base + extension
+    return urljoin(base, extension)
 
 
 def make_oauth_url(auth_url):
