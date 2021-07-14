@@ -677,7 +677,7 @@ list with one item when data_id is given
 DoxApiClient.delete_all_enrichment_data(data_type: str = None)
 ```
 
-This endpoint is deleting all master data records for the account
+This endpoint is deleting all enrichment data records for the account
 - Argument data_type: (Optional) The type of enrichment data that should be deleted. For the available data types
 see documentation
 
