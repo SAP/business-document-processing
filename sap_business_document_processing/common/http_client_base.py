@@ -5,7 +5,7 @@
 import json
 import logging
 import time
-from oauthlib.oauth2 import BackendApplicationClient, MissingTokenError
+from oauthlib.oauth2 import BackendApplicationClient, MissingTokenError, TokenExpiredError
 from requests_oauthlib import OAuth2Session
 
 from .constants import API_STATUS_FIELD, MIN_POLLING_INTERVAL, FAILED_STATUSES, SUCCEEDED_STATUSES
@@ -52,19 +52,23 @@ class CommonClient:
     @property
     def session(self):
         if self._session is None:
-            self._session = self._get_oauth_session(self.client_id, self.client_secret, self.uaa_url)
+            self._session = self._get_oauth_session()
         return self._session
 
-    def _get_oauth_session(self, client_id, client_secret, uaa_url):
-        if not uaa_url or not client_id or not client_secret:
+    def _get_oauth_session(self):
+        if not (self.uaa_url and self.client_id and self.client_secret):
             raise BDPClientException('Authentication is missing')
-        client = BackendApplicationClient(client_id)
+        client = BackendApplicationClient(self.client_id)
         session = OAuth2Session(client=client)
         add_retry_to_session(session, pool_maxsize=self.polling_threads)
+        return self._fetch_session_token(session)
+
+    def _fetch_session_token(self, session):
         tries, i = 2, 0
         for i in range(tries):
             try:
-                session.fetch_token(token_url=make_oauth_url(uaa_url), client_id=client_id, client_secret=client_secret)
+                session.fetch_token(token_url=make_oauth_url(self.uaa_url), client_id=self.client_id,
+                                    client_secret=self.client_secret)
                 return session
             except MissingTokenError as e:
                 if i < tries - 1:
@@ -120,7 +124,13 @@ class CommonClient:
         # add central logging here
         if log_msg_before is not None:
             self.logger.debug(log_msg_before)
-        response = request_func(self.path_to_url(path), **kwargs)
+        try:
+            response = request_func(self.path_to_url(path), **kwargs)
+        except TokenExpiredError:
+            self.logger.warning("OAuth token expired, fetching new token")
+            self._fetch_session_token(self.session)
+            response = request_func(self.path_to_url(path), **kwargs)
+
         if validate:
             self.raise_for_status_with_logging(response)
         if log_msg_after is not None:
