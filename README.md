@@ -14,6 +14,26 @@ Please check out the [**usage examples**](./examples), they are very useful to g
 
 Please have a look at [**API documentation**](./API.md) in order to use the library.
 
+### Notes for users of the sap-document-classification-client library
+This library includes all the capabilities of the sap-document-classification-client, which will not be developed further. However, the code is still available [here](https://github.com/SAP/business-document-processing/tree/master).
+If you want to switch to this library, you have to be aware of the following changes:
+
+* The DCApiClient can now be imported directly from the top module via: ```from sap_business_document_processing import DCApiClient```
+* The functions ```classifiy_documents```, ```upload_documents_to_dataset```, ```upload_documents_directory_to_dataset``` now return an iterator instead of a list. You can either analyze individual results using with ```result = next(iterator)``` within a try-catch block (e.g. to handle each failed document) or use ```results = list(iterator)``` to turn it to a list. The latter will raise an error if at least one document failed.
+* The function ```get_datasets_info``` now returns a list which is the "dataset" part of the API response json. (You just need to delete the \["dataset"\] from the response to work with it as until now)
+* The function ```get_classification_documents_info``` now returns a list which is the "results" part of the API response json.
+* The function ```get_training_models_info``` now returns a list which is the "models" part of the API response json.
+* The function ```get_deployed_models_info``` now returns a list which is the "deployments" part of the API response json.
+* The library now raises the following custom exceptions:
+    - **BDPApiException**: Base exception for all exceptions of this library. Raise when no other exception is applicable.
+    - **BDPClientException**: Raised when an HTTP response with status code between 400 and 500 is returned. Usually means incorrect user input. (Replaces some HTTPErrors)
+    - **BDPServerException**: Raised when an HTTP response with status code between 500 and 600 is returned. Usually means that the server had some internal error. (Replaces some HTTPErrors)
+    - **BDPUnauthorizedException**: Raised when an HTTP response with status code 401 is returned. Usually means that a wrong OAuth credentials were provided.
+    - **BDPFailedAsynchronousOperationException**: Raised when an asynchronous job failed during processing. (Replaces FailedCallException)
+    - **BDPPollingTimeoutException**: Raised when an asynchronous job exceeds the set polling_max_attempts. (Replaces PollingTimeoutException)
+* The function ```_poll_for_url``` now doesn`t expect an 'url' and 'payload' parameters, but 'path' and 'json' parameters instead.
+
+
 ## Requirements
 
 This library requires properly setup [Python 3](https://www.python.org/downloads/) environment.
