@@ -42,14 +42,14 @@ This library requires properly setup [Python 3](https://www.python.org/downloads
 
 This Python library should be consumed in the standard way by running
 
-```pip install sap-document-classification-client```
+```pip install sap-business-document-processing```
 
 or adding the library as a dependency of your code in `requirements.txt` file.
 
 ## Demo usage
 
 Prerequisites:
-* [Get an SAP Business Technology Plattform trial account](https://developers.sap.com/tutorials/hcp-create-trial-account.html)
+* [Get an SAP Business Technology Platform trial account](https://developers.sap.com/tutorials/hcp-create-trial-account.html)
 * [Create a DC service instance](https://developers.sap.com/tutorials/cp-aibus-dc-service-instance.html)
 * [Create a Dox service instance](https://developers.sap.com/tutorials/cp-aibus-dox-service-instance.html)
 
