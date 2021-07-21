@@ -80,3 +80,7 @@ Please see the [issues section](https://github.com/SAP/business-document-process
 ## How to obtain support
 
 In case you would like to contribute to this project, ask any questions or get support, please open an issue containing the description of your question or planned contribution in GitHub and we will get in touch.
+
+## Licensing
+
+Please see our [LICENSE](https://github.com/SAP/business-document-processing/blob/main/LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available via the [REUSE tool](https://api.reuse.software/info/github.com/SAP/business-document-processing).
