@@ -4,15 +4,15 @@ SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Python client library for SAP AI Business Services - Document Classification REST API
+# Python Client Library for the SAP AI Business Services: Document Classification and Document Information Extraction
 
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP/document-classification-client)](https://api.reuse.software/info/github.com/SAP/document-classification-client)
 
-This repository contains the [source code](sap_business_document_processing) of a Python client library to facilitate the use of [SAP AI Business Services - Document Classification](https://help.sap.com/dc) and [SAP AI Business Services - Document Information Extraction](https://help.sap.com/dox). The client library provides two API Client classes that contain convenient methods to access these services and issue calls to the [SAP AI Business Services - Document Classification REST API](https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html) and [SAP AI Business Services - Document Information Extraction REST API](https://help.sap.com/viewer/5fa7265b9ff64d73bac7cec61ee55ae6/SHIP/en-US/ded7d34e60f1422ba2e04e892a7f0e25.html) respectively. In order to be able to use the library you need to [have access to SAP Business Technology Platform](https://www.sap.com/products/cloud-platform/get-started.html).
+This repository contains the [source code](sap_business_document_processing) of a Python client library to facilitate the use of the SAP AI Business Services: [Document Classification](https://help.sap.com/dc) and [Document Information Extraction](https://help.sap.com/dox). The client library provides two API Client classes that contain convenient methods to access these services and issue calls to the [Document Classification REST API](https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html) and [Document Information Extraction REST API](https://help.sap.com/viewer/5fa7265b9ff64d73bac7cec61ee55ae6/SHIP/en-US/ded7d34e60f1422ba2e04e892a7f0e25.html) services respectively. To use the library you need to [have access to SAP Business Technology Platform](https://www.sap.com/products/cloud-platform/get-started.html).
 
-Please check out the [**usage examples**](./examples), they are very useful to get started with the services.
+Check out the [**usage examples**](./examples), they are very useful to get started with the services.
 
-Please have a look at [**API documentation**](./API.md) in order to use the library.
+Have a look at [**API documentation**](./API.md) in order to use the library.
 
 ### Notes for users of the sap-document-classification-client library
 This library includes all the capabilities of the sap-document-classification-client, which will not be developed further. However, the code is still available [here](https://github.com/SAP/business-document-processing/tree/master).
@@ -49,9 +49,9 @@ or adding the library as a dependency of your code in `requirements.txt` file.
 ## Demo usage
 
 Prerequisites:
-* [Get an SAP Business Technology Platform trial account](https://developers.sap.com/tutorials/hcp-create-trial-account.html)
-* [Create a DC service instance](https://developers.sap.com/tutorials/cp-aibus-dc-service-instance.html)
-* [Create a Dox service instance](https://developers.sap.com/tutorials/cp-aibus-dox-service-instance.html)
+* [Get a Free Account on SAP BTP Trial](https://developers.sap.com/tutorials/hcp-create-trial-account.html)
+* [Create Service Instance for Document Classification with Trial Account](https://developers.sap.com/tutorials/cp-aibus-dc-service-instance.html)
+* [Create Service Instance for Document Information Extraction](https://developers.sap.com/tutorials/cp-aibus-dox-service-instance.html)
 
 #### Document Classification
 
