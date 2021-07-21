@@ -1,0 +1,40 @@
+name: Release to Pypi
+
+on: workflow_dispatch
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+      - name: Install build dependencies
+        run: pip install -r build-requirements.txt
+      - name: Set Git username
+        run: |
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git config user.name "${{ github.actor }}"
+      - name: Bump version
+        run: python -m bumpversion build
+      - name: Create API documentation
+        run: |
+          python -m pydocmd simple sap_business_document_processing+ sap_business_document_processing.document_classification_client.dc_api_client++ sap_business_document_processing.document_information_extraction_client.dox_api_client++ > API.md
+          sed -i 's/:param/- Argument/g' API.md
+          sed -i 's/:return/\n**Returns**/g' API.md
+      - name: Update API documentation and version
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: |
+            API.md
+            VERSION
+            .bumpversion.cfg
+          message: 'Update version and API.md'
+      - name: Build release distribution
+        run: python -m build .
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
