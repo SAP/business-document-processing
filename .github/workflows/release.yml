@@ -34,8 +34,7 @@ jobs:
           message: 'Update version and API.md'
       - name: Build release distribution
         run: python -m build .
-      - name: Publish to TEST Pypi
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}

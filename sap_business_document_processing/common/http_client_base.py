@@ -121,7 +121,6 @@ class CommonClient:
         return make_url(self.base_url, path)
 
     def _request(self, request_func, path: str, validate: bool, log_msg_before=None, log_msg_after=None, **kwargs):
-        # add central logging here
         if log_msg_before is not None:
             self.logger.debug(log_msg_before)
         try:
