@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Python Client Library for the SAP AI Business Services: Document Classification and Document Information Extraction
 
-[![REUSE status](https://api.reuse.software/badge/github.com/SAP/document-classification-client)](https://api.reuse.software/info/github.com/SAP/document-classification-client)
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP/business-document-processing)](https://api.reuse.software/info/github.com/SAP/business-document-processing)
 
 This repository contains the [source code](sap_business_document_processing) of a Python client library to facilitate the use of the SAP AI Business Services: [Document Classification](https://help.sap.com/dc) and [Document Information Extraction](https://help.sap.com/dox). The client library provides two API Client classes that contain convenient methods to access these services and issue calls to the [Document Classification REST API](https://help.sap.com/viewer/ca60cd2ed44f4261a3ae500234c46f37/SHIP/en-US/c1045a561faf4ba0ae2b0e7713f5e6c4.html) and [Document Information Extraction REST API](https://help.sap.com/viewer/5fa7265b9ff64d73bac7cec61ee55ae6/SHIP/en-US/ded7d34e60f1422ba2e04e892a7f0e25.html) respectively. To use the library you need to [have access to SAP Business Technology Platform](https://www.sap.com/products/cloud-platform/get-started.html).
 
