@@ -36,7 +36,7 @@ If you want to switch to this library, you have to be aware of the following cha
 
 ## Requirements
 
-This library requires properly setup [Python 3.6](https://www.python.org/downloads/) environment.
+This library requires properly setup [Python](https://www.python.org/downloads/) 3.6 (or higher version) environment.
 
 ## Download and Installation
 
