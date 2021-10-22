@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import mimetypes
-
 from .constants import API_FIELD_CLIENT_ID, API_FIELD_DOCUMENT_TYPE, API_FIELD_ENRICHMENT, API_FIELD_TEMPLATE_ID, \
     API_FIELD_EXTRACTED_HEADER_FIELDS, API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, API_REQUEST_FIELD_EXTRACTED_FIELDS, \
     API_FIELD_FILE_TYPE, API_REQUEST_FIELD_RECEIVED_DATE
@@ -72,7 +70,3 @@ def create_capability_mapping_options(document_type, file_type, header_fields=No
     options[API_FIELD_EXTRACTED_LINE_ITEM_FIELDS] = line_item_fields
 
     return options
-
-
-def get_mimetype(filename: str) -> str:
-    return mimetypes.guess_type(filename)[0]

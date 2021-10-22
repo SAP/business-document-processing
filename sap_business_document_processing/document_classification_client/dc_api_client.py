@@ -45,7 +45,6 @@ class DCApiClient(CommonClient):
                  client_id,
                  client_secret,
                  uaa_url,
-                 url_path_prefix='document-classification/v1/',
                  polling_threads=5,
                  polling_sleep=5,
                  polling_long_sleep=30,
@@ -62,7 +61,7 @@ class DCApiClient(CommonClient):
                                           polling_sleep=polling_sleep,
                                           polling_long_sleep=polling_long_sleep,
                                           polling_max_attempts=polling_max_attempts,
-                                          url_path_prefix=url_path_prefix,
+                                          url_path_prefix='document-classification/v1/',
                                           logger_name='DCApiClient',
                                           logging_level=logging_level)
 
