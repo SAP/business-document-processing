@@ -43,7 +43,7 @@ def get_ground_truth_json(ground_truth):
 
 def add_retry_to_session(session: requests.Session, pool_maxsize=None, retries=3, backoff_factor=1,
                          status_forcelist=(500, 502, 503, 504)):
-    # see: https://urllib3.readthedocs.io/en/latest/reference/urllib3.uil.html for Retry class
+    # see: https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html for Retry class
     retry = Retry(total=retries,
                   read=retries,
                   status=retries,
