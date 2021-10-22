@@ -46,6 +46,7 @@ class DoxApiClient(CommonClient):
                  client_id,
                  client_secret,
                  uaa_url,
+                 url_path_prefix='document-information-extraction/v1/',
                  polling_threads=5,
                  polling_sleep=5,
                  polling_max_attempts=60,
@@ -60,7 +61,7 @@ class DoxApiClient(CommonClient):
                                            polling_threads=polling_threads,
                                            polling_sleep=polling_sleep,
                                            polling_max_attempts=polling_max_attempts,
-                                           url_path_prefix='document-information-extraction/v1/',
+                                           url_path_prefix=url_path_prefix,
                                            logger_name='DoxApiClient',
                                            logging_level=logging_level)
 
