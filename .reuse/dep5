@@ -4,6 +4,6 @@ Upstream-Contact: Alexander Bolshakov <alexander.bolshakov@sap.com>
 Source: https://github.com/SAP/document-classification-client
 
 Files: *
-Copyright: 2019-2020 SAP SE
+Copyright: 2019-2021 SAP SE
 License: Apache-2.0
-SPDX-FileCopyrightText: 2019-2020 SAP SE
+SPDX-FileCopyrightText: 2019-2021 SAP SE
