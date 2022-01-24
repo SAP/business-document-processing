@@ -5,6 +5,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
+from pathlib import Path
 from typing import Iterator, List, Union
 
 from sap_business_document_processing.common.http_client_base import CommonClient
@@ -297,7 +298,7 @@ class DoxApiClient(CommonClient):
             mime_type = get_mimetype(document_path)
         with open(document_path, 'rb') as file:
             response = self.post(DOCUMENT_ENDPOINT,
-                                 files={API_REQUEST_FIELD_FILE: (file.name, file, mime_type)},
+                                 files={API_REQUEST_FIELD_FILE: (Path(document_path).name, file, mime_type)},
                                  data={API_REQUEST_FIELD_OPTIONS: json.dumps(options)})
         return response.json()
 
