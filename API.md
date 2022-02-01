@@ -12,6 +12,7 @@ DCApiClient(self,
             client_id,
             client_secret,
             uaa_url,
+            url_path_prefix='document-classification/v1/',
             polling_threads=5,
             polling_sleep=5,
             polling_long_sleep=30,
@@ -323,6 +324,7 @@ DoxApiClient(self,
              client_id,
              client_secret,
              uaa_url,
+             url_path_prefix='document-information-extraction/v1/',
              polling_threads=5,
              polling_sleep=5,
              polling_max_attempts=60,
@@ -468,7 +470,9 @@ a timeout is reached
 - Argument document_path: The path to the document
 - Argument client_id: The client ID for which the document should be uploaded
 - Argument document_type: The type of the document being uploaded. For available document types see documentation
-- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type of the uploaded file. If 'unknown' is given, the content type is fetched
+automatically. Default is 'application/pdf'. The 'constants.py' file contains
+CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
 - Argument header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
 separated string. If none are given, no header fields will be extracted
 - Argument line_item_fields: A list of line item fields to be extracted. Can be given as list of strings or as comma
@@ -487,7 +491,7 @@ Default is False
 DoxApiClient.extract_information_from_document_with_options(
   document_path: str,
   options: dict,
-  mime_type: str,
+  mime_type: str = 'application/pdf',
   return_null_values: bool = False)
 ```
 
@@ -496,7 +500,9 @@ a timeout is reached.
 - Argument document_path: The path to the document
 - Argument options: The options for processing the document as dictionary. It has to include at least a valid client
 ID and document type
-- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type of the uploaded file. If 'unknown' is given, the content type is fetched
+automatically. Default is 'application/pdf'. The 'constants.py' file contains
+CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
 - Argument return_null_values: Flag if fields with null as value should be included in the response or not.
 Default is False
 
@@ -510,6 +516,7 @@ DoxApiClient.extract_information_from_documents(
   client_id,
   document_type: str,
   mime_type: str = 'application/pdf',
+  mime_type_list: typing.List[str] = None,
   header_fields: typing.Union[str, typing.List[str]] = None,
   line_item_fields: typing.Union[str, typing.List[str]] = None,
   template_id=None,
@@ -523,7 +530,11 @@ or a timeout is reached. The given parameters will be used for all documents
 - Argument document_paths: A list of paths to the documents
 - Argument client_id: The client ID for which the documents should be uploaded
 - Argument document_type: The type of the document being uploaded. For available document types see documentation
-- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type that is used for all uploaded files. If 'unknown' is given, the content type is
+fetched automatically. Default is 'application/pdf'. The 'constants.py' file contains
+CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
+- Argument mime_type_list: A list of content types for each file to be uploaded. Has to have the same length as
+'document_paths'. If this parameter is given, 'mime_type' will be ignored.
 - Argument header_fields: A list of header fields to be extracted. Can be passed as list of strings or as comma
 separated string. If none are given, no header fields will be extracted
 - Argument line_item_fields: A list of line item fields to be extracted. Can be passed as list of strings
@@ -545,6 +556,7 @@ DoxApiClient.extract_information_from_documents_with_options(
   document_paths: typing.List[str],
   options: dict,
   mime_type: str = 'application/pdf',
+  mime_type_list: typing.List[str] = None,
   return_null_values: bool = False)
 ```
 
@@ -553,7 +565,11 @@ or a timeout is reached. The given options will be used for all documents
 - Argument document_paths: A list of paths to the documents
 - Argument options: The options for processing the documents as dictionary. It has to include at least a valid
 client ID and document type
-- Argument mime_type: Content type of the uploaded file. Default is 'application/pdf'.
+- Argument mime_type: Content type that is used for all uploaded files. If 'unknown' is given, the content type is
+fetched automatically. Default is 'application/pdf'. The 'constants.py' file contains
+CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
+- Argument mime_type_list: A list of content types for each file to be uploaded. Has to have the same length as
+'document_paths'. If this parameter is given, 'mime_type' will be ignored.
 - Argument return_null_values: Flag if fields with null as value should be included in the responses or not.
 Default is False
 

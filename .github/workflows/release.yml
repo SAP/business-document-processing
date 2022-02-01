@@ -1,6 +1,17 @@
 name: Release to Pypi
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      bumpVersionPart:
+        description: 'The part of the version to increase'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
 
 jobs:
   release:
@@ -18,7 +29,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
       - name: Bump version
-        run: python -m bumpversion build
+        run: python -m bumpversion ${{ github.event.inputs.bumpVersionPart }}
       - name: Create API documentation
         run: |
           python -m pydocmd simple sap_business_document_processing+ sap_business_document_processing.document_classification_client.dc_api_client++ sap_business_document_processing.document_information_extraction_client.dox_api_client++ > API.md
