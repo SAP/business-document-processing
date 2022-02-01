@@ -1,5 +1,5 @@
 # Packages needed in the Jupyter Notebooks in the examples directory, installed by repo2docker (e.g. mybinder) 
-numpy==1.17.2
+numpy==1.21.0
 matplotlib==3.1.1
 scikit-learn==0.21.3
 pandas==0.25.1
