@@ -36,8 +36,10 @@ API_REQUEST_FIELD_ENRICHMENT_TYPE = 'type'
 
 API_HEADER_ACCEPT = 'accept'
 
+CONTENT_TYPE_JPEG = 'image/jpeg'
 CONTENT_TYPE_PDF = 'application/pdf'
 CONTENT_TYPE_PNG = 'image/png'
+CONTENT_TYPE_TIFF = 'image/tiff'
 CONTENT_TYPE_UNKNOWN = 'unknown'
 DATA_TYPE_BUSINESS_ENTITY = "businessEntity"
 DOCUMENT_TYPE_ADVICE = 'paymentAdvice'

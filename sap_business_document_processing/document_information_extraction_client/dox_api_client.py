@@ -181,7 +181,8 @@ class DoxApiClient(CommonClient):
         :param client_id: The client ID for which the document should be uploaded
         :param document_type: The type of the document being uploaded. For available document types see documentation
         :param mime_type: Content type of the uploaded file. If 'unknown' is given, the content type is fetched
-        automatically. Default is 'application/pdf'.
+        automatically. Default is 'application/pdf'. The 'constants.py' file contains
+        CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
         :param header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
         separated string. If none are given, no header fields will be extracted
         :param line_item_fields: A list of line item fields to be extracted. Can be given as list of strings or as comma
@@ -209,7 +210,8 @@ class DoxApiClient(CommonClient):
         :param options: The options for processing the document as dictionary. It has to include at least a valid client
         ID and document type
         :param mime_type: Content type of the uploaded file. If 'unknown' is given, the content type is fetched
-        automatically. Default is 'application/pdf'.
+        automatically. Default is 'application/pdf'. The 'constants.py' file contains
+        CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
         :param return_null_values: Flag if fields with null as value should be included in the response or not.
         Default is False
         :return: The extracted information of the document as dictionary
@@ -230,7 +232,8 @@ class DoxApiClient(CommonClient):
         :param client_id: The client ID for which the documents should be uploaded
         :param document_type: The type of the document being uploaded. For available document types see documentation
         :param mime_type: Content type that is used for all uploaded files. If 'unknown' is given, the content type is
-        fetched automatically. Default is 'application/pdf'.
+        fetched automatically. Default is 'application/pdf'. The 'constants.py' file contains
+        CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
         :param mime_type_list: A list of content types for each file to be uploaded. Has to have the same length as
         'document_paths'. If this parameter is given, 'mime_type' will be ignored.
         :param header_fields: A list of header fields to be extracted. Can be passed as list of strings or as comma
@@ -262,7 +265,8 @@ class DoxApiClient(CommonClient):
         :param options: The options for processing the documents as dictionary. It has to include at least a valid
         client ID and document type
         :param mime_type: Content type that is used for all uploaded files. If 'unknown' is given, the content type is
-        fetched automatically. Default is 'application/pdf'.
+        fetched automatically. Default is 'application/pdf'. The 'constants.py' file contains
+        CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
         :param mime_type_list: A list of content types for each file to be uploaded. Has to have the same length as
         'document_paths'. If this parameter is given, 'mime_type' will be ignored.
         :param return_null_values: Flag if fields with null as value should be included in the responses or not.
