@@ -18,7 +18,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
       - name: Bump version
-        run: python -m bumpversion build
+        run: python -m bumpversion patch
       - name: Create API documentation
         run: |
           python -m pydocmd simple sap_business_document_processing+ sap_business_document_processing.document_classification_client.dc_api_client++ sap_business_document_processing.document_information_extraction_client.dox_api_client++ > API.md
