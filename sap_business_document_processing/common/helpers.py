@@ -51,7 +51,7 @@ def add_retry_to_session(session: requests.Session, pool_maxsize=None, retries=3
                   connect=retries,
                   backoff_factor=backoff_factor,
                   status_forcelist=status_forcelist,
-                  allowed_methods=['GET'],
+                  method_whitelist=['GET'],
                   raise_on_status=False)
     adapter = HTTPAdapter(max_retries=retry, pool_maxsize=pool_maxsize)
     session.mount('http://', adapter)
