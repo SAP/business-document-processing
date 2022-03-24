@@ -92,6 +92,8 @@ class CommonClient:
 
         if log_msg_before is not None:
             self.logger.debug(log_msg_before)
+
+        response = None
         for _ in range(self.polling_max_attempts):
             response = self.get(path, validate=False, **kwargs)
             if (wait_status is not None) and response.status_code == wait_status:
@@ -115,7 +117,7 @@ class CommonClient:
             else:
                 self.raise_for_status_with_logging(response)
         raise BDPPollingTimeoutException("Polling for URL '{}' timed out after {} seconds".format(
-            self.path_to_url(path), sleep_interval * self.polling_max_attempts))
+            self.path_to_url(path), sleep_interval * self.polling_max_attempts), response=response)
 
     def path_to_url(self, path):
         return make_url(self.base_url, path)
