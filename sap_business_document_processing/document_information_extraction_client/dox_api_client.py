@@ -509,12 +509,12 @@ class DoxApiClient(CommonClient):
                                           f"enrichment data records for client {client_id}")
         return response.json()
 
-    def activate_enrichment_data(self) -> dict:
+    def activate_enrichment_data(self, query_parameters) -> dict:
         """
         Activates all enrichment data records for the current tenant
         :return: The API endpoint response as dictionary
         """
-        response = self.post(DATA_ACTIVATION_ASYNC_ENDPOINT,
+        response = self.post(DATA_ACTIVATION_ASYNC_ENDPOINT + query_parameters,
                              log_msg_before='Start activating enrichment data records')
 
         response = self._poll_for_url(DATA_ACTIVATION_ID_ENDPOINT.format(id=response.json()[API_FIELD_ID]),
