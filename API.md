@@ -724,10 +724,11 @@ used when deleting large amounts of data to improve performance. Default is ``Fa
 
 ### activate_enrichment_data
 ```python
-DoxApiClient.activate_enrichment_data()
+DoxApiClient.activate_enrichment_data(params=None)
 ```
 
 Activates all enrichment data records for the current tenant
+- Argument params: Optional. A dictionary, list of tuples or bytes to send as a query string.
 
 **Returns**: The API endpoint response as dictionary
 
