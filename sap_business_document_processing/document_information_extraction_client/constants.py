@@ -14,6 +14,7 @@ API_FIELD_FILE_TYPE = 'fileType'
 API_FIELD_ID = 'id'
 API_FIELD_RESULTS = 'results'
 API_FIELD_RETURN_NULL = 'returnNullValues'
+API_FIELD_SUPPORT_MODE = "supportMode"
 API_FIELD_STATUS = 'status'
 API_FIELD_TEMPLATE_ID = 'templateId'
 API_FIELD_VALUE = 'value'

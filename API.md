@@ -462,7 +462,8 @@ DoxApiClient.extract_information_from_document(
   template_id=None,
   received_date=None,
   enrichment=None,
-  return_null_values: bool = False)
+  return_null_values: bool = False,
+  support_mode: bool = False)
 ```
 
 Extracts the information from a document. The function will run until a processing result can be returned or
@@ -481,6 +482,7 @@ separated string. If none are given, no line item fields will be extracted
 - Argument received_date: (optional) The date the document was received
 - Argument enrichment: (optional) A dictionary of entities that should be used for entity matching
 - Argument return_null_values: Flag if fields with null as value should be included in the response or not.
+- Argument support_mode: (optional) Flag if support info property is added to each extraction field.
 Default is False
 
 **Returns**: The extracted information of the document as dictionary
@@ -492,7 +494,8 @@ DoxApiClient.extract_information_from_document_with_options(
   document_path: str,
   options: dict,
   mime_type: str = 'application/pdf',
-  return_null_values: bool = False)
+  return_null_values: bool = False,
+  support_mode: bool = False)
 ```
 
 Extracts the information from a document. The function will run until a processing result can be returned or
@@ -504,6 +507,7 @@ ID and document type
 automatically. Default is 'application/pdf'. The 'constants.py' file contains
 CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
 - Argument return_null_values: Flag if fields with null as value should be included in the response or not.
+- Argument support_mode: (optional) Flag if support info property is added to each extraction field.
 Default is False
 
 **Returns**: The extracted information of the document as dictionary
@@ -522,7 +526,8 @@ DoxApiClient.extract_information_from_documents(
   template_id=None,
   received_date=None,
   enrichment=None,
-  return_null_values: bool = False)
+  return_null_values: bool = False,
+  support_mode: bool = False)
 ```
 
 Extracts the information from multiple documents. The function will run until all documents have been processed
@@ -544,6 +549,7 @@ or as comma separated string. If none are given, no line items fields are extrac
 - Argument enrichment: (optional) A dictionary of entities that should be used for entity matching. For the format
 see documentation
 - Argument return_null_values: Flag if fields with null as value should be included in the responses or not.
+- Argument support_mode: (optional) Flag if support info property is added to each extraction field.
 Default is False
 
 **Returns**: An iterator with extracted information for successful documents and exceptions for failed documents.
@@ -557,7 +563,8 @@ DoxApiClient.extract_information_from_documents_with_options(
   options: dict,
   mime_type: str = 'application/pdf',
   mime_type_list: typing.List[str] = None,
-  return_null_values: bool = False)
+  return_null_values: bool = False,
+  support_mode: bool = False)
 ```
 
 Extracts the information from multiple documents. The function will run until all documents have been processed
@@ -571,6 +578,7 @@ CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
 - Argument mime_type_list: A list of content types for each file to be uploaded. Has to have the same length as
 'document_paths'. If this parameter is given, 'mime_type' will be ignored.
 - Argument return_null_values: Flag if fields with null as value should be included in the responses or not.
+- Argument support_mode: (optional) Flag if support info property is added to each extraction field.
 Default is False
 
 **Returns**: An iterator with extracted information for successful documents and exceptions for failed documents.
@@ -582,7 +590,8 @@ Use next(iterator) within a try-catch block to filter the failed documents.
 DoxApiClient.get_extraction_for_document(
   document_id,
   extracted_values: bool = None,
-  return_null_values: bool = False)
+  return_null_values: bool = False,
+  support_mode: bool = False)
 ```
 
 Gets the extracted information of an uploaded document by document ID. Raises an exception, when the document
@@ -593,6 +602,7 @@ to `True` the extracted values are returned. If set to `False` the ground truth 
 is available, the extracted values will be returned either way. If `None` is given, the ground truth is returned
 if available
 - Argument return_null_values: Flag if fields with null as value should be included in the response or not.
+- Argument support_mode: (optional) Flag if support info property is added to each extraction field.
 Default is False
 
 **Returns**: The extracted information of the processed document or the ground truth as dictionary
@@ -603,7 +613,8 @@ Default is False
 DoxApiClient.get_extraction_for_documents(
   document_ids: list,
   extracted_values: bool = None,
-  return_null_values: bool = False)
+  return_null_values: bool = False,
+  support_mode: bool = False)
 ```
 
 Gets the extracted information for multiple documents given their document IDs
@@ -613,6 +624,7 @@ to `True` the extracted values are returned. If set to `False` the ground truth 
 is available, the extracted values will be returned either way. If `None` is given, the ground truth is returned
 if available
 - Argument return_null_values: Flag if fields with null as value should be included in the response or not.
+- Argument support_mode: (optional) Flag if support info property is added to each extraction field.
 Default is False
 
 **Returns**: An iterator with extracted information or ground truths for successful documents and exceptions
