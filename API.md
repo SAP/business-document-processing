@@ -460,6 +460,7 @@ DoxApiClient.extract_information_from_document(
   header_fields: typing.Union[str, typing.List[str]] = None,
   line_item_fields: typing.Union[str, typing.List[str]] = None,
   template_id=None,
+  schema_id=None,
   received_date=None,
   enrichment=None,
   return_null_values: bool = False)
@@ -474,10 +475,14 @@ a timeout is reached
 automatically. Default is 'application/pdf'. The 'constants.py' file contains
 CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
 - Argument header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
-separated string. If none are given, no header fields will be extracted
-- Argument line_item_fields: A list of line item fields to be extracted. Can be given as list of strings or as comma
-separated string. If none are given, no line item fields will be extracted
+separated string. If none are given, no header fields will be extracted. Will be ignored, if schema_id is
+provided
+- Argument line_item_fields: A list of line item fields to be extracted. Can be given as list of strings
+or as comma separated string. If none are given, no line item fields will be extracted. Will be ignored, if
+schema_id is provided.
 - Argument template_id: (optional) The ID of the template to be used for this document
+- Argument schema_id: (optional) The ID of the schema to be used for the document. Only schema_id OR header_fields
+and line_item_fields can be used. If given, header_fields and line_item_fields are ignored
 - Argument received_date: (optional) The date the document was received
 - Argument enrichment: (optional) A dictionary of entities that should be used for entity matching
 - Argument return_null_values: Flag if fields with null as value should be included in the response or not.
@@ -520,6 +525,7 @@ DoxApiClient.extract_information_from_documents(
   header_fields: typing.Union[str, typing.List[str]] = None,
   line_item_fields: typing.Union[str, typing.List[str]] = None,
   template_id=None,
+  schema_id=None,
   received_date=None,
   enrichment=None,
   return_null_values: bool = False)
@@ -535,11 +541,15 @@ fetched automatically. Default is 'application/pdf'. The 'constants.py' file con
 CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
 - Argument mime_type_list: A list of content types for each file to be uploaded. Has to have the same length as
 'document_paths'. If this parameter is given, 'mime_type' will be ignored.
-- Argument header_fields: A list of header fields to be extracted. Can be passed as list of strings or as comma
-separated string. If none are given, no header fields will be extracted
-- Argument line_item_fields: A list of line item fields to be extracted. Can be passed as list of strings
-or as comma separated string. If none are given, no line items fields are extracted
+- Argument header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
+separated string. If none are given, no header fields will be extracted. Will be ignored, if schema_id is
+provided
+- Argument line_item_fields: A list of line item fields to be extracted. Can be given as list of strings
+or as comma separated string. If none are given, no line item fields will be extracted. Will be ignored, if
+schema_id is provided.
 - Argument template_id: (optional) The ID of the template to be used for the documents
+- Argument schema_id: (optional) The ID of the schema to be used for the documents. Only schema_id OR header_fields
+and line_item_fields can be used. If given, header_fields and line_item_fields are ignored
 - Argument received_date: (optional) The date the documents were received
 - Argument enrichment: (optional) A dictionary of entities that should be used for entity matching. For the format
 see documentation
