@@ -173,7 +173,8 @@ class DoxApiClient(CommonClient):
                                           mime_type: str = CONTENT_TYPE_PDF,
                                           header_fields: Union[str, List[str]] = None,
                                           line_item_fields: Union[str, List[str]] = None, template_id=None,
-                                          received_date=None, enrichment=None, return_null_values: bool = False) -> dict:
+                                          schema_id=None, received_date=None, enrichment=None,
+                                          return_null_values: bool = False) -> dict:
         """
         Extracts the information from a document. The function will run until a processing result can be returned or
         a timeout is reached
@@ -184,10 +185,14 @@ class DoxApiClient(CommonClient):
         automatically. Default is 'application/pdf'. The 'constants.py' file contains
         CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
         :param header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
-        separated string. If none are given, no header fields will be extracted
-        :param line_item_fields: A list of line item fields to be extracted. Can be given as list of strings or as comma
-        separated string. If none are given, no line item fields will be extracted
+        separated string. If none are given, no header fields will be extracted. Will be ignored, if schema_id is
+        provided
+        :param line_item_fields: A list of line item fields to be extracted. Can be given as list of strings
+        or as comma separated string. If none are given, no line item fields will be extracted. Will be ignored, if
+        schema_id is provided.
         :param template_id: (optional) The ID of the template to be used for this document
+        :param schema_id: (optional) The ID of the schema to be used for the document. Only schema_id OR header_fields
+        and line_item_fields can be used. If given, header_fields and line_item_fields are ignored
         :param received_date: (optional) The date the document was received
         :param enrichment: (optional) A dictionary of entities that should be used for entity matching
         :param return_null_values: Flag if fields with null as value should be included in the response or not.
@@ -197,7 +202,8 @@ class DoxApiClient(CommonClient):
         return next(self.extract_information_from_documents([document_path], client_id, document_type, mime_type,
                                                             header_fields=header_fields,
                                                             line_item_fields=line_item_fields, template_id=template_id,
-                                                            received_date=received_date, enrichment=enrichment,
+                                                            schema_id=schema_id, received_date=received_date,
+                                                            enrichment=enrichment,
                                                             return_null_values=return_null_values))
 
     def extract_information_from_document_with_options(self, document_path: str, options: dict,
@@ -223,7 +229,7 @@ class DoxApiClient(CommonClient):
                                            mime_type: str = CONTENT_TYPE_PDF, mime_type_list: List[str] = None,
                                            header_fields: Union[str, List[str]] = None,
                                            line_item_fields: Union[str, List[str]] = None, template_id=None,
-                                           received_date=None, enrichment=None,
+                                           schema_id=None, received_date=None, enrichment=None,
                                            return_null_values: bool = False) -> Iterator[dict]:
         """
         Extracts the information from multiple documents. The function will run until all documents have been processed
@@ -236,11 +242,15 @@ class DoxApiClient(CommonClient):
         CONTENT_TYPE_[JPEG, PDF, PNG, TIFF, UNKNOWN] that can be used here.
         :param mime_type_list: A list of content types for each file to be uploaded. Has to have the same length as
         'document_paths'. If this parameter is given, 'mime_type' will be ignored.
-        :param header_fields: A list of header fields to be extracted. Can be passed as list of strings or as comma
-        separated string. If none are given, no header fields will be extracted
-        :param line_item_fields: A list of line item fields to be extracted. Can be passed as list of strings
-        or as comma separated string. If none are given, no line items fields are extracted
+        :param header_fields: A list of header fields to be extracted. Can be given as list of strings or as comma
+        separated string. If none are given, no header fields will be extracted. Will be ignored, if schema_id is
+        provided
+        :param line_item_fields: A list of line item fields to be extracted. Can be given as list of strings
+        or as comma separated string. If none are given, no line item fields will be extracted. Will be ignored, if
+        schema_id is provided.
         :param template_id: (optional) The ID of the template to be used for the documents
+        :param schema_id: (optional) The ID of the schema to be used for the documents. Only schema_id OR header_fields
+        and line_item_fields can be used. If given, header_fields and line_item_fields are ignored
         :param received_date: (optional) The date the documents were received
         :param enrichment: (optional) A dictionary of entities that should be used for entity matching. For the format
         see documentation
@@ -250,7 +260,7 @@ class DoxApiClient(CommonClient):
         Use next(iterator) within a try-catch block to filter the failed documents.
         """
         options = create_document_options(client_id, document_type, header_fields, line_item_fields, template_id,
-                                          received_date, enrichment)
+                                          schema_id, received_date, enrichment)
         return self.extract_information_from_documents_with_options(document_paths, options, mime_type, mime_type_list,
                                                                     return_null_values)
 
