@@ -28,3 +28,13 @@ class BDPServerException(BDPApiException):
 
 class BDPUnauthorizedException(BDPClientException):
     pass
+
+
+class DoxApiClientError(Exception):
+    def __init__(self, message, status_code: int = None):
+        super(DoxApiClientError, self).__init__(message)
+        self.status_code = status_code
+
+
+class DoxApiCreateSchemaError(DoxApiClientError):
+    pass
