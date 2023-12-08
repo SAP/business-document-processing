@@ -2,11 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 import os
-import tempfile
 from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
-from http import HTTPStatus
 from pathlib import Path
 from typing import Iterator, List, Union
 
@@ -21,8 +19,8 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     CONTENT_TYPE_UNKNOWN, DATA_TYPE_BUSINESS_ENTITY, DOCUMENT_TYPE_ADVICE, FILE_TYPE_EXCEL, API_FIELD_DOCUMENT_TYPE, \
     API_FIELD_PREDEFINED, API_REQUEST_FIELD_ORDER, SCHEMAS_LIST_ENDPOINT, SCHEMAS_UPDATE_ENDPOINT, SCHEMAS_ENDPOINT, \
     SCHEMAS_VERSION_FIELDS_ENDPOINT, SCHEMAS_VERSION_ACTIVATE_ENDPOINT, SCHEMAS_VERSION_DEACTIVATE_ENDPOINT, \
-    SCHEMAS_CAPABILITIES, SCHEMAS_VERSIONS_ENDPOINT, SCHEMAS_VERSION_UUID_ENDPOINT, MODEL_TYPE_DEFAULT_1, \
-    MODEL_TYPE_DEFAULT_2, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SUPPORTED_MODEL_TYPES, MODEL_TYPE_CUSTOM
+    SCHEMAS_CAPABILITIES, SCHEMAS_VERSIONS_ENDPOINT, SCHEMAS_VERSION_UUID_ENDPOINT, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, \
+    SUPPORTED_MODEL_TYPES, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_2, SETUP_TYPE_VERSION_1
 from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, \
     DATA_ACTIVATION_ASYNC_ENDPOINT, DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, \
     DOCUMENT_ENDPOINT, DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, \
@@ -30,6 +28,7 @@ from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_EN
     DOCUMENT_PAGE_TEXT_ENDPOINT, DOCUMENT_PAGES_TEXT_ENDPOINT
 from .helpers import create_document_options, create_capability_mapping_options, get_mimetype, \
     create_payload_for_schema_fields
+from ..common.exceptions import DoxApiInvalidDataProvidedError
 
 
 class DoxApiClient(CommonClient):
@@ -699,7 +698,7 @@ class DoxApiClient(CommonClient):
         """
         Create new version for schema
         """
-        url = SCHEMAS_UPDATE_ENDPOINT.format(schema_id) + "?clientId={}".format(client_id)
+        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
         return self.post(url)
 
     def get_schema_configuration_details(self, client_id, schema_id):
@@ -800,9 +799,11 @@ class DoxApiClient(CommonClient):
         """
         Delete Versions associated with Schema
         """
-        url = SCHEMAS_VERSIONS_ENDPOINT.format(schema_id) + "?clientId={}".format(client_id)
+        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
         payload = {
-            "version": version
+            "version": [
+                version
+            ]
         }
         return self.delete(url, json=payload)
 
@@ -817,7 +818,7 @@ class DoxApiClient(CommonClient):
         """
         Retrieve all versions for Schema
         """
-        url = SCHEMAS_VERSIONS_ENDPOINT.format(schema_id) + "?clientId={}".format(client_id)
+        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
         return self.get(url)
 
     def get_schema_version_details(self, schema_id, version, client_id):
@@ -831,29 +832,32 @@ class DoxApiClient(CommonClient):
         """
         Retrieve Version Details of Schema for a Client
         """
-        url = SCHEMAS_VERSION_UUID_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}"\
+        url = SCHEMAS_VERSION_UUID_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
             .format(client_id)
         return self.get(url)
 
-    def create_schema_with_fields(self, client_id, payload, model_type, item_fields=None, setup_fields=None):
+    def create_schema_with_fields(self, client_id, payload, model_type, item_fields=None):
         """
         Create schema along with header fields and line items
         """
         if model_type not in SUPPORTED_MODEL_TYPES:
-            raise Exception
+            # response = ErrorMessage('E1', 'Invalid model. Valid models are {}.',
+            #                         plural_text='Invalid model. Valid models are {}.',
+            #                         variables=[str(SUPPORTED_MODEL_TYPES)],
+            #                         detail_msg=DetailsBuilder('Invalid model: {}',
+            #                                                   plural_text='Invalid model: {}'))
+            error_msg = 'Invalid model. Valid models are {}.'.format(str(SUPPORTED_MODEL_TYPES))
+            raise DoxApiInvalidDataProvidedError(error_msg)
         file_path = self._get_default_extractor_fields(model_type)
-        if model_type != MODEL_TYPE_CUSTOM:
-            schema_fields_payload = create_payload_for_schema_fields(model_type, item_fields)
-            if model_type in [MODEL_TYPE_DEFAULT_1, MODEL_TYPE_DEFAULT_2]:
-                os.remove(file_path)
-        else:
-            schema_fields_payload = create_payload_for_schema_fields(model_type, item_fields, setup_fields)
+        schema_fields_payload = create_payload_for_schema_fields(model_type, item_fields)
+        if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
+            os.remove(file_path)
         response = self.post_schema_configuration(payload)
         schema_id = response.json()["id"]
         return self.post_schema_version_fields(schema_fields_payload, schema_id, '1', client_id)
 
     def _get_default_extractor_fields(self, model_type):
-        if model_type in [MODEL_TYPE_DEFAULT_1, MODEL_TYPE_DEFAULT_2]:
+        if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
             capabilities = self.get_capabilities()
             file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_EXTRACTOR_FIELDS_FILE_PATH)
             try:

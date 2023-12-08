@@ -7,13 +7,14 @@ import os.path
 
 from .constants import API_FIELD_CLIENT_ID, API_FIELD_DOCUMENT_TYPE, API_FIELD_ENRICHMENT, API_FIELD_TEMPLATE_ID, \
     API_FIELD_EXTRACTED_HEADER_FIELDS, API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, API_REQUEST_FIELD_EXTRACTED_FIELDS, \
-    API_FIELD_FILE_TYPE, API_REQUEST_FIELD_RECEIVED_DATE, MODEL_TYPE_DEFAULT_1, MODEL_TYPE_DEFAULT_2, \
+    API_FIELD_FILE_TYPE, API_REQUEST_FIELD_RECEIVED_DATE, \
     DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SETUP_TYPE_VERSION_1, API_FIELD_SCHEMA_NAME, API_FIELD_DESCRIPTION, \
     API_FIELD_LABEL, API_FIELD_DEFAULT_EXTRACTOR, API_FIELD_FIELD_NAME, API_FIELD_SETUP_TYPE, \
     API_FIELD_SETUP_TYPE_VERSION, API_FIELD_SETUP, API_FIELD_FORMATTING_TYPE, API_FIELD_FORMATTING, \
     API_FIELD_FORMATTING_TYPE_VERSION, API_FIELD_STATIC, API_FIELD_TYPE, API_FIELD_IS_LINE_ITEM, SETUP_TYPE_AUTO, \
     API_FIELD_PRIORITY, MODEL_TYPE_LLM, SETUP_TYPE_VERSION_2, MODEL_TYPE_TEMPLATE, SETUP_TYPE_MANUAL, \
-    API_FIELD_DATATYPE, SETUP_TYPE_MODEL, API_FIELD_PROPERTIES, API_FIELD_FILTER
+    API_FIELD_DATATYPE, MODEL_TYPE_DEFAULT
+from ..common.exceptions import DoxApiInvalidDataProvidedError, DOXInternalServerError
 
 
 def create_document_options(client_id, document_type, header_fields=None, line_item_fields=None, template_id=None,
@@ -103,36 +104,51 @@ def generate_item_payload(item, setup_type_version, datatype, setup_fields=None)
     return payload
 
 
-def create_payload_for_schema_fields(model_type, items, setup=None):
+def create_payload_for_schema_fields(model_type, items):
     header_items, line_items = [], []
     current_directory = os.path.dirname(os.path.abspath(__file__))
     json_file_path = os.path.join(current_directory, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH)
     header_name_to_type, line_name_to_type = [], []
-    if model_type in [MODEL_TYPE_DEFAULT_1, MODEL_TYPE_DEFAULT_2]:
+
+    if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
         if os.path.exists(json_file_path):
             with open(str(json_file_path), 'r') as file:
                 data = json.load(file)
-        for item in items:
-            if any(field.get(API_FIELD_SCHEMA_NAME) == item[API_FIELD_SCHEMA_NAME]
-                   for field in data[API_REQUEST_FIELD_EXTRACTED_FIELDS][API_FIELD_EXTRACTED_HEADER_FIELDS])\
-                    and not item[API_FIELD_IS_LINE_ITEM]:
-                header_name_to_type.append({item[API_FIELD_SCHEMA_NAME]: field[API_FIELD_TYPE] for field in
-                                            data[API_REQUEST_FIELD_EXTRACTED_FIELDS][API_FIELD_EXTRACTED_HEADER_FIELDS]
-                                            if field[API_FIELD_SCHEMA_NAME] == item[API_FIELD_SCHEMA_NAME]})
-            elif any(field.get(API_FIELD_SCHEMA_NAME) == item[API_FIELD_SCHEMA_NAME]
-                     for field in data[API_REQUEST_FIELD_EXTRACTED_FIELDS][API_FIELD_EXTRACTED_LINE_ITEM_FIELDS])\
-                    and item[API_FIELD_IS_LINE_ITEM]:
-                line_name_to_type.append({item[API_FIELD_SCHEMA_NAME]: field[API_FIELD_TYPE] for field in
-                                          data[API_REQUEST_FIELD_EXTRACTED_FIELDS][API_FIELD_EXTRACTED_LINE_ITEM_FIELDS]
-                                          if field[API_FIELD_SCHEMA_NAME] == item[API_FIELD_SCHEMA_NAME]})
-            else:
-                return 404
+
+            extracted_header_fields = data.get(API_REQUEST_FIELD_EXTRACTED_FIELDS, {}) \
+                .get(API_FIELD_EXTRACTED_HEADER_FIELDS, [])
+            extracted_line_item_fields = data.get(API_REQUEST_FIELD_EXTRACTED_FIELDS, {}) \
+                .get(API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, [])
+
+            for item in items:
+                schema_name = item[API_FIELD_SCHEMA_NAME]
+                is_line_item = item[API_FIELD_IS_LINE_ITEM]
+
+                matching_fields = [field for field in extracted_header_fields if
+                                   field.get(API_FIELD_SCHEMA_NAME) == schema_name] if not is_line_item \
+                    else [field for field in extracted_line_item_fields
+                          if field.get(API_FIELD_SCHEMA_NAME) == schema_name]
+
+                if matching_fields:
+                    if not is_line_item:
+                        header_name_to_type.append({schema_name: field[API_FIELD_TYPE] for field in matching_fields})
+                    else:
+                        line_name_to_type.append({schema_name: field[API_FIELD_TYPE] for field in matching_fields})
+                else:
+                    error_msg = 'fieldName not found in defaultExtractor values. Please provide valid fieldName from ' \
+                                '/capabilities API.'
+                    raise DoxApiInvalidDataProvidedError(error_msg)
+        else:
+            error_msg = 'Internal Server Error'
+            raise DOXInternalServerError(error_msg)
+
     setup_fields = {
         API_FIELD_TYPE: None,
         API_FIELD_PRIORITY: '1'
     }
-    if model_type == MODEL_TYPE_DEFAULT_1:
-        """  FOR DEFAULT MODEL 1 """
+
+    if model_type == MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1:
+        """  FOR DEFAULT MODEL 1.0.0 """
         for item in items:
             if not item[API_FIELD_IS_LINE_ITEM]:
                 value = {item[API_FIELD_SCHEMA_NAME]: next((field[item[API_FIELD_SCHEMA_NAME]] for field
@@ -146,8 +162,8 @@ def create_payload_for_schema_fields(model_type, items, setup=None):
                                                             in field), None)}
                 item_payload = generate_item_payload(item, SETUP_TYPE_VERSION_1, value)
                 line_items.append(item_payload)
-    elif model_type == MODEL_TYPE_DEFAULT_2:
-        """  FOR DEFAULT MODEL 2 """
+    elif model_type == MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2:
+        """  FOR DEFAULT MODEL 2.0.0 """
         setup_fields[API_FIELD_TYPE] = SETUP_TYPE_AUTO
         for item in items:
             if not item[API_FIELD_IS_LINE_ITEM]:
@@ -179,21 +195,6 @@ def create_payload_for_schema_fields(model_type, items, setup=None):
         setup_fields[API_FIELD_TYPE] = SETUP_TYPE_MANUAL
         for item in items:
             item_payload = generate_item_payload(item, SETUP_TYPE_VERSION_2,
-                                                 {item[API_FIELD_SCHEMA_NAME]: item[API_FIELD_DATATYPE]},
-                                                 setup_fields=setup_fields)
-            item_payload[API_FIELD_DEFAULT_EXTRACTOR] = {}
-            if not item[API_FIELD_IS_LINE_ITEM]:
-                header_items.append(item_payload)
-            else:
-                line_items.append(item_payload)
-    else:
-        """  FOR CUSTOM MODEL """
-        setup_fields[API_FIELD_TYPE] = SETUP_TYPE_MODEL
-        setup_fields[API_FIELD_PROPERTIES] = setup[API_FIELD_PROPERTIES]
-        setup_fields[API_FIELD_FILTER] = setup[API_FIELD_FILTER]
-
-        for item in items:
-            item_payload = generate_item_payload(item, SETUP_TYPE_VERSION_1,
                                                  {item[API_FIELD_SCHEMA_NAME]: item[API_FIELD_DATATYPE]},
                                                  setup_fields=setup_fields)
             item_payload[API_FIELD_DEFAULT_EXTRACTOR] = {}
