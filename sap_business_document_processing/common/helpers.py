@@ -1,10 +1,7 @@
 # SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
 #
 # SPDX-License-Identifier: Apache-2.0
-import gettext
 import json
-from typing import List
-
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -46,6 +43,7 @@ def get_ground_truth_json(ground_truth):
 
 def add_retry_to_session(session: requests.Session, pool_maxsize=None, retries=3, backoff_factor=1,
                          status_forcelist=(500, 502, 503, 504)):
+
     # see: https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html for Retry class
     retry = Retry(total=retries,
                   read=retries,
