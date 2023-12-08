@@ -840,6 +840,27 @@ class DoxApiClient(CommonClient):
     def create_schema_with_fields(self, client_id, payload, model_type, item_fields=None):
         """
         Create schema along with header fields and line items
+        Sample payload for posting fields:
+            fields_payload = [
+                {
+                    "name": "documentNumber",
+                    "description": "",
+                    "label": "",
+                    "datatype": "",
+                    "is_line_item": False
+                },
+                {
+                    "name": "netAmount",
+                    "description": "",
+                    "label": "",
+                    "datatype": "",
+                    "is_line_item": True
+                }
+            ]
+            model_type = "defaultWorkflow"
+            setupTypeVersion = "1.0.0"
+            response = create_schema_with_fields(external_client, schema_payload, model_type + setupTypeVersion,
+                                                fields_payload)
         """
         if model_type not in SUPPORTED_MODEL_TYPES:
             error_msg = 'Invalid model. Valid models are {}.'.format(str(SUPPORTED_MODEL_TYPES))
