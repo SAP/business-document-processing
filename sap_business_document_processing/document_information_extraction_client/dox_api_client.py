@@ -16,16 +16,17 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     API_REQUEST_FIELD_LIMIT, API_REQUEST_FIELD_OFFSET, API_REQUEST_FIELD_OPTIONS, API_REQUEST_FIELD_PAYLOAD, \
     API_REQUEST_FIELD_ENRICHMENT_COMPANYCODE, API_REQUEST_FIELD_ENRICHMENT_ID, API_REQUEST_FIELD_ENRICHMENT_SUBTYPE, \
     API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PDF, CONTENT_TYPE_PNG, \
-    CONTENT_TYPE_UNKNOWN, DATA_TYPE_BUSINESS_ENTITY, DOCUMENT_TYPE_ADVICE, FILE_TYPE_EXCEL, API_FIELD_DOCUMENT_TYPE, \
-    API_FIELD_PREDEFINED, API_REQUEST_FIELD_ORDER, SCHEMAS_LIST_ENDPOINT, SCHEMAS_UPDATE_ENDPOINT, SCHEMAS_ENDPOINT, \
-    SCHEMAS_VERSION_FIELDS_ENDPOINT, SCHEMAS_VERSION_ACTIVATE_ENDPOINT, SCHEMAS_VERSION_DEACTIVATE_ENDPOINT, \
-    SCHEMAS_CAPABILITIES, SCHEMAS_VERSIONS_ENDPOINT, SCHEMAS_VERSION_UUID_ENDPOINT, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, \
-    SUPPORTED_MODEL_TYPES, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_2, SETUP_TYPE_VERSION_1
-from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, \
-    DATA_ACTIVATION_ASYNC_ENDPOINT, DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, \
-    DOCUMENT_ENDPOINT, DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, \
-    DOCUMENT_PAGE_ENDPOINT, DOCUMENT_PAGE_DIMENSIONS_ENDPOINT, DOCUMENT_PAGES_DIMENSIONS_ENDPOINT, \
-    DOCUMENT_PAGE_TEXT_ENDPOINT, DOCUMENT_PAGES_TEXT_ENDPOINT
+    CONTENT_TYPE_UNKNOWN, DATA_TYPE_BUSINESS_ENTITY, DOCUMENT_TYPE_ADVICE, FILE_TYPE_EXCEL, SCHEMAS_ENDPOINT, \
+    SCHEMAS_LIST_ENDPOINT, API_FIELD_PREDEFINED, API_REQUEST_FIELD_ORDER, API_FIELD_DOCUMENT_TYPE, \
+    SCHEMAS_UPDATE_ENDPOINT, SCHEMAS_VERSION_FIELDS_ENDPOINT, SCHEMAS_VERSION_ACTIVATE_ENDPOINT, \
+    SCHEMAS_VERSION_DEACTIVATE_ENDPOINT, SCHEMAS_VERSIONS_ENDPOINT, SCHEMAS_VERSION_UUID_ENDPOINT, \
+    SUPPORTED_MODEL_TYPES, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_1, SETUP_TYPE_VERSION_2, \
+    DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SCHEMAS_CAPABILITIES
+from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
+    DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
+    DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
+    DOCUMENT_PAGE_DIMENSIONS_ENDPOINT, DOCUMENT_PAGES_DIMENSIONS_ENDPOINT, DOCUMENT_PAGE_TEXT_ENDPOINT, \
+    DOCUMENT_PAGES_TEXT_ENDPOINT
 from .helpers import create_document_options, create_capability_mapping_options, get_mimetype, \
     create_payload_for_schema_fields
 from ..common.exceptions import DoxApiInvalidDataProvidedError
@@ -428,7 +429,7 @@ class DoxApiClient(CommonClient):
             data = [data]
         resp = self.post(DATA_ASYNC_ENDPOINT, json={API_FIELD_VALUE: data}, params=params,
                          log_msg_before=f'Start uploading {len(data)} enrichment data '
-                                        f'records of type {data_type} for client {client_id}')
+                         f'records of type {data_type} for client {client_id}')
         job_id = resp.json()[API_FIELD_ID]
         response = self._poll_for_url(DATA_ID_ENDPOINT.format(id=job_id), sleep_interval=1,
                                       get_status=lambda r: r[API_FIELD_VALUE][API_FIELD_STATUS],
@@ -515,14 +516,14 @@ class DoxApiClient(CommonClient):
         delete_url = DATA_ASYNC_ENDPOINT if delete_async else DATA_ENDPOINT
         response = self.delete(delete_url, json={API_FIELD_VALUE: enrichment_records}, params=params,
                                log_msg_before=f"Start deleting {len(enrichment_records) if len(enrichment_records) > 0 else 'all'} "
-                                              f"enrichment data records for client {client_id}")
+                               f"enrichment data records for client {client_id}")
 
         if delete_async:
             job_id = response.json()[API_FIELD_ID]
             response = self._poll_for_url(DATA_ID_ENDPOINT.format(id=job_id),
                                           get_status=lambda r: r[API_FIELD_VALUE][API_FIELD_STATUS],
                                           log_msg_after=f"Successfully deleted {len(enrichment_records) if len(enrichment_records) > 0 else 'all'} "
-                                                        f"enrichment data records for client {client_id}")
+                                          f"enrichment data records for client {client_id}")
         return response.json()
 
     def activate_enrichment_data(self, params=None) -> dict:
@@ -841,11 +842,6 @@ class DoxApiClient(CommonClient):
         Create schema along with header fields and line items
         """
         if model_type not in SUPPORTED_MODEL_TYPES:
-            # response = ErrorMessage('E1', 'Invalid model. Valid models are {}.',
-            #                         plural_text='Invalid model. Valid models are {}.',
-            #                         variables=[str(SUPPORTED_MODEL_TYPES)],
-            #                         detail_msg=DetailsBuilder('Invalid model: {}',
-            #                                                   plural_text='Invalid model: {}'))
             error_msg = 'Invalid model. Valid models are {}.'.format(str(SUPPORTED_MODEL_TYPES))
             raise DoxApiInvalidDataProvidedError(error_msg)
         file_path = self._get_default_extractor_fields(model_type)
