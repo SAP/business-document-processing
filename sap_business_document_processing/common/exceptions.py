@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-
 class BDPApiException(Exception):
     def __init__(self, message, response=None, status_code=None):
         super(BDPApiException, self).__init__(message)
@@ -28,3 +27,24 @@ class BDPServerException(BDPApiException):
 
 class BDPUnauthorizedException(BDPClientException):
     pass
+
+
+class DoxApiClientError(Exception):
+    def __init__(self, message, status_code: int = None):
+        super(DoxApiClientError, self).__init__(message)
+        self.status_code = status_code
+
+
+class DoxApiCreateSchemaError(DoxApiClientError):
+    def __init__(self, message: str):
+        super().__init__(message=message, status_code=400)
+
+
+class DoxApiInvalidDataProvidedError(DoxApiClientError):
+    def __init__(self, message: str):
+        super().__init__(message=message, status_code=400)
+
+
+class DOXInternalServerError(DoxApiClientError):
+    def __init__(self, message: str):
+        super().__init__(message=message, status_code=500)
