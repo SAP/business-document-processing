@@ -147,6 +147,9 @@ class CommonClient:
     def delete(self, path: str, validate=True, **kwargs):
         return self._request(self.session.delete, path, validate, **kwargs)
 
+    def put(self, path: str, validate=True, **kwargs):
+        return self._request(self.session.put, path, validate, **kwargs)
+
     def raise_for_status_with_logging(self, response):
         e = None
         if response.status_code == 401:

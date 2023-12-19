@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
 #
 # SPDX-License-Identifier: Apache-2.0
-
+import os
 from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
@@ -16,13 +16,20 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     API_REQUEST_FIELD_LIMIT, API_REQUEST_FIELD_OFFSET, API_REQUEST_FIELD_OPTIONS, API_REQUEST_FIELD_PAYLOAD, \
     API_REQUEST_FIELD_ENRICHMENT_COMPANYCODE, API_REQUEST_FIELD_ENRICHMENT_ID, API_REQUEST_FIELD_ENRICHMENT_SUBTYPE, \
     API_REQUEST_FIELD_ENRICHMENT_SYSTEM, API_REQUEST_FIELD_ENRICHMENT_TYPE, CONTENT_TYPE_PDF, CONTENT_TYPE_PNG, \
-    CONTENT_TYPE_UNKNOWN, DATA_TYPE_BUSINESS_ENTITY, DOCUMENT_TYPE_ADVICE, FILE_TYPE_EXCEL
+    CONTENT_TYPE_UNKNOWN, DATA_TYPE_BUSINESS_ENTITY, DOCUMENT_TYPE_ADVICE, FILE_TYPE_EXCEL, SCHEMAS_ENDPOINT, \
+    SCHEMAS_LIST_ENDPOINT, API_FIELD_PREDEFINED, API_REQUEST_FIELD_ORDER, API_FIELD_DOCUMENT_TYPE, \
+    SCHEMAS_UPDATE_ENDPOINT, SCHEMAS_VERSION_FIELDS_ENDPOINT, SCHEMAS_VERSION_ACTIVATE_ENDPOINT, \
+    SCHEMAS_VERSION_DEACTIVATE_ENDPOINT, SCHEMAS_VERSIONS_ENDPOINT, SCHEMAS_VERSION_UUID_ENDPOINT, \
+    SUPPORTED_MODEL_TYPES, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_1, SETUP_TYPE_VERSION_2, \
+    DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SCHEMAS_CAPABILITIES
 from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
     DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
     DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
     DOCUMENT_PAGE_DIMENSIONS_ENDPOINT, DOCUMENT_PAGES_DIMENSIONS_ENDPOINT, DOCUMENT_PAGE_TEXT_ENDPOINT, \
     DOCUMENT_PAGES_TEXT_ENDPOINT
-from .helpers import create_document_options, create_capability_mapping_options, get_mimetype
+from .helpers import create_document_options, create_capability_mapping_options, get_mimetype, \
+    create_payload_for_schema_fields
+from ..common.exceptions import DoxApiInvalidDataProvidedError
 
 
 class DoxApiClient(CommonClient):
@@ -633,3 +640,247 @@ class DoxApiClient(CommonClient):
                              log_msg_before=f'Confirming document with ID {document_id}',
                              log_msg_after=f'Successfully confirmed document with ID {document_id}')
         return response.json()
+
+    def post_schema_configuration(self, payload):
+        """
+        POST /schemas
+        """
+        response = self._post_schema_configuration(payload)
+        return response
+
+    def _post_schema_configuration(self, payload):
+        """
+        Post Schema configuration
+        """
+        return self.post(SCHEMAS_ENDPOINT, json=payload)
+
+    def get_schema_configurations(self, client_id, predefined: bool = None, document_type: str = None,
+                                  offset: int = None,
+                                  limit: int = None,
+                                  order_by: str = None):
+        """
+        GET /schemas
+        """
+        url = SCHEMAS_LIST_ENDPOINT.format(client_id)
+        if not predefined and not document_type and not offset and not limit and not order_by:
+            return self.get(url)
+        else:
+            params = {
+                API_FIELD_PREDEFINED: predefined,
+                API_REQUEST_FIELD_OFFSET: offset,
+                API_REQUEST_FIELD_LIMIT: limit,
+                API_REQUEST_FIELD_ORDER: order_by,
+                API_FIELD_DOCUMENT_TYPE: document_type
+            }
+            return self.get(url, params=params)
+
+    def delete_schema_configurations(self, payload, client_id):
+        """
+        DELETE /schemas
+        """
+        response = self._delete_schema_configurations(payload, client_id)
+        return response
+
+    def _delete_schema_configurations(self, payload, client_id):
+        """
+        Delete Schema configurations
+        """
+        url = SCHEMAS_ENDPOINT + "?clientId={}".format(client_id)
+        return self.delete(url, json=payload)
+
+    def post_schema_version(self, schema_id, client_id):
+        """
+        POST /schemas/{schemaId}
+        """
+        response = self._post_schema_version(schema_id, client_id)
+        return response
+
+    def _post_schema_version(self, schema_id, client_id):
+        """
+        Create new version for schema
+        """
+        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
+        return self.post(url)
+
+    def get_schema_configuration_details(self, client_id, schema_id):
+        """
+        GET /schemas/{schemaId}
+        """
+        response = self._get_schema_configurations_details(client_id, schema_id)
+        return response
+
+    def _get_schema_configurations_details(self, client_id, schema_id):
+        """
+        Get Schema configurations
+        """
+        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
+        return self.get(url)
+
+    def put_schema_configuration(self, payload, schema_id, client_id):
+        """
+        PUT /schemas/{schemasId}
+        """
+        response = self._put_schema_configuration(payload, schema_id, client_id)
+        return response
+
+    def _put_schema_configuration(self, payload, schema_id, client_id):
+        """
+        Put Schema configuration
+        """
+        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
+        return self.put(url, json=payload)
+
+    def post_schema_version_fields(self, payload, schema_id, version, client_id):
+        """
+        POST /schemas/{schemaId}/versions/{version}/fields
+        """
+        response = self._post_schema_version_fields(payload, schema_id, version, client_id)
+        return response
+
+    def _post_schema_version_fields(self, payload, schema_id, version, client_id):
+        """
+        Post Fields to Schema version
+        """
+        url = SCHEMAS_VERSION_FIELDS_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
+            .format(client_id)
+        return self.post(url, json=payload)
+
+    def post_schema_version_activate(self, schema_id, version, client_id):
+        """
+        POST /schemas/{schemaId}/versions/{version}/activate
+        """
+        response = self._post_schema_version_activate(schema_id, version, client_id)
+        return response
+
+    def _post_schema_version_activate(self, schema_id, version, client_id):
+        """
+        Activate Schema version
+        """
+        url = SCHEMAS_VERSION_ACTIVATE_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
+            .format(client_id)
+        return self.post(url)
+
+    def post_schema_version_deactivate(self, schema_id, version, client_id):
+        """
+        POST /schemas/{schemaId}/versions/{version}/deactivate
+        """
+        response = self._post_schema_version_deactivate(schema_id, version, client_id)
+        return response
+
+    def _post_schema_version_deactivate(self, schema_id, version, client_id):
+        """
+        Deactivate Schema version
+        """
+        url = SCHEMAS_VERSION_DEACTIVATE_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
+            .format(client_id)
+        return self.post(url)
+
+    def get_schema_capabilities(self):
+        """
+        GET /schemas/capabilities
+        """
+        response = self._get_schema_capabilities()
+        return response
+
+    def _get_schema_capabilities(self):
+        """
+        Get Schema capabilities
+        """
+        url = SCHEMAS_CAPABILITIES
+        return self.get(url)
+
+    def delete_schema_versions(self, schema_id, version, client_id):
+        """
+        DELETE /schemas/{schemaId}/versions
+        """
+        response = self._delete_schema_versions(schema_id, version, client_id)
+        return response
+
+    def _delete_schema_versions(self, schema_id, version, client_id):
+        """
+        Delete Versions associated with Schema
+        """
+        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
+        payload = {
+            "version": [
+                version
+            ]
+        }
+        return self.delete(url, json=payload)
+
+    def get_all_schema_versions(self, schema_id, client_id):
+        """
+        GET /schemas/{schemaId}/versions
+        """
+        response = self._get_all_schema_versions(schema_id, client_id)
+        return response
+
+    def _get_all_schema_versions(self, schema_id, client_id):
+        """
+        Retrieve all versions for Schema
+        """
+        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
+        return self.get(url)
+
+    def get_schema_version_details(self, schema_id, version, client_id):
+        """
+        GET /schemas/{schemaId}/versions/{version}
+        """
+        response = self._get_schema_version_details(schema_id, version, client_id)
+        return response
+
+    def _get_schema_version_details(self, schema_id, version, client_id):
+        """
+        Retrieve Version Details of Schema for a Client
+        """
+        url = SCHEMAS_VERSION_UUID_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
+            .format(client_id)
+        return self.get(url)
+
+    def create_schema_with_fields(self, client_id, payload, model_type, item_fields=None):
+        """
+        Create schema along with header fields and line items
+        Sample payload for posting fields:
+            fields_payload = [
+                {
+                    "name": "documentNumber",
+                    "description": "",
+                    "label": "",
+                    "datatype": "",
+                    "is_line_item": False
+                },
+                {
+                    "name": "netAmount",
+                    "description": "",
+                    "label": "",
+                    "datatype": "",
+                    "is_line_item": True
+                }
+            ]
+            model_type = "defaultWorkflow"
+            setupTypeVersion = "1.0.0"
+            response = create_schema_with_fields(external_client, schema_payload, model_type + setupTypeVersion,
+                                                fields_payload)
+        """
+        if model_type not in SUPPORTED_MODEL_TYPES:
+            error_msg = 'Invalid model. Valid models are {}.'.format(str(SUPPORTED_MODEL_TYPES))
+            raise DoxApiInvalidDataProvidedError(error_msg)
+        file_path = self._get_default_extractor_fields(model_type)
+        schema_fields_payload = create_payload_for_schema_fields(model_type, item_fields)
+        if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
+            os.remove(file_path)
+        response = self.post_schema_configuration(payload)
+        schema_id = response.json()["id"]
+        return self.post_schema_version_fields(schema_fields_payload, schema_id, '1', client_id)
+
+    def _get_default_extractor_fields(self, model_type):
+        if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
+            capabilities = self.get_capabilities()
+            file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_EXTRACTOR_FIELDS_FILE_PATH)
+            try:
+                with open(file_path, 'w') as file:
+                    json.dump(capabilities, file, indent=4)
+                    file.flush()
+                return file_path
+            except Exception as e:
+                print(e)
