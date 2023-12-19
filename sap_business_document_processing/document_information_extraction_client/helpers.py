@@ -13,7 +13,7 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_DOCUMENT_TYPE, API_FIELD_E
     API_FIELD_FORMATTING_TYPE_VERSION, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_1, \
     SETUP_TYPE_VERSION_2, API_FIELD_IS_LINE_ITEM, API_FIELD_TYPE, API_FIELD_PRIORITY, SETUP_TYPE_AUTO, MODEL_TYPE_LLM, \
     API_FIELD_DATATYPE, MODEL_TYPE_TEMPLATE, SETUP_TYPE_MANUAL
-from ..common.exceptions import DoxApiInvalidDataProvidedError, DOXInternalServerError
+from ..common.exceptions import BDPApiInvalidDataProvidedError, BDPInternalServerError
 
 
 def create_document_options(client_id, document_type, header_fields=None, line_item_fields=None, template_id=None,
@@ -145,10 +145,10 @@ def create_payload_for_schema_fields(model_type, items):
                 else:
                     error_msg = 'fieldName not found in defaultExtractor values. Please provide valid fieldName from ' \
                                 '/capabilities API.'
-                    raise DoxApiInvalidDataProvidedError(error_msg)
+                    raise BDPApiInvalidDataProvidedError(error_msg)
         else:
             error_msg = 'Internal Server Error'
-            raise DOXInternalServerError(error_msg)
+            raise BDPInternalServerError(error_msg)
 
     setup_fields = {
         API_FIELD_TYPE: None,

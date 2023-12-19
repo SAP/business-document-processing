@@ -29,7 +29,7 @@ from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_EN
     DOCUMENT_PAGES_TEXT_ENDPOINT
 from .helpers import create_document_options, create_capability_mapping_options, get_mimetype, \
     create_payload_for_schema_fields
-from ..common.exceptions import DoxApiInvalidDataProvidedError
+from ..common.exceptions import BDPApiInvalidDataProvidedError
 
 
 class DoxApiClient(CommonClient):
@@ -864,7 +864,7 @@ class DoxApiClient(CommonClient):
         """
         if model_type not in SUPPORTED_MODEL_TYPES:
             error_msg = 'Invalid model. Valid models are {}.'.format(str(SUPPORTED_MODEL_TYPES))
-            raise DoxApiInvalidDataProvidedError(error_msg)
+            raise BDPApiInvalidDataProvidedError(error_msg)
         file_path = self._get_default_extractor_fields(model_type)
         schema_fields_payload = create_payload_for_schema_fields(model_type, item_fields)
         if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
