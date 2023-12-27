@@ -21,7 +21,9 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     SCHEMAS_UPDATE_ENDPOINT, SCHEMAS_VERSION_FIELDS_ENDPOINT, SCHEMAS_VERSION_ACTIVATE_ENDPOINT, \
     SCHEMAS_VERSION_DEACTIVATE_ENDPOINT, SCHEMAS_VERSIONS_ENDPOINT, SCHEMAS_VERSION_UUID_ENDPOINT, \
     SUPPORTED_MODEL_TYPES, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_1, SETUP_TYPE_VERSION_2, \
-    DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SCHEMAS_CAPABILITIES
+    DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SCHEMAS_CAPABILITIES, API_FIELD_NAME, API_FIELD_DESCRIPTION, \
+    API_FIELD_DOCUMENT_TYPE_DESCRIPTION, API_FIELD_EXTRACTED_HEADER_FIELDS, API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, \
+    API_FIELD_SCHEMA_DESCRIPTION
 from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
     DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
     DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
@@ -641,205 +643,347 @@ class DoxApiClient(CommonClient):
                              log_msg_after=f'Successfully confirmed document with ID {document_id}')
         return response.json()
 
-    def post_schema_configuration(self, payload):
+    def create_schema(self, client_id, schema_name, schema_desc, document_type, document_type_desc):
+        """
+        Creates a new schema
+        :param client_id: The client ID for which the schema shall be created
+        :param schema_name: Name for the schema to be created
+        :param schema_desc: Description for the schema to be created
+        :param document_type: Document Type which will be supported by the schema
+        :param document_type_desc: Document Type description for the schema to be created
+        :return: The API endpoint response as dictionary
+        """
+        payload = {
+            API_FIELD_NAME: schema_name,
+            API_FIELD_SCHEMA_DESCRIPTION: schema_desc,
+            API_FIELD_DOCUMENT_TYPE: document_type,
+            API_FIELD_DOCUMENT_TYPE_DESCRIPTION: document_type_desc
+        }
+        if client_id:
+            payload[API_FIELD_CLIENT_ID] = client_id
+        response = self._create_schema(payload)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
+
+    def _create_schema(self, payload):
         """
         POST /schemas
-        """
-        response = self._post_schema_configuration(payload)
-        return response
-
-    def _post_schema_configuration(self, payload):
-        """
-        Post Schema configuration
         """
         return self.post(SCHEMAS_ENDPOINT, json=payload)
 
     def get_schema_configurations(self, client_id, predefined: bool = None, document_type: str = None,
-                                  offset: int = None,
-                                  limit: int = None,
+                                  skip: int = None,
+                                  top: int = None,
                                   order_by: str = None):
         """
-        GET /schemas
+        Retrieves all schemas for the provided client
+        :param client_id: The client ID for which the schema details need to be fetched
+        :param predefined: (optional) The arguement which specifies if the schema is predefined schema or not
+        :param document_type: (optional) The argument to filter out schemas based on the provided document_type
+        :param skip: (optional) The index of the first record to be returned
+        :param top: (optional) The maximum number records to be returned
+        :param order_by: (optional) The value to order the elements returned based on it
+        :return: The schema values as dictionary with 'schemas' as key of the json response
         """
-        url = SCHEMAS_LIST_ENDPOINT.format(client_id)
-        if not predefined and not document_type and not offset and not limit and not order_by:
-            return self.get(url)
+        url = SCHEMAS_ENDPOINT
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        if predefined is not None:
+            params[API_FIELD_PREDEFINED] = predefined
+        if document_type is not None:
+            params[API_FIELD_DOCUMENT_TYPE] = document_type
+        if predefined is not None:
+            params[API_REQUEST_FIELD_OFFSET] = skip
+        if predefined is not None:
+            params[API_REQUEST_FIELD_LIMIT] = top
+        if predefined is not None:
+            params[API_REQUEST_FIELD_ORDER] = order_by
+        response = self.get(url, params=params)
+        if response.status_code == 200:
+            return response.json()
         else:
-            params = {
-                API_FIELD_PREDEFINED: predefined,
-                API_REQUEST_FIELD_OFFSET: offset,
-                API_REQUEST_FIELD_LIMIT: limit,
-                API_REQUEST_FIELD_ORDER: order_by,
-                API_FIELD_DOCUMENT_TYPE: document_type
-            }
-            return self.get(url, params=params)
+            return "Request failed with status code:" + str(response.status_code)
 
-    def delete_schema_configurations(self, payload, client_id):
+    def delete_schemas(self, client_id, schema_id):
+        """
+        Deletes specified schemas for a client
+        :param client_id: The client ID for which the schema shall be deleted
+        :param schema_id: ID for the schema that shall be deleted (string for single schema, list for multiple schemas)
+        :return: The API endpoint response as dictionary
+        """
+        payload = {
+            API_FIELD_VALUE: schema_id
+        }
+        response = self._delete_schemas(payload, client_id)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
+
+    def _delete_schemas(self, payload, client_id):
         """
         DELETE /schemas
         """
-        response = self._delete_schema_configurations(payload, client_id)
-        return response
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_ENDPOINT
+        return self.delete(url, params=params, json=payload)
 
-    def _delete_schema_configurations(self, payload, client_id):
+    def create_schema_version(self, client_id, schema_id):
         """
-        Delete Schema configurations
+        Creates a new version for the schema
+        :param client_id: The client ID for which the new version shall be created
+        :param schema_id: ID for the schema from which new version shall be created
+        :return: The API endpoint response as dictionary
         """
-        url = SCHEMAS_ENDPOINT + "?clientId={}".format(client_id)
-        return self.delete(url, json=payload)
+        response = self._create_schema_version(client_id, schema_id)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
 
-    def post_schema_version(self, schema_id, client_id):
+    def _create_schema_version(self, client_id, schema_id):
         """
         POST /schemas/{schemaId}
         """
-        response = self._post_schema_version(schema_id, client_id)
-        return response
-
-    def _post_schema_version(self, schema_id, client_id):
-        """
-        Create new version for schema
-        """
-        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
-        return self.post(url)
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id)
+        return self.post(url, params=params)
 
     def get_schema_configuration_details(self, client_id, schema_id):
         """
-        GET /schemas/{schemaId}
+        Retrieves details for a specific schema
+        :param client_id: The client ID for which the schema details shall be fetched
+        :param schema_id: The ID of the schema whose details shall be fetched
+        :return: The schema details as dictionary
         """
         response = self._get_schema_configurations_details(client_id, schema_id)
-        return response
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
 
     def _get_schema_configurations_details(self, client_id, schema_id):
         """
-        Get Schema configurations
+        GET /schemas/{schemaId}
         """
-        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
-        return self.get(url)
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id)
+        return self.get(url, params=params)
 
-    def put_schema_configuration(self, payload, schema_id, client_id):
+    def update_schema_configuration(self, client_id, schema_id, schema_name, schema_desc, document_type_desc):
+        """
+        Updates the schema details for a specific schema
+        :param client_id: The client ID for which the details shall be updated
+        :param schema_id: ID for the schema for which details shall be updated
+        :param schema_name: Name of the schema (updated or old)
+        :param schema_desc: Description for the schema (updated or old)
+        :param document_type_desc: Description of the document-type for the schema (updated or old)
+        :return: The API endpoint response as dictionary
+        """
+        payload = {
+            API_FIELD_NAME: schema_name,
+            API_FIELD_SCHEMA_DESCRIPTION: schema_desc,
+            API_FIELD_DOCUMENT_TYPE_DESCRIPTION: document_type_desc
+        }
+        response = self._update_schema_configuration(client_id, schema_id, payload)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
+
+    def _update_schema_configuration(self, client_id, schema_id, payload):
         """
         PUT /schemas/{schemasId}
         """
-        response = self._put_schema_configuration(payload, schema_id, client_id)
-        return response
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id)
+        return self.put(url, params=params, json=payload)
 
-    def _put_schema_configuration(self, payload, schema_id, client_id):
+    def add_schema_version_fields(self, client_id, schema_id, version, header_fields, line_item_fields):
         """
-        Put Schema configuration
+        Adds Header and Line Item fields to a schema version
+        :param client_id: The client ID for which the fields shall be added
+        :param schema_id: ID for the schema for which fields shall be added
+        :param version: Version of the schema for which fields shall be added
+        :param header_fields: List of header fields that shall be added
+        :param line_item_fields: List of line item fields that shall be added
+        :return: The API endpoint response as dictionary
         """
-        url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
-        return self.put(url, json=payload)
+        payload = {
+            API_FIELD_EXTRACTED_HEADER_FIELDS: header_fields,
+            API_FIELD_EXTRACTED_LINE_ITEM_FIELDS: line_item_fields
+        }
+        response = self._add_schema_version_fields(client_id, schema_id, version, payload)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
 
-    def post_schema_version_fields(self, payload, schema_id, version, client_id):
+    def _add_schema_version_fields(self, client_id, schema_id, version, payload):
         """
         POST /schemas/{schemaId}/versions/{version}/fields
         """
-        response = self._post_schema_version_fields(payload, schema_id, version, client_id)
-        return response
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_VERSION_FIELDS_ENDPOINT.format(schemaId=schema_id, versionId=version)
+        return self.post(url, params=params, json=payload)
 
-    def _post_schema_version_fields(self, payload, schema_id, version, client_id):
+    def activate_schema_version(self, client_id, schema_id, version):
         """
-        Post Fields to Schema version
+        Activates a schema version
+        :param client_id: The client ID for which the schema version shall be activated
+        :param schema_id: ID for the schema for which the schema version shall be activated
+        :param version: Version of the schema that shall be activated
+        :return: The API endpoint response as dictionary
         """
-        url = SCHEMAS_VERSION_FIELDS_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
-            .format(client_id)
-        return self.post(url, json=payload)
+        response = self._activate_schema_version(client_id, schema_id, version)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
 
-    def post_schema_version_activate(self, schema_id, version, client_id):
+    def _activate_schema_version(self, client_id, schema_id, version):
         """
         POST /schemas/{schemaId}/versions/{version}/activate
         """
-        response = self._post_schema_version_activate(schema_id, version, client_id)
-        return response
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_VERSION_ACTIVATE_ENDPOINT.format(schemaId=schema_id, versionId=version)
+        return self.post(url, params=params)
 
-    def _post_schema_version_activate(self, schema_id, version, client_id):
+    def deactivate_schema_version(self, client_id, schema_id, version):
         """
-        Activate Schema version
+        Deactivates a schema version
+        :param client_id: The client ID for which the schema version shall be deactivated
+        :param schema_id: ID for the schema for which the schema version shall be deactivated
+        :param version: Version of the schema that shall be deactivated
+        :return: The API endpoint response as dictionary
         """
-        url = SCHEMAS_VERSION_ACTIVATE_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
-            .format(client_id)
-        return self.post(url)
+        response = self._deactivate_schema_version(client_id, schema_id, version)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
 
-    def post_schema_version_deactivate(self, schema_id, version, client_id):
+    def _deactivate_schema_version(self, client_id, schema_id, version):
         """
         POST /schemas/{schemaId}/versions/{version}/deactivate
         """
-        response = self._post_schema_version_deactivate(schema_id, version, client_id)
-        return response
-
-    def _post_schema_version_deactivate(self, schema_id, version, client_id):
-        """
-        Deactivate Schema version
-        """
-        url = SCHEMAS_VERSION_DEACTIVATE_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
-            .format(client_id)
-        return self.post(url)
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_VERSION_DEACTIVATE_ENDPOINT.format(schemaId=schema_id, versionId=version)
+        return self.post(url, params=params)
 
     def get_schema_capabilities(self):
         """
-        GET /schemas/capabilities
+        Retrieves the capabilities for all schemas
+        :return: The schema capabilities as dictionary
         """
         response = self._get_schema_capabilities()
-        return response
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
 
     def _get_schema_capabilities(self):
         """
-        Get Schema capabilities
+        GET /schemas/capabilities
         """
         url = SCHEMAS_CAPABILITIES
         return self.get(url)
 
-    def delete_schema_versions(self, schema_id, version, client_id):
+    def delete_schema_versions(self, client_id, schema_id, versions):
+        """
+        Deletes specific versions of the schema
+        :param client_id: The client ID for which the schema version shall be deleted
+        :param schema_id: ID for the schema for which the schema version shall be deleted
+        :param versions: List of versions of the schema that shall be deleted
+        :return: The API endpoint response as dictionary
+        """
+        response = self._delete_schema_versions(client_id, schema_id, versions)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
+
+    def _delete_schema_versions(self, client_id, schema_id, versions):
         """
         DELETE /schemas/{schemaId}/versions
         """
-        response = self._delete_schema_versions(schema_id, version, client_id)
-        return response
-
-    def _delete_schema_versions(self, schema_id, version, client_id):
-        """
-        Delete Versions associated with Schema
-        """
-        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
-        payload = {
-            "version": [
-                version
-            ]
+        params = {
+            API_FIELD_CLIENT_ID: client_id
         }
-        return self.delete(url, json=payload)
+        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id)
+        payload = {
+            "version": versions
+        }
+        return self.delete(url, params=params, json=payload)
 
-    def get_all_schema_versions(self, schema_id, client_id):
+    def get_all_schema_versions(self, client_id, schema_id):
+        """
+        Retrieves all the versions associated with a schema
+        :param client_id: The client ID for which the schema versions shall be fetched
+        :param schema_id: ID for the schema for which the schema versions shall be fetched
+        :return: The schema version details as dictionary with 'schemas' as key of the json response
+        """
+        response = self._get_all_schema_versions(client_id, schema_id)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
+
+    def _get_all_schema_versions(self, client_id, schema_id):
         """
         GET /schemas/{schemaId}/versions
         """
-        response = self._get_all_schema_versions(schema_id, client_id)
-        return response
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id)
+        return self.get(url, params=params)
 
-    def _get_all_schema_versions(self, schema_id, client_id):
+    def get_schema_version_details(self, client_id, schema_id, version):
         """
-        Retrieve all versions for Schema
+        Retrieves specific version details associated with a schema
+        :param client_id: The client ID for which the schema version shall be fetched
+        :param schema_id: ID for the schema for which the schema version shall be fetched
+        :param version: Version of the schema that shall be fetched
+        :return: Schema version details as dictionary
         """
-        url = SCHEMAS_VERSIONS_ENDPOINT.format(schemaId=schema_id) + "?clientId={}".format(client_id)
-        return self.get(url)
+        response = self._get_schema_version_details(client_id, schema_id, version)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
 
-    def get_schema_version_details(self, schema_id, version, client_id):
+    def _get_schema_version_details(self, client_id, schema_id, version):
         """
         GET /schemas/{schemaId}/versions/{version}
         """
-        response = self._get_schema_version_details(schema_id, version, client_id)
-        return response
+        params = {
+            API_FIELD_CLIENT_ID: client_id
+        }
+        url = SCHEMAS_VERSION_UUID_ENDPOINT.format(schemaId=schema_id, versionId=version)
+        return self.get(url, params=params)
 
-    def _get_schema_version_details(self, schema_id, version, client_id):
+    def create_schema_with_fields(self, client_id, schema_name, schema_desc, document_type, document_type_desc,
+                                  model_type, item_fields=None):
         """
-        Retrieve Version Details of Schema for a Client
-        """
-        url = SCHEMAS_VERSION_UUID_ENDPOINT.format(schemaId=schema_id, versionId=version) + "?clientId={}" \
-            .format(client_id)
-        return self.get(url)
-
-    def create_schema_with_fields(self, client_id, payload, model_type, item_fields=None):
-        """
-        Create schema along with header fields and line items
+        Creates schema along with header fields and line items
         Sample payload for posting fields:
             fields_payload = [
                 {
@@ -869,9 +1013,9 @@ class DoxApiClient(CommonClient):
         schema_fields_payload = create_payload_for_schema_fields(model_type, item_fields)
         if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
             os.remove(file_path)
-        response = self.post_schema_configuration(payload)
-        schema_id = response.json()["id"]
-        return self.post_schema_version_fields(schema_fields_payload, schema_id, '1', client_id)
+        response = self.create_schema(client_id, schema_name, schema_desc, document_type, document_type_desc)
+        schema_id = response["id"]
+        return self.add_schema_version_fields(client_id, schema_id, '1', header_fields=None, line_item_fields=None)
 
     def _get_default_extractor_fields(self, model_type):
         if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
