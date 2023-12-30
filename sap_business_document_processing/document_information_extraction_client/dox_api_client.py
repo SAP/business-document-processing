@@ -24,14 +24,14 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SCHEMAS_CAPABILITIES, API_FIELD_NAME, API_FIELD_DESCRIPTION, \
     API_FIELD_DOCUMENT_TYPE_DESCRIPTION, API_FIELD_EXTRACTED_HEADER_FIELDS, API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, \
     API_FIELD_SCHEMA_DESCRIPTION
-from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
+from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT, \
     DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
     DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
     DOCUMENT_PAGE_DIMENSIONS_ENDPOINT, DOCUMENT_PAGES_DIMENSIONS_ENDPOINT, DOCUMENT_PAGE_TEXT_ENDPOINT, \
     DOCUMENT_PAGES_TEXT_ENDPOINT
 from .helpers import create_document_options, create_capability_mapping_options, get_mimetype, \
     create_payload_for_schema_fields
-from ..common.exceptions import BDPApiInvalidDataProvidedError
+from ..common.exceptions import BDPValueError
 
 
 class DoxApiClient(CommonClient):
@@ -431,7 +431,7 @@ class DoxApiClient(CommonClient):
             data = [data]
         resp = self.post(DATA_ASYNC_ENDPOINT, json={API_FIELD_VALUE: data}, params=params,
                          log_msg_before=f'Start uploading {len(data)} enrichment data '
-                         f'records of type {data_type} for client {client_id}')
+                                        f'records of type {data_type} for client {client_id}')
         job_id = resp.json()[API_FIELD_ID]
         response = self._poll_for_url(DATA_ID_ENDPOINT.format(id=job_id), sleep_interval=1,
                                       get_status=lambda r: r[API_FIELD_VALUE][API_FIELD_STATUS],
@@ -518,14 +518,14 @@ class DoxApiClient(CommonClient):
         delete_url = DATA_ASYNC_ENDPOINT if delete_async else DATA_ENDPOINT
         response = self.delete(delete_url, json={API_FIELD_VALUE: enrichment_records}, params=params,
                                log_msg_before=f"Start deleting {len(enrichment_records) if len(enrichment_records) > 0 else 'all'} "
-                               f"enrichment data records for client {client_id}")
+                                              f"enrichment data records for client {client_id}")
 
         if delete_async:
             job_id = response.json()[API_FIELD_ID]
             response = self._poll_for_url(DATA_ID_ENDPOINT.format(id=job_id),
                                           get_status=lambda r: r[API_FIELD_VALUE][API_FIELD_STATUS],
                                           log_msg_after=f"Successfully deleted {len(enrichment_records) if len(enrichment_records) > 0 else 'all'} "
-                                          f"enrichment data records for client {client_id}")
+                                                        f"enrichment data records for client {client_id}")
         return response.json()
 
     def activate_enrichment_data(self, params=None) -> dict:
@@ -981,50 +981,65 @@ class DoxApiClient(CommonClient):
         return self.get(url, params=params)
 
     def create_schema_with_fields(self, client_id, schema_name, schema_desc, document_type, document_type_desc,
-                                  model_type, item_fields=None):
+                                  model_type, setup_version_type=None, header_fields=None, line_fields=None):
         """
         Creates schema along with header fields and line items
         Sample payload for posting fields:
-            fields_payload = [
+            header_fields = [
+                {
+                    "name": "senderName",
+                    "description": "",
+                    "label": "",
+                    "datatype": ""
+                },
                 {
                     "name": "documentNumber",
                     "description": "",
                     "label": "",
-                    "datatype": "",
-                    "is_line_item": False
-                },
+                    "datatype": ""
+                }
+            ]
+            line_fields = [
                 {
                     "name": "netAmount",
                     "description": "",
                     "label": "",
-                    "datatype": "",
-                    "is_line_item": True
+                    "datatype": ""
+                },
+                {
+                    "name": "documentDate",
+                    "description": "",
+                    "label": "",
+                    "datatype": ""
                 }
             ]
             model_type = "defaultWorkflow"
-            setupTypeVersion = "1.0.0"
-            response = create_schema_with_fields(external_client, schema_payload, model_type + setupTypeVersion,
-                                                fields_payload)
+            setup_type_version = "1.0.0"
+            resp = external_client.create_schema_with_fields(fixture_client, "Custom_Payment_Advice_Schema",
+                                                     "Schema for document type paymentAdvice", "paymentAdvice",
+                                                     "paymentAdviceDocument type", model_type, setup_type_version,
+                                                     header_fields, line_fields)
         """
         if model_type not in SUPPORTED_MODEL_TYPES:
             error_msg = 'Invalid model. Valid models are {}.'.format(str(SUPPORTED_MODEL_TYPES))
-            raise BDPApiInvalidDataProvidedError(error_msg)
-        file_path = self._get_default_extractor_fields(model_type)
-        schema_fields_payload = create_payload_for_schema_fields(model_type, item_fields)
-        if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
-            os.remove(file_path)
+            raise BDPValueError(error_msg)
+        file_path = self._get_default_extractor_fields()
+        header_items, line_items = create_payload_for_schema_fields(model_type, setup_version_type,
+                                                                    header_fields, line_fields)
+        # if model_type == MODEL_TYPE_DEFAULT:
+        #     os.remove(file_path)
         response = self.create_schema(client_id, schema_name, schema_desc, document_type, document_type_desc)
         schema_id = response["id"]
-        return self.add_schema_version_fields(client_id, schema_id, '1', header_fields=None, line_item_fields=None)
+        return self.add_schema_version_fields(client_id, schema_id, '1', header_items, line_items)
 
-    def _get_default_extractor_fields(self, model_type):
-        if model_type in [MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_1, MODEL_TYPE_DEFAULT + SETUP_TYPE_VERSION_2]:
-            capabilities = self.get_capabilities()
-            file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_EXTRACTOR_FIELDS_FILE_PATH)
-            try:
-                with open(file_path, 'w') as file:
-                    json.dump(capabilities, file, indent=4)
-                    file.flush()
-                return file_path
-            except Exception as e:
-                print(e)
+    def _get_default_extractor_fields(self):
+        capabilities = self.get_capabilities()
+        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_EXTRACTOR_FIELDS_FILE_PATH)
+        try:
+            with open(file_path, 'w') as file:
+                file.write("defExtFields = ")
+                json.dump(capabilities, file, indent=4)
+                file.flush()
+            return file_path
+        except Exception as e:
+            print(e)

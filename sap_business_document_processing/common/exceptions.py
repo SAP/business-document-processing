@@ -29,7 +29,7 @@ class BDPUnauthorizedException(BDPClientException):
     pass
 
 
-class BDPApiInvalidDataProvidedError(BDPClientException):
+class BDPValueError(BDPClientException):
     def __init__(self, message: str):
         super().__init__(message=message, status_code=400)
 
