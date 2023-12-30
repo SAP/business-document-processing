@@ -96,7 +96,7 @@ def get_mimetype(filename: str) -> str:
     return mimetypes.guess_type(filename)[0]
 
 
-def generate_item_payload(item, setup_type_version, setup_field_type=None, datatype=None):
+def generate_item_payload(item, setup_type_version, setup_field_type=None, datatype=None, setup_type=API_FIELD_STATIC):
     if datatype is None:
         datatype = item[API_FIELD_DATATYPE]
     payload = {
@@ -106,7 +106,7 @@ def generate_item_payload(item, setup_type_version, setup_field_type=None, datat
         API_FIELD_DEFAULT_EXTRACTOR: {
             API_FIELD_FIELD_NAME: item[API_FIELD_NAME]
         },
-        API_FIELD_SETUP_TYPE: API_FIELD_STATIC,
+        API_FIELD_SETUP_TYPE: setup_type,
         API_FIELD_SETUP_TYPE_VERSION: setup_type_version,
         API_FIELD_SETUP: {
             API_FIELD_TYPE: setup_field_type,
