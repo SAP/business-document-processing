@@ -30,7 +30,6 @@ from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_EN
     DOCUMENT_PAGES_TEXT_ENDPOINT
 from .helpers import create_document_options, create_capability_mapping_options, get_mimetype, \
     create_payload_for_schema_fields
-from ..common.exceptions import BDPValueError
 
 
 class DoxApiClient(CommonClient):
@@ -706,15 +705,31 @@ class DoxApiClient(CommonClient):
         else:
             return "Request failed with status code:" + str(response.status_code)
 
-    def delete_schemas(self, client_id, schema_id):
+    def delete_schema(self, client_id, schema_id):
         """
-        Deletes specified schemas for a client
+        Deletes specified schema for a client
         :param client_id: The client ID for which the schema shall be deleted
-        :param schema_id: ID for the schema that shall be deleted (string for single schema, list for multiple schemas)
+        :param schema_id: ID of the schema that shall be deleted [string]
         :return: The API endpoint response as dictionary
         """
         payload = {
-            API_FIELD_VALUE: schema_id
+            API_FIELD_VALUE: [schema_id]
+        }
+        response = self._delete_schemas(payload, client_id)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return "Request failed with status code:" + str(response.status_code)
+
+    def delete_schemas(self, client_id, schema_ids):
+        """
+        Deletes multiple schemas for a client
+        :param client_id: The client ID for which the schemas shall be deleted
+        :param schema_ids: IDs of the schemas that shall be deleted [list of strings]
+        :return: The API endpoint response as dictionary
+        """
+        payload = {
+            API_FIELD_VALUE: schema_ids
         }
         response = self._delete_schemas(payload, client_id)
         if response.status_code == 200:
@@ -809,14 +824,14 @@ class DoxApiClient(CommonClient):
         url = SCHEMAS_UPDATE_ENDPOINT.format(schemaId=schema_id)
         return self.put(url, params=params, json=payload)
 
-    def add_schema_version_fields(self, client_id, schema_id, version, header_fields, line_item_fields):
+    def add_schema_version_fields(self, client_id, schema_id, version, header_fields=[], line_item_fields=[]):
         """
         Adds Header and Line Item fields to a schema version
         :param client_id: The client ID for which the fields shall be added
         :param schema_id: ID for the schema for which fields shall be added
         :param version: Version of the schema for which fields shall be added
-        :param header_fields: List of header fields that shall be added
-        :param line_item_fields: List of line item fields that shall be added
+        :param (optional) header_fields: List of header fields that shall be added
+        :param (optional) line_item_fields: List of line item fields that shall be added
         :return: The API endpoint response as dictionary
         """
         payload = {
@@ -1020,8 +1035,7 @@ class DoxApiClient(CommonClient):
                                                      header_fields, line_fields)
         """
         if model_type not in SUPPORTED_MODEL_TYPES:
-            error_msg = 'Invalid model. Valid models are {}.'.format(str(SUPPORTED_MODEL_TYPES))
-            raise BDPValueError(error_msg)
+            raise ValueError(f'Invalid model. Valid models are {SUPPORTED_MODEL_TYPES}.')
         file_path = self._get_default_extractor_fields()
         header_items, line_items = create_payload_for_schema_fields(model_type, setup_version_type,
                                                                     header_fields, line_fields)

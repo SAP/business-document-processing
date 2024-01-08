@@ -11,9 +11,8 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_DOCUMENT_TYPE, API_FIELD_E
     API_FIELD_DESCRIPTION, API_FIELD_LABEL, API_FIELD_DEFAULT_EXTRACTOR, API_FIELD_FIELD_NAME, API_FIELD_SETUP_TYPE, \
     API_FIELD_STATIC, API_FIELD_SETUP_TYPE_VERSION, API_FIELD_SETUP, API_FIELD_FORMATTING_TYPE, API_FIELD_FORMATTING, \
     API_FIELD_FORMATTING_TYPE_VERSION, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_1, \
-    SETUP_TYPE_VERSION_2, API_FIELD_IS_LINE_ITEM, API_FIELD_TYPE, API_FIELD_PRIORITY, SETUP_TYPE_AUTO, MODEL_TYPE_LLM, \
+    SETUP_TYPE_VERSION_2, API_FIELD_TYPE, API_FIELD_PRIORITY, SETUP_TYPE_AUTO, MODEL_TYPE_LLM, \
     API_FIELD_DATATYPE, MODEL_TYPE_TEMPLATE, SETUP_TYPE_MANUAL, SETUP_TYPE_PRIORITY
-from ..common.exceptions import BDPInternalServerError, BDPValueError
 from .default_extractor_fields import defExtFields
 
 
@@ -127,17 +126,16 @@ def create_list_for_header_and_line_items(items, extracted_items):
             (field.get(API_FIELD_TYPE) for field in extracted_items if field.get(API_FIELD_NAME) == field_name),
             None)
         if name_to_type_list[field_name] is None:
-            error_msg = 'fieldName not found in defaultExtractor values. Please provide valid fieldName from ' \
-                    '/capabilities API.'
-            raise BDPValueError(error_msg)
+            raise ValueError(f'fieldName not found in defaultExtractor values. Please provide valid fieldName from '
+                             '/capabilities API.')
     return name_to_type_list
 
 
 def create_payload_for_schema_fields(model_type, setup_type_version, header_fields, line_fields):
     header_items, line_items = [], []
-    header_name_to_type, line_name_to_type = {}, {}
 
     if model_type == MODEL_TYPE_DEFAULT:
+        header_name_to_type, line_name_to_type = {}, {}
         data = defExtFields
 
         extracted_header_fields = data.get(API_REQUEST_FIELD_EXTRACTED_FIELDS, {}) \
@@ -147,8 +145,6 @@ def create_payload_for_schema_fields(model_type, setup_type_version, header_fiel
 
         header_name_to_type = create_list_for_header_and_line_items(header_fields, extracted_header_fields)
         line_name_to_type = create_list_for_header_and_line_items(line_fields, extracted_line_item_fields)
-
-    if model_type == MODEL_TYPE_DEFAULT:
 
         if setup_type_version == SETUP_TYPE_VERSION_1:
             """  FOR DEFAULT MODEL 1.0.0 """

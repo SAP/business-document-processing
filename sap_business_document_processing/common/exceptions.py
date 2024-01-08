@@ -27,13 +27,3 @@ class BDPServerException(BDPApiException):
 
 class BDPUnauthorizedException(BDPClientException):
     pass
-
-
-class BDPValueError(BDPClientException):
-    def __init__(self, message: str):
-        super().__init__(message=message, status_code=400)
-
-
-class BDPInternalServerError(BDPServerException):
-    def __init__(self, message: str):
-        super().__init__(message=message, status_code=500)
