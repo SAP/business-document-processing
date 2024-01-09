@@ -1,19 +1,16 @@
 # SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
 #
 # SPDX-License-Identifier: Apache-2.0
-import json
 import mimetypes
-import os
 
 from .constants import API_FIELD_CLIENT_ID, API_FIELD_DOCUMENT_TYPE, API_FIELD_ENRICHMENT, API_FIELD_TEMPLATE_ID, \
     API_FIELD_EXTRACTED_HEADER_FIELDS, API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, API_FIELD_SCHEMA_ID, \
     API_REQUEST_FIELD_EXTRACTED_FIELDS, API_FIELD_FILE_TYPE, API_REQUEST_FIELD_RECEIVED_DATE, API_FIELD_NAME, \
     API_FIELD_DESCRIPTION, API_FIELD_LABEL, API_FIELD_DEFAULT_EXTRACTOR, API_FIELD_FIELD_NAME, API_FIELD_SETUP_TYPE, \
     API_FIELD_STATIC, API_FIELD_SETUP_TYPE_VERSION, API_FIELD_SETUP, API_FIELD_FORMATTING_TYPE, API_FIELD_FORMATTING, \
-    API_FIELD_FORMATTING_TYPE_VERSION, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_1, \
+    API_FIELD_FORMATTING_TYPE_VERSION, MODEL_TYPE_DEFAULT, SETUP_TYPE_VERSION_1, \
     SETUP_TYPE_VERSION_2, API_FIELD_TYPE, API_FIELD_PRIORITY, SETUP_TYPE_AUTO, MODEL_TYPE_LLM, \
     API_FIELD_DATATYPE, MODEL_TYPE_TEMPLATE, SETUP_TYPE_MANUAL, SETUP_TYPE_PRIORITY
-from .default_extractor_fields import defExtFields
 
 
 def create_document_options(client_id, document_type, header_fields=None, line_item_fields=None, template_id=None,
@@ -131,16 +128,15 @@ def create_list_for_header_and_line_items(items, extracted_items):
     return name_to_type_list
 
 
-def create_payload_for_schema_fields(model_type, setup_type_version, header_fields, line_fields):
+def create_payload_for_schema_fields(model_type, setup_type_version, header_fields, line_fields, capabilities=None):
     header_items, line_items = [], []
 
     if model_type == MODEL_TYPE_DEFAULT:
         header_name_to_type, line_name_to_type = {}, {}
-        data = defExtFields
 
-        extracted_header_fields = data.get(API_REQUEST_FIELD_EXTRACTED_FIELDS, {}) \
+        extracted_header_fields = capabilities.get(API_REQUEST_FIELD_EXTRACTED_FIELDS, {}) \
             .get(API_FIELD_EXTRACTED_HEADER_FIELDS, [])
-        extracted_line_item_fields = data.get(API_REQUEST_FIELD_EXTRACTED_FIELDS, {}) \
+        extracted_line_item_fields = capabilities.get(API_REQUEST_FIELD_EXTRACTED_FIELDS, {}) \
             .get(API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, [])
 
         header_name_to_type = create_list_for_header_and_line_items(header_fields, extracted_header_fields)

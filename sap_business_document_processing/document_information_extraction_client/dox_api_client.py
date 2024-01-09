@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2020 2019-2020 SAP SE
 #
 # SPDX-License-Identifier: Apache-2.0
-import os
 from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
@@ -20,10 +19,10 @@ from .constants import API_FIELD_CLIENT_ID, API_FIELD_CLIENT_LIMIT, API_FIELD_CL
     API_FIELD_PREDEFINED, API_REQUEST_FIELD_ORDER, API_FIELD_DOCUMENT_TYPE, \
     SCHEMAS_UPDATE_ENDPOINT, SCHEMAS_VERSION_FIELDS_ENDPOINT, SCHEMAS_VERSION_ACTIVATE_ENDPOINT, \
     SCHEMAS_VERSION_DEACTIVATE_ENDPOINT, SCHEMAS_VERSIONS_ENDPOINT, SCHEMAS_VERSION_UUID_ENDPOINT, \
-    SUPPORTED_MODEL_TYPES, DEFAULT_EXTRACTOR_FIELDS_FILE_PATH, SCHEMAS_CAPABILITIES, API_FIELD_NAME, \
+    SUPPORTED_MODEL_TYPES, SCHEMAS_CAPABILITIES, API_FIELD_NAME, \
     API_FIELD_DOCUMENT_TYPE_DESCRIPTION, API_FIELD_EXTRACTED_HEADER_FIELDS, API_FIELD_EXTRACTED_LINE_ITEM_FIELDS, \
-    API_FIELD_SCHEMA_DESCRIPTION
-from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT, \
+    API_FIELD_SCHEMA_DESCRIPTION, MODEL_TYPE_DEFAULT
+from .endpoints import CAPABILITIES_ENDPOINT, CLIENT_ENDPOINT, CLIENT_MAPPING_ENDPOINT, DATA_ACTIVATION_ASYNC_ENDPOINT,\
     DATA_ACTIVATION_ID_ENDPOINT, DATA_ENDPOINT, DATA_ASYNC_ENDPOINT, DATA_ID_ENDPOINT, DOCUMENT_ENDPOINT, \
     DOCUMENT_CONFIRM_ENDPOINT, DOCUMENT_ID_ENDPOINT, DOCUMENT_ID_REQUEST_ENDPOINT, DOCUMENT_PAGE_ENDPOINT, \
     DOCUMENT_PAGE_DIMENSIONS_ENDPOINT, DOCUMENT_PAGES_DIMENSIONS_ENDPOINT, DOCUMENT_PAGE_TEXT_ENDPOINT, \
@@ -660,10 +659,7 @@ class DoxApiClient(CommonClient):
         if client_id:
             payload[API_FIELD_CLIENT_ID] = client_id
         response = self._create_schema(payload)
-        if response.status_code == 201:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _create_schema(self, payload):
         """
@@ -700,10 +696,7 @@ class DoxApiClient(CommonClient):
         if predefined is not None:
             params[API_REQUEST_FIELD_ORDER] = order_by
         response = self.get(url, params=params)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def delete_schema(self, client_id, schema_id):
         """
@@ -716,10 +709,7 @@ class DoxApiClient(CommonClient):
             API_FIELD_VALUE: [schema_id]
         }
         response = self._delete_schemas(payload, client_id)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def delete_schemas(self, client_id, schema_ids):
         """
@@ -732,10 +722,7 @@ class DoxApiClient(CommonClient):
             API_FIELD_VALUE: schema_ids
         }
         response = self._delete_schemas(payload, client_id)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _delete_schemas(self, payload, client_id):
         """
@@ -755,10 +742,7 @@ class DoxApiClient(CommonClient):
         :return: The API endpoint response as dictionary
         """
         response = self._create_schema_version(client_id, schema_id)
-        if response.status_code == 201:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _create_schema_version(self, client_id, schema_id):
         """
@@ -778,10 +762,7 @@ class DoxApiClient(CommonClient):
         :return: The schema details as dictionary
         """
         response = self._get_schema_configurations_details(client_id, schema_id)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _get_schema_configurations_details(self, client_id, schema_id):
         """
@@ -809,10 +790,7 @@ class DoxApiClient(CommonClient):
             API_FIELD_DOCUMENT_TYPE_DESCRIPTION: document_type_desc
         }
         response = self._update_schema_configuration(client_id, schema_id, payload)
-        if response.status_code == 201:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _update_schema_configuration(self, client_id, schema_id, payload):
         """
@@ -830,8 +808,8 @@ class DoxApiClient(CommonClient):
         :param client_id: The client ID for which the fields shall be added
         :param schema_id: ID for the schema for which fields shall be added
         :param version: Version of the schema for which fields shall be added
-        :param (optional) header_fields: List of header fields that shall be added
-        :param (optional) line_item_fields: List of line item fields that shall be added
+        :param header_fields: (optional) List of header fields that shall be added
+        :param line_item_fields: (optional) List of line item fields that shall be added
         :return: The API endpoint response as dictionary
         """
         payload = {
@@ -839,10 +817,7 @@ class DoxApiClient(CommonClient):
             API_FIELD_EXTRACTED_LINE_ITEM_FIELDS: line_item_fields
         }
         response = self._add_schema_version_fields(client_id, schema_id, version, payload)
-        if response.status_code == 201:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _add_schema_version_fields(self, client_id, schema_id, version, payload):
         """
@@ -863,10 +838,7 @@ class DoxApiClient(CommonClient):
         :return: The API endpoint response as dictionary
         """
         response = self._activate_schema_version(client_id, schema_id, version)
-        if response.status_code == 201:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _activate_schema_version(self, client_id, schema_id, version):
         """
@@ -887,10 +859,7 @@ class DoxApiClient(CommonClient):
         :return: The API endpoint response as dictionary
         """
         response = self._deactivate_schema_version(client_id, schema_id, version)
-        if response.status_code == 201:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _deactivate_schema_version(self, client_id, schema_id, version):
         """
@@ -908,10 +877,7 @@ class DoxApiClient(CommonClient):
         :return: The schema capabilities as dictionary
         """
         response = self._get_schema_capabilities()
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _get_schema_capabilities(self):
         """
@@ -929,10 +895,7 @@ class DoxApiClient(CommonClient):
         :return: The API endpoint response as dictionary
         """
         response = self._delete_schema_versions(client_id, schema_id, versions)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _delete_schema_versions(self, client_id, schema_id, versions):
         """
@@ -955,10 +918,7 @@ class DoxApiClient(CommonClient):
         :return: The schema version details as dictionary with 'schemas' as key of the json response
         """
         response = self._get_all_schema_versions(client_id, schema_id)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _get_all_schema_versions(self, client_id, schema_id):
         """
@@ -979,10 +939,7 @@ class DoxApiClient(CommonClient):
         :return: Schema version details as dictionary
         """
         response = self._get_schema_version_details(client_id, schema_id, version)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return "Request failed with status code:" + str(response.status_code)
+        return response.json()
 
     def _get_schema_version_details(self, client_id, schema_id, version):
         """
@@ -995,65 +952,40 @@ class DoxApiClient(CommonClient):
         return self.get(url, params=params)
 
     def create_schema_with_fields(self, client_id, schema_name, schema_desc, document_type, document_type_desc,
-                                  model_type, setup_version_type=None, header_fields=None, line_fields=None):
+                                  model_type, setup_type_version=None, header_fields=None, line_fields=None):
         """
         Creates schema along with header fields and line items
-        Sample payload for posting fields:
-            header_fields = [
-                {
-                    "name": "senderName",
-                    "description": "",
-                    "label": "",
-                    "datatype": ""
-                },
-                {
-                    "name": "documentNumber",
-                    "description": "",
-                    "label": "",
-                    "datatype": ""
-                }
-            ]
-            line_fields = [
-                {
-                    "name": "netAmount",
-                    "description": "",
-                    "label": "",
-                    "datatype": ""
-                },
-                {
-                    "name": "documentDate",
-                    "description": "",
-                    "label": "",
-                    "datatype": ""
-                }
-            ]
-            model_type = "defaultWorkflow"
-            setup_type_version = "1.0.0"
-            resp = external_client.create_schema_with_fields(fixture_client, "Custom_Payment_Advice_Schema",
-                                                     "Schema for document type paymentAdvice", "paymentAdvice",
-                                                     "paymentAdviceDocument type", model_type, setup_type_version,
-                                                     header_fields, line_fields)
+        :param client_id: The client ID for which the schema shall be created
+        :param schema_name: Name for the schema to be created
+        :param schema_desc: Description for the schema to be created
+        :param document_type: Document Type which will be supported by the schema
+        :param document_type_desc: Document Type description for the schema to be created
+        :param model_type: Type of model for document extraction
+        :param setup_type_version: (optional) The version of setup_type for the fields to be added
+        :param header_fields: (optional) List of header fields that shall be added
+        :param line_fields: (optional) List of line item fields that shall be added
+        :return: The response message and schema_id as a dictionary
+
+        Header and Line items should have name, description, label and datatype in dictionary format.
         """
         if model_type not in SUPPORTED_MODEL_TYPES:
             raise ValueError(f'Invalid model. Valid models are {SUPPORTED_MODEL_TYPES}.')
-        file_path = self._get_default_extractor_fields()
-        header_items, line_items = create_payload_for_schema_fields(model_type, setup_version_type,
-                                                                    header_fields, line_fields)
-        # if model_type == MODEL_TYPE_DEFAULT:
-        #     os.remove(file_path)
+        if model_type is MODEL_TYPE_DEFAULT:
+            capabilities = self.get_default_extractor_data()
+            header_items, line_items = create_payload_for_schema_fields(model_type, setup_type_version,
+                                                                        header_fields, line_fields, capabilities)
+        else:
+            header_items, line_items = create_payload_for_schema_fields(model_type, setup_type_version,
+                                                                        header_fields, line_fields)
         response = self.create_schema(client_id, schema_name, schema_desc, document_type, document_type_desc)
-        schema_id = response["id"]
+        schema_id = response[API_FIELD_ID]
         response = self.add_schema_version_fields(client_id, schema_id, '1', header_items, line_items)
-        return schema_id, response
+        response[API_FIELD_ID] = schema_id
+        return response
 
-    def _get_default_extractor_fields(self):
-        capabilities = self.get_capabilities()
-        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_EXTRACTOR_FIELDS_FILE_PATH)
+    def get_default_extractor_data(self):
         try:
-            with open(file_path, 'w') as file:
-                file.write("defExtFields = ")
-                json.dump(capabilities, file, indent=4)
-                file.flush()
-            return file_path
+            capabilities = self.get_capabilities()
+            return capabilities
         except Exception as e:
             print(e)
