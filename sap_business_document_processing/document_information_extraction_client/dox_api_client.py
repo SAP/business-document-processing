@@ -968,7 +968,7 @@ class DoxApiClient(CommonClient):
 
         Header and Line items should have name, description, label and datatype in dictionary format.
         """
-        if model_type not in SUPPORTED_MODEL_TYPES:
+        if model_type not in SUPPORTED_MODEL_TYPES or model_type is None:
             raise ValueError(f'Invalid model. Valid models are {SUPPORTED_MODEL_TYPES}.')
         if model_type is MODEL_TYPE_DEFAULT:
             capabilities = self.get_default_extractor_data()
