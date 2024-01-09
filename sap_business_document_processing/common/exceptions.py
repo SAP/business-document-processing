@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+
 class BDPApiException(Exception):
     def __init__(self, message, response=None, status_code=None):
         super(BDPApiException, self).__init__(message)
