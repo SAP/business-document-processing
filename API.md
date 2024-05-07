@@ -838,3 +838,227 @@ Sets the document status to confirmed
 
 **Returns**: The API endpoint response as dictionary
 
+
+### create_schema
+```python
+DoxApiClient.create_schema(client_id, schema_name, schema_desc,
+                           document_type, document_type_desc)
+```
+
+Creates a new schema
+- Argument client_id: The client ID for which the schema shall be created
+- Argument schema_name: Name for the schema to be created
+- Argument schema_desc: Description for the schema to be created
+- Argument document_type: Document Type which will be supported by the schema
+- Argument document_type_desc: Document Type description for the schema to be created
+
+**Returns**: The API endpoint response as dictionary
+
+
+### get_schema_configurations
+```python
+DoxApiClient.get_schema_configurations(client_id,
+                                       predefined: bool = None,
+                                       document_type: str = None,
+                                       skip: int = None,
+                                       top: int = None,
+                                       order_by: str = None)
+```
+
+Retrieves all schemas for the provided client
+- Argument client_id: The client ID for which the schema details need to be fetched
+- Argument predefined: (optional) The arguement which specifies if the schema is predefined schema or not
+- Argument document_type: (optional) The argument to filter out schemas based on the provided document_type
+- Argument skip: (optional) The index of the first record to be returned
+- Argument top: (optional) The maximum number records to be returned
+- Argument order_by: (optional) The value to order the elements returned based on it
+
+**Returns**: The schema values as dictionary with 'schemas' as key of the json response
+
+
+### delete_schema
+```python
+DoxApiClient.delete_schema(client_id, schema_id)
+```
+
+Deletes specified schema for a client
+- Argument client_id: The client ID for which the schema shall be deleted
+- Argument schema_id: ID of the schema that shall be deleted [string]
+
+**Returns**: The API endpoint response as dictionary
+
+
+### delete_schemas
+```python
+DoxApiClient.delete_schemas(client_id, schema_ids)
+```
+
+Deletes multiple schemas for a client
+- Argument client_id: The client ID for which the schemas shall be deleted
+- Argument schema_ids: IDs of the schemas that shall be deleted [list of strings]
+
+**Returns**: The API endpoint response as dictionary
+
+
+### create_schema_version
+```python
+DoxApiClient.create_schema_version(client_id, schema_id)
+```
+
+Creates a new version for the schema
+- Argument client_id: The client ID for which the new version shall be created
+- Argument schema_id: ID for the schema from which new version shall be created
+
+**Returns**: The API endpoint response as dictionary
+
+
+### get_schema_configuration_details
+```python
+DoxApiClient.get_schema_configuration_details(client_id, schema_id)
+```
+
+Retrieves details for a specific schema
+- Argument client_id: The client ID for which the schema details shall be fetched
+- Argument schema_id: The ID of the schema whose details shall be fetched
+
+**Returns**: The schema details as dictionary
+
+
+### update_schema_configuration
+```python
+DoxApiClient.update_schema_configuration(client_id, schema_id,
+                                         schema_name, schema_desc,
+                                         document_type_desc)
+```
+
+Updates the schema details for a specific schema
+- Argument client_id: The client ID for which the details shall be updated
+- Argument schema_id: ID for the schema for which details shall be updated
+- Argument schema_name: Name of the schema (updated or old)
+- Argument schema_desc: Description for the schema (updated or old)
+- Argument document_type_desc: Description of the document-type for the schema (updated or old)
+
+**Returns**: The API endpoint response as dictionary
+
+
+### add_schema_version_fields
+```python
+DoxApiClient.add_schema_version_fields(client_id,
+                                       schema_id,
+                                       version,
+                                       header_fields=[],
+                                       line_item_fields=[])
+```
+
+Adds Header and Line Item fields to a schema version
+- Argument client_id: The client ID for which the fields shall be added
+- Argument schema_id: ID for the schema for which fields shall be added
+- Argument version: Version of the schema for which fields shall be added
+- Argument header_fields: (optional) List of header fields that shall be added
+- Argument line_item_fields: (optional) List of line item fields that shall be added
+
+**Returns**: The API endpoint response as dictionary
+
+
+### activate_schema_version
+```python
+DoxApiClient.activate_schema_version(client_id, schema_id, version)
+```
+
+Activates a schema version
+- Argument client_id: The client ID for which the schema version shall be activated
+- Argument schema_id: ID for the schema for which the schema version shall be activated
+- Argument version: Version of the schema that shall be activated
+
+**Returns**: The API endpoint response as dictionary
+
+
+### deactivate_schema_version
+```python
+DoxApiClient.deactivate_schema_version(client_id, schema_id, version)
+```
+
+Deactivates a schema version
+- Argument client_id: The client ID for which the schema version shall be deactivated
+- Argument schema_id: ID for the schema for which the schema version shall be deactivated
+- Argument version: Version of the schema that shall be deactivated
+
+**Returns**: The API endpoint response as dictionary
+
+
+### get_schema_capabilities
+```python
+DoxApiClient.get_schema_capabilities()
+```
+
+Retrieves the capabilities for all schemas
+
+**Returns**: The schema capabilities as dictionary
+
+
+### delete_schema_versions
+```python
+DoxApiClient.delete_schema_versions(client_id, schema_id, versions)
+```
+
+Deletes specific versions of the schema
+- Argument client_id: The client ID for which the schema version shall be deleted
+- Argument schema_id: ID for the schema for which the schema version shall be deleted
+- Argument versions: List of versions of the schema that shall be deleted
+
+**Returns**: The API endpoint response as dictionary
+
+
+### get_all_schema_versions
+```python
+DoxApiClient.get_all_schema_versions(client_id, schema_id)
+```
+
+Retrieves all the versions associated with a schema
+- Argument client_id: The client ID for which the schema versions shall be fetched
+- Argument schema_id: ID for the schema for which the schema versions shall be fetched
+
+**Returns**: The schema version details as dictionary with 'schemas' as key of the json response
+
+
+### get_schema_version_details
+```python
+DoxApiClient.get_schema_version_details(client_id, schema_id, version)
+```
+
+Retrieves specific version details associated with a schema
+- Argument client_id: The client ID for which the schema version shall be fetched
+- Argument schema_id: ID for the schema for which the schema version shall be fetched
+- Argument version: Version of the schema that shall be fetched
+
+**Returns**: Schema version details as dictionary
+
+
+### create_schema_with_fields
+```python
+DoxApiClient.create_schema_with_fields(client_id,
+                                       schema_name,
+                                       schema_desc,
+                                       document_type,
+                                       document_type_desc,
+                                       model_type,
+                                       setup_type_version=None,
+                                       header_fields=None,
+                                       line_fields=None)
+```
+
+Creates schema along with header fields and line items
+- Argument client_id: The client ID for which the schema shall be created
+- Argument schema_name: Name for the schema to be created
+- Argument schema_desc: Description for the schema to be created
+- Argument document_type: Document Type which will be supported by the schema
+- Argument document_type_desc: Document Type description for the schema to be created
+- Argument model_type: Type of model for document extraction
+- Argument setup_type_version: (optional) The version of setup_type for the fields to be added
+- Argument header_fields: (optional) List of header fields that shall be added
+- Argument line_fields: (optional) List of line item fields that shall be added
+
+**Returns**: The response message and schema_id as a dictionary
+
+Header and Line items should have name, description, label and datatype in dictionary format.
+
