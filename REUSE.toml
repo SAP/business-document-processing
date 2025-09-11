@@ -1,0 +1,10 @@
+version = 1
+SPDX-PackageName = "document-classification-client"
+SPDX-PackageSupplier = "Alexander Bolshakov <alexander.bolshakov@sap.com>"
+SPDX-PackageDownloadLocation = "https://github.com/SAP/document-classification-client"
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2019-2021 SAP SE"
+SPDX-License-Identifier = "Apache-2.0"
